@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Button from "@/components/ui/Button";
 
 export default function Home() {
   const [tests, setTests] = useState([]);
@@ -22,6 +23,15 @@ export default function Home() {
           </li>
         ))}
       </ul>
+      <div className="space-x-3 p-6">
+      <Button>Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="danger">Delete</Button>
+      <Button variant="outline">Outline</Button>
+      <Button size="lg">Big Button</Button>
+    </div>
     </main>
   );
 }
+
+
