@@ -9,11 +9,7 @@ interface SidebarProps {
 
 const sections = [
   "Profile",
-  "Skills",
   "Projects",
-  "Certifications",
-  "Blogs",
-  "Activities",
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
