@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
+// 1. Import the AuthProvider
+import { AuthProvider } from "@/context/AuthContext";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -9,7 +12,6 @@ export const metadata: Metadata = {
   description: "Create your developer portfolio instantly.",
 };
 
-// This is the new, minimal root layout. It has no navbar.
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,7 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {/* 2. Wrap the children with the AuthProvider */}
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

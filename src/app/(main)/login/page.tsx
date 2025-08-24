@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+// 1. Import the useAuth hook
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -9,18 +12,27 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 2. Get the loginUser function from our context
+  const { loginUser } = useAuth();
+  const router = useRouter(); // Initialize router
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // --- We will add the API call logic here in the next step ---
-    console.log("Submitting:", { email, password });
-    
-    // Simulate an API call
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    try {
+      // 3. Call the loginUser function from the context
+      await loginUser({ email, password });
+      
+      // If login is successful, the context will automatically handle
+      // state updates and redirection.
 
-    setLoading(false);
+    } catch (err: any) {
+      // 4. If an error is thrown, display it to the user
+      setError(err.message || "An unexpected error occurred.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,7 +50,7 @@ const LoginPage = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)} // Corrected this line
               className="mt-1 w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="example@email.com"
               required

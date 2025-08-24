@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+// 1. Import the useAuth hook
+import { useAuth } from "@/context/AuthContext";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -11,18 +13,26 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 2. Get the registerUser function from our context
+  const { registerUser } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError(""); // Clear previous errors
     setLoading(true);
 
-    // --- We will add the API call logic here in the next step ---
-    console.log("Submitting:", { name, username, email, password });
-    
-    // Simulate an API call
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    try {
+      // 3. Call the registerUser function from the context
+      await registerUser({ name, username, email, password });
+      
+      // If registration is successful, the context will automatically redirect
+      // to the /editor page. We don't need to do anything else here.
 
-    setLoading(false);
+    } catch (err: any) {
+      // 4. If an error is thrown, display it to the user
+      setError(err.message || "An unexpected error occurred.");
+      setLoading(false); // Stop the loading indicator
+    }
   };
 
   return (
@@ -33,6 +43,7 @@ const RegisterPage = () => {
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* This will now display backend errors */}
           {error && <p className="bg-red-100 text-red-700 p-3 rounded-md text-center">{error}</p>}
           
           <div>
