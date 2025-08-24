@@ -1,27 +1,60 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
+// 1. Import the useAuth hook to access the context
+import { useAuth } from "@/context/AuthContext";
 
-export default function Navbar() {
+const Navbar = () => {
+  // 2. Get the authentication status, user info, and logout function
+  const { isAuthenticated, user, logoutUser } = useAuth();
+
   return (
-    <nav className="flex justify-between items-center px-6 py-3 bg-gray-900 text-white shadow">
-      {/* Logo / App Name */}
-      <Link href="/" className="text-xl font-bold hover:text-blue-400">
-        DevPort 🚀
-      </Link>
+    <nav className="bg-gray-900 text-white p-4 flex items-center justify-between">
+      {/* Logo */}
+      <div>
+        <Link href="/" className="text-xl font-bold">
+          DevPort 🚀
+        </Link>
+      </div>
 
       {/* Navigation Links */}
-      <div className="space-x-6">
-        <Link href="/templates" className="hover:text-blue-400">
-          Templates
-        </Link>
-        <Link href="/pricing" className="hover:text-blue-400">
-          Pricing
-        </Link>
-        <Link href="/profile" className="hover:text-blue-400">
-          Profile
-        </Link>
+      <div className="flex items-center space-x-6">
+        {/* 3. Use a ternary operator for conditional rendering */}
+        {isAuthenticated ? (
+          // --- Show these links if the user IS logged in ---
+          <>
+            <span className="text-gray-300">Welcome, {user?.name}!</span>
+            <Link href="/editor" className="hover:text-blue-300 transition">
+              Editor
+            </Link>
+            <Link href="/profile" className="hover:text-blue-300 transition">
+              Profile
+            </Link>
+            <button
+              onClick={logoutUser}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          // --- Show these links if the user IS NOT logged in ---
+          <>
+            <Link href="/templates" className="hover:text-blue-300 transition">
+              Templates
+            </Link>
+            <Link href="/login" className="hover:text-blue-300 transition">
+              Login
+            </Link>
+            <Link href="/register" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
