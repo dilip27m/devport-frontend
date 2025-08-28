@@ -3,10 +3,12 @@
 import React from "react";
 import Project from "../components/Projectcomp";
 
+// Add 'image' to the interface
 interface ProjectType {
   title: string;
   description: string;
   link?: string;
+  image?: string;
 }
 
 interface ProjectsViewProps {
@@ -25,10 +27,11 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
               title={project.title}
               description={project.description}
               link={project.link}
+              image={project.image} // Pass the image prop down
             />
           ))
         ) : (
-          <p className="text-gray-500">Your projects will be displayed here once you add them in the editor.</p>
+          <p className="text-gray-500">Your projects will be displayed here.</p>
         )}
       </div>
     </div>
