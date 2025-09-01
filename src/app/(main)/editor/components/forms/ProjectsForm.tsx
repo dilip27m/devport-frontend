@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -9,19 +9,22 @@ import {
   Trash2,
   GripVertical,
   ExternalLink,
+  Plus,
+  X,
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import {
-  FaGithub,
-  FaLinkedin,
-  FaGlobe,
-} from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaGlobe } from "react-icons/fa";
 import { SiVercel, SiNetlify } from "react-icons/si";
+
+export interface ProjectLink {
+  label: string;
+  url: string;
+}
 
 export interface Project {
   title: string;
   description: string;
-  link: string;
+  links: ProjectLink[];
   image?: string;
 }
 
@@ -31,46 +34,32 @@ export interface ProjectsFormProps {
 }
 
 const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
-  const { upload, isUploading } = useCloudinaryUpload();
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const { upload } = useCloudinaryUpload();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addProject = () => {
-    onChange([...projects, { title: "", description: "", link: "", image: "" }]);
+    onChange([
+      ...projects,
+      { title: "", description: "", links: [], image: "" },
+    ]);
     setExpandedIndex(projects.length);
   };
 
-  const updateProject = (index: number, field: keyof Project, value: string) => {
+  const updateProject = (
+    index: number,
+    field: keyof Project,
+    value: any
+  ) => {
     const updated = [...projects];
     (updated[index] as any)[field] = value;
     onChange(updated);
   };
 
   const removeProject = (index: number) => {
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
     const updated = projects.filter((_, i) => i !== index);
     onChange(updated);
     setExpandedIndex(null);
-  };
-
-  const handleUploadButtonClick = (index: number) => {
-    setUploadingIndex(index);
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || uploadingIndex === null) return;
-
-    try {
-      const imageUrl = await upload(file);
-      updateProject(uploadingIndex, "image", imageUrl);
-    } catch (error) {
-      console.error("Upload failed", error);
-      alert("Image upload failed. Please try again.");
-    } finally {
-      setUploadingIndex(null);
-    }
   };
 
   const handleDragEnd = (result: any) => {
@@ -83,25 +72,20 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
 
   // Detect link type → return correct icon
   const getLinkIcon = (link: string) => {
-    if (!link) return null;
-    if (link.includes("github.com")) return <FaGithub className="text-gray-700" size={18} />;
-    if (link.includes("linkedin.com")) return <FaLinkedin className="text-blue-600" size={18} />;
-    if (link.includes("vercel.app")) return <SiVercel className="text-black" size={18} />;
-    if (link.includes("netlify.app")) return <SiNetlify className="text-green-600" size={18} />;
+    if (!link) return <FaGlobe className="text-gray-400" size={18} />;
+    if (link.includes("github.com"))
+      return <FaGithub className="text-gray-700" size={18} />;
+    if (link.includes("linkedin.com"))
+      return <FaLinkedin className="text-blue-600" size={18} />;
+    if (link.includes("vercel.app"))
+      return <SiVercel className="text-black" size={18} />;
+    if (link.includes("netlify.app"))
+      return <SiNetlify className="text-green-600" size={18} />;
     return <FaGlobe className="text-gray-500" size={18} />;
   };
 
   return (
     <div className="space-y-4 h-[70vh] overflow-y-auto pr-2">
-      {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept="image/png, image/jpeg, image/gif, image/webp"
-      />
-
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-800">Projects</h2>
@@ -118,12 +102,20 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="projects">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="space-y-3"
+            >
               {projects.map((project, index) => {
                 const isExpanded = expandedIndex === index;
 
                 return (
-                  <Draggable key={index} draggableId={`project-${index}`} index={index}>
+                  <Draggable
+                    key={index}
+                    draggableId={`project-${index}`}
+                    index={index}
+                  >
                     {(provided) => (
                       <div
                         ref={provided.innerRef}
@@ -133,7 +125,9 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                         {/* Accordion Header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-50 hover:bg-gray-100"
-                          onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                          onClick={() =>
+                            setExpandedIndex(isExpanded ? null : index)
+                          }
                         >
                           <div className="flex items-center space-x-2">
                             <span
@@ -149,6 +143,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                           <div className="flex items-center space-x-3">
                             <button
                               type="button"
+                              title="Remove Project"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 removeProject(index);
@@ -160,7 +155,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                             {isExpanded ? (
                               <ChevronUp className="text-gray-600" size={18} />
                             ) : (
-                              <ChevronDown className="text-gray-600" size={18} />
+                              <ChevronDown
+                                className="text-gray-600"
+                                size={18}
+                              />
                             )}
                           </div>
                         </div>
@@ -187,15 +185,37 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                     className="w-full h-32 object-cover rounded mb-2 border"
                                   />
                                 )}
+                                <input
+                                  type="file"
+                                  id={`file-input-${index}`}
+                                  className="hidden"
+                                  accept="image/png, image/jpeg, image/gif, image/webp"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                      const imageUrl = await upload(file);
+                                      updateProject(index, "image", imageUrl);
+                                    } catch (error) {
+                                      console.error("Upload failed", error);
+                                      alert(
+                                        "Image upload failed. Please try again."
+                                      );
+                                    }
+                                  }}
+                                />
                                 <button
                                   type="button"
-                                  onClick={() => handleUploadButtonClick(index)}
-                                  disabled={isUploading && uploadingIndex === index}
-                                  className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-200 transition text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                  onClick={() =>
+                                    document
+                                      .getElementById(
+                                        `file-input-${index}`
+                                      )
+                                      ?.click()
+                                  }
+                                  className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-200 transition text-sm"
                                 >
-                                  {isUploading && uploadingIndex === index
-                                    ? "Uploading..."
-                                    : "Upload Image"}
+                                  Upload Image
                                 </button>
                               </div>
 
@@ -204,7 +224,9 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 type="text"
                                 placeholder="Project Title"
                                 value={project.title}
-                                onChange={(e) => updateProject(index, "title", e.target.value)}
+                                onChange={(e) =>
+                                  updateProject(index, "title", e.target.value)
+                                }
                                 className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
                               />
 
@@ -212,32 +234,102 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               <textarea
                                 placeholder="Project Description"
                                 value={project.description}
-                                onChange={(e) => updateProject(index, "description", e.target.value)}
+                                onChange={(e) =>
+                                  updateProject(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
                               />
 
-                              {/* Project Link */}
-                              <div className="relative flex items-center">
-                                <span className="absolute left-3">
-                                  {getLinkIcon(project.link)}
-                                </span>
-                                <input
-                                  type="text"
-                                  placeholder="Project Link (GitHub/Live)"
-                                  value={project.link}
-                                  onChange={(e) => updateProject(index, "link", e.target.value)}
-                                  className="w-full border border-gray-300 rounded-md p-2 pl-10 pr-10 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
-                                />
-                                {project.link && (
-                                  <a
-                                    href={project.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="absolute right-3 text-gray-500 hover:text-blue-600"
+                              {/* Multiple Project Links */}
+                              <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Project Links
+                                </label>
+                                {(project.links ?? []).map((link, linkIndex) => (
+                                  <div
+                                    key={linkIndex}
+                                    className="flex items-center space-x-2"
                                   >
-                                    <ExternalLink size={18} />
-                                  </a>
-                                )}
+                                    <input
+                                      type="text"
+                                      placeholder="Label (e.g. GitHub, Live)"
+                                      value={link.label}
+                                      onChange={(e) => {
+                                        const updatedLinks = [
+                                          ...(project.links ?? []),
+                                        ];
+                                        updatedLinks[linkIndex].label =
+                                          e.target.value;
+                                        updateProject(index, "links", updatedLinks);
+                                      }}
+                                      className="w-1/3 border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
+                                    />
+                                    <div className="relative flex-1">
+                                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                        {getLinkIcon(link.url)}
+                                      </span>
+                                      <input
+                                        type="text"
+                                        placeholder="URL"
+                                        value={link.url}
+                                        onChange={(e) => {
+                                          const updatedLinks = [
+                                            ...(project.links ?? []),
+                                          ];
+                                          updatedLinks[linkIndex].url =
+                                            e.target.value;
+                                          updateProject(
+                                            index,
+                                            "links",
+                                            updatedLinks
+                                          );
+                                        }}
+                                        className="w-full border border-gray-300 rounded-md p-2 pl-10 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
+                                      />
+                                      {link.url && (
+                                        <a
+                                          href={link.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          title={`Open ${link.label || 'link'} in new tab`}
+                                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                                        >
+                                          <ExternalLink size={18} />
+                                        </a>
+                                      )}
+                                    </div>
+                                    <button
+                                      type="button"
+                                      title="Remove Link"
+                                      onClick={() => {
+                                        const updatedLinks = [
+                                          ...(project.links ?? []),
+                                        ].filter((_, i) => i !== linkIndex);
+                                        updateProject(index, "links", updatedLinks);
+                                      }}
+                                      className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                    >
+                                      <X size={16} />
+                                    </button>
+                                  </div>
+                                ))}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updatedLinks = [
+                                      ...(project.links ?? []),
+                                      { label: "", url: "" },
+                                    ];
+                                    updateProject(index, "links", updatedLinks);
+                                  }}
+                                  className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+                                >
+                                  <Plus size={16} className="mr-1" /> Add Link
+                                </button>
                               </div>
                             </motion.div>
                           )}
