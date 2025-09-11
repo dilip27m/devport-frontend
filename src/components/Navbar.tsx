@@ -10,7 +10,7 @@ const Navbar = () => {
   const { isAuthenticated, user, logoutUser } = useAuth();
 
   return (
-    <nav className="bg-gray-900 text-white p-4 flex items-center justify-between">
+    <nav className="bg-gray-900 text-white p-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50 mb-10">
       {/* Logo */}
       <div>
         <Link href="/" className="text-xl font-bold">
