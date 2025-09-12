@@ -44,7 +44,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ data, activeTemplate }) => {
           <>
             {/* The internal structure can be simplified. The parent handles scrolling. */}
             {/* We add extra padding at the bottom so the REAL bottom bar doesn't hide content */}
-            <div className="h-full overflow-y-auto ">
+            <div className="h-full overflow-y-auto no-scrollbar ">
               <ActiveTemplateComponent data={data} />
             </div>
           </>

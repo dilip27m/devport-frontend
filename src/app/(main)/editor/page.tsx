@@ -116,12 +116,12 @@ export default function EditorPage() {
       <div className="flex-1 flex items-start p-6 gap-6 overflow-hidden">
         
         {/* Left Sidebar */}
-        <div className="w-[15%] h-full bg-gray-800 p-6 rounded-xl overflow-y-auto">
+        <div className="w-[15%] h-full bg-gray-800 p-6 rounded-xl overflow-y-auto ">
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
         
         {/* Middle Live Preview Panel */}
-        <div className="w-[60%] h-full bg-white rounded-xl overflow-hidden">
+        <div className="w-[60%] h-full bg-white rounded-xl overflow-hidden  shadow-lg">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
         

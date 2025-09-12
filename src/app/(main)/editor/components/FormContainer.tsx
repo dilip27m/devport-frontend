@@ -59,7 +59,7 @@ const FormContainer: React.FC<FormContainerProps> = ({
       
       {/* The actual forms are now in a scrollable container */}
 
- <div className="flex-1 p-6 overflow-y-auto pb-24">
+ <div className="flex-1 p-6 overflow-y-auto no-scrollbar pb-24">
   {section === "Profile" && ( <ProfileForm data={data.profile} onChange={(field, value) => setData({ ...data, profile: { ...data.profile, [field]: value } })} /> )}
   {section === "Projects" && ( <ProjectsForm projects={data.projects} onChange={(projects) => setData({ ...data, projects })} /> )}
 </div>
