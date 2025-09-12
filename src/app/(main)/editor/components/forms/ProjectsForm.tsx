@@ -70,22 +70,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
     onChange(reordered);
   };
 
-  // Detect link type → return correct icon
-  const getLinkIcon = (link: string) => {
-    if (!link) return <FaGlobe className="text-gray-400" size={18} />;
-    if (link.includes("github.com"))
-      return <FaGithub className="text-gray-700" size={18} />;
-    if (link.includes("linkedin.com"))
-      return <FaLinkedin className="text-blue-600" size={18} />;
-    if (link.includes("vercel.app"))
-      return <SiVercel className="text-black" size={18} />;
-    if (link.includes("netlify.app"))
-      return <SiNetlify className="text-green-600" size={18} />;
-    return <FaGlobe className="text-gray-500" size={18} />;
-  };
+
 
   return (
-    <div className="space-y-4 h-[70vh] overflow-y-auto pr-2">
+    <div className="space-y-4  pr-2">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-800">Projects</h2>
@@ -270,7 +258,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                     />
                                     <div className="relative flex-1">
                                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                        {getLinkIcon(link.url)}
+                                        {(link.url)}
                                       </span>
                                       <input
                                         type="text"

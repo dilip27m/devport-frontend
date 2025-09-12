@@ -102,26 +102,32 @@ export default function EditorPage() {
       setTimeout(() => setSaveStatus("idle"), 2000);
     }
   };
+ return (
+    // This root container is now simple. It fills the height its parent gives it.
+    <div className="flex flex-col h-full bg-gray-200">
 
-     return (
-    // The main container for the entire page, relative for the bottom bar
-    <div className="relative flex-1 flex flex-col">
-      {/* This container holds the three main panels */}
-      <div className="flex-1 flex overflow-hidden">
+
+      {/* 
+        This is the container for the three panels.
+        1. `flex-1` makes it fill the available space.
+        2. `items-start` is correctly placed here to stop the panels from stretching.
+        3. `p-6` and `gap-6` provide the spacing.
+      */}
+      <div className="flex-1 flex items-start p-6 gap-6 overflow-hidden">
+        
         {/* Left Sidebar */}
-        <div className="w-[15%] bg-gray-800 p-6 overflow-y-auto">
+        <div className="w-[15%] h-full bg-gray-800 p-6 rounded-xl overflow-y-auto">
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
         
-        {/* Middle Panel for Live Preview */}
-        {/* This now has a hard boundary and will scroll internally */}
-        <div className="w-[60%] p-6 bg-gray-100 overflow-y-auto">
+        {/* Middle Live Preview Panel */}
+        <div className="w-[60%] h-full bg-white rounded-xl overflow-hidden">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
         
-        {/* Right Panel for Forms */}
-        {/* This now has a hard boundary and its child will scroll */}
-        <div className="w-[25%] bg-white shadow-inner flex flex-col">
+        {/* Right Form Panel */}
+        <div className="w-[25%] h-full bg-white shadow-inner flex flex-col rounded-xl overflow-hidden">
+
           <FormContainer
             section={activeSection}
             data={data}
@@ -133,7 +139,9 @@ export default function EditorPage() {
         </div>
       </div>
       
-      {/* The BottomBar for templates */}
+
+      {/* The BottomBar sits correctly outside the scrolling content area */}
+
       <BottomBar
         activeTemplate={activeTemplate}
         onTemplateChange={setActiveTemplate}
