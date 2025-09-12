@@ -106,6 +106,7 @@ export default function EditorPage() {
     // This root container is now simple. It fills the height its parent gives it.
     <div className="flex flex-col h-full bg-gray-200">
 
+
       {/* 
         This is the container for the three panels.
         1. `flex-1` makes it fill the available space.
@@ -126,6 +127,7 @@ export default function EditorPage() {
         
         {/* Right Form Panel */}
         <div className="w-[25%] h-full bg-white shadow-inner flex flex-col rounded-xl overflow-hidden">
+
           <FormContainer
             section={activeSection}
             data={data}
@@ -137,7 +139,9 @@ export default function EditorPage() {
         </div>
       </div>
       
+
       {/* The BottomBar sits correctly outside the scrolling content area */}
+
       <BottomBar
         activeTemplate={activeTemplate}
         onTemplateChange={setActiveTemplate}
