@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// This interface defines what our hook will return
 interface UseCloudinaryUpload {
   isUploading: boolean;
   upload: (file: File) => Promise<string>;
@@ -13,7 +12,7 @@ interface UseCloudinaryUpload {
 
 export const useCloudinaryUpload = (): UseCloudinaryUpload => {
   const [isUploading, setIsUploading] = useState(false);
-  const { token } = useAuth(); // We need the user's token to get the signature
+  const { token } = useAuth();
 
   const upload = async (file: File): Promise<string> => {
     if (!token) {
@@ -23,30 +22,30 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
     setIsUploading(true);
 
     try {
-      // Step 1: Get the secure signature from our backend
+      // Step 1: Get secure signature from backend
       const signatureResponse = await fetch(`${API_BASE_URL}/upload/signature`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const signatureData = await signatureResponse.json();
       if (!signatureResponse.ok) {
         throw new Error("Failed to get upload signature from server.");
       }
 
-      const { signature, timestamp, api_key } = signatureData;
+      //  Use correct field names from backend response
+      const { signature, timestamp, apiKey, cloudName } = signatureData;
 
-      // Step 2: Prepare the data for the direct upload to Cloudinary
+      // Step 2: Prepare upload data for Cloudinary
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("api_key", api_key);
+      formData.append("api_key", apiKey); // snake_case for Cloudinary
       formData.append("signature", signature);
-      formData.append("timestamp", timestamp);
+      formData.append("timestamp", timestamp.toString());
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      // Step 3: Upload directly to Cloudinary
       const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
-      // Step 3: Make the actual upload call directly to Cloudinary
       const uploadResponse = await fetch(uploadUrl, {
         method: "POST",
         body: formData,
@@ -54,15 +53,13 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
 
       const uploadData = await uploadResponse.json();
       if (!uploadResponse.ok) {
-        throw new Error(uploadData.error.message || "Cloudinary upload failed.");
+        throw new Error(uploadData.error?.message || "Cloudinary upload failed.");
       }
 
-      // The `secure_url` is the permanent, HTTPS link to the uploaded image
-      return uploadData.secure_url;
-
+      return uploadData.secure_url; // final image URL
     } catch (error) {
       console.error("Upload error:", error);
-      throw error; // Re-throw so the component can display the error
+      throw error;
     } finally {
       setIsUploading(false);
     }
@@ -70,4 +67,3 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
 
   return { isUploading, upload };
 };
-

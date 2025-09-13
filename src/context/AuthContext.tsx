@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // Checks for token on initial load
   const router = useRouter();
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");

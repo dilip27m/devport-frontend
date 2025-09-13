@@ -13,8 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { FaGithub, FaLinkedin, FaGlobe } from "react-icons/fa";
-import { SiVercel, SiNetlify } from "react-icons/si";
+
 
 export interface ProjectLink {
   label: string;

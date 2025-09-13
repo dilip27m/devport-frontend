@@ -8,7 +8,7 @@ import BottomBar, { SaveStatus } from "@/app/(main)/editor/components/Bottombar"
 import { useAuth } from "@/context/AuthContext";
 import { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function EditorPage() {
   const [activeSection, setActiveSection] = useState("Profile");
