@@ -2,22 +2,34 @@
 
 import React from "react";
 
-// The only props it needs now are for template switching
-export type SaveStatus = "idle" | "saving" | "success" | "error"; // Keep type for other components
+
+export type SaveStatus = "idle" | "saving" | "success" | "error";
+
+
 interface BottomBarProps {
   activeTemplate: string;
   onTemplateChange: (template: string) => void;
 }
 
-const templates = ["template1", "template2", "template3", "template4", "template5", "template6"]; // Add more to test scrolling
+
+const templates = [
+  "template1",
+  "template2",
+  "template3",
+  "template4",
+  "template5",
+  "template6",
+];
+
 
 const BottomBar: React.FC<BottomBarProps> = ({
   activeTemplate,
   onTemplateChange,
 }) => {
   return (
-    // This container handles the horizontal scrolling
-    <div className="w-full bg-gray-900 px-6 py-3 overflow-x-auto">
+
+    <div className=" bg-gray-900 px-6 py-3 overflow-x-auto shadow-md z-50">
+
       <div className="flex items-center space-x-2 whitespace-nowrap">
         <span className="font-semibold text-white mr-2">Templates:</span>
         {templates.map((template) => (

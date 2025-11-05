@@ -19,6 +19,7 @@ interface AuthContextType {
   registerUser: (userData: any) => Promise<void>;
   loginUser: (userData: any) => Promise<void>;
   logoutUser: () => void;
+  updatePassword: (passwordData: any) => Promise<string>; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // Checks for token on initial load
   const router = useRouter();
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -115,6 +116,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     router.push("/login");
   };
 
+  const updatePassword = async (passwordData: any): Promise<string> => {
+    if (!token) {
+      throw new Error("You must be logged in to change your password.");
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Send the user's token for authentication
+        },
+        body: JSON.stringify(passwordData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // If the server sends an error (e.g., "Incorrect current password"), throw it
+        throw new Error(data.error || "Failed to update password.");
+      }
+
+      // On success, return the success message from the server
+      return data.message;
+
+    } catch (error) {
+      // Re-throw the error to be caught by the UI component
+      throw error;
+    }
+  };
+
+
   const isAuthenticated = !!token;
 
   return (
@@ -127,6 +160,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         registerUser,
         loginUser,
         logoutUser,
+        updatePassword, // <-- Add the new function to the context's value
       }}
     >
       {!loading && children}

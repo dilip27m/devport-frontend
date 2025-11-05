@@ -42,14 +42,12 @@ const Template1Shell: React.FC<Template1ShellProps> = ({ data }) => {
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50 font-sans">
+    <div className="min-h-full flex flex-col bg-gray-50 font-sans rounded-xl">
       <Navbar onNavigate={setCurrentPage} />
       <main className="flex-1">
         {renderCurrentPage()}
       </main>
-      <footer className="bg-gray-900 text-white text-center py-4">
-        © {new Date().getFullYear()} {data.profile.name || "Your Name"}
-      </footer>
+
     </div>
   );
 };

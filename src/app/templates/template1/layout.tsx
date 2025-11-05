@@ -12,9 +12,7 @@ export default function Template1Layout({
       <main className="flex-1">
         {children}
       </main>
-      <footer className="bg-gray-900 text-white text-center py-4">
-        © {new Date().getFullYear()} My Portfolio
-      </footer>
+
     </div>
   );
 }
