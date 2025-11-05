@@ -10,20 +10,23 @@ interface SidebarProps {
 const sections = [
   "Profile",
   "Projects",
+  "Skills",
+  "Experience",
+  "Education",
+  "Contact",
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
   return (
-    <div className="text-white  flex flex-col space-y-6">
-      <h2 className="text-xl font-bold mb-4">Sections</h2>
+    <div className="flex flex-col space-y-3 text-base text-gray-800">
       {sections.map((section) => (
         <button
           key={section}
           onClick={() => onSelect(section)}
-          className={`text-left px-3 py-2 rounded-lg transition ${
+          className={`text-left px-4 py-2 rounded-2xl transition-colors duration-200 font-medium ${
             active === section
-              ? "bg-blue-500 text-white"
-              : "hover:bg-gray-700 text-gray-300"
+              ? "bg-gray-200 text-gray-900"
+              : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
           }`}
         >
           {section}
