@@ -104,7 +104,7 @@ export default function EditorPage() {
   };
  return (
     // This root container is now simple. It fills the height its parent gives it.
-    <div className="flex flex-col h-full bg-gray-200">
+    <div className="flex flex-col h-full bg-white">
 
 
       {/* 
@@ -113,20 +113,20 @@ export default function EditorPage() {
         2. `items-start` is correctly placed here to stop the panels from stretching.
         3. `p-6` and `gap-6` provide the spacing.
       */}
-      <div className="flex-1 flex items-start p-6 gap-6 overflow-hidden">
+      <div className="flex-1 flex items-start p-5 pb-0 gap-6 overflow-hidden">
         
         {/* Left Sidebar */}
-        <div className="w-[15%] h-full bg-gray-800 p-6 rounded-xl overflow-y-auto ">
+        <div className="w-[10%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto ">
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
         
         {/* Middle Live Preview Panel */}
-        <div className="w-[60%] h-full bg-white rounded-xl overflow-hidden  shadow-lg">
+        <div className="w-[60%] h-full border border-gray-600 rounded-3xl overflow-hidden  ">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
         
         {/* Right Form Panel */}
-        <div className="w-[25%] h-full bg-white shadow-inner flex flex-col rounded-xl overflow-hidden">
+        <div className="w-[30%] h-full border border-gray-600 bg-gray-100  shadow-inner flex flex-col rounded-3xl overflow-hidden">
 
           <FormContainer
             section={activeSection}

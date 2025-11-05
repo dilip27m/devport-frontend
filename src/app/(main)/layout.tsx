@@ -14,11 +14,11 @@ export default function MainAppLayout({
       <Navbar />
 
       {/* 2. The <main> content area fills the screen and has top PADDING. */}
-      {/* `h-screen`: Makes the container the full height of the viewport. */}
-      {/* `pt-16`: Adds 4rem (64px) of PADDING to the top. This pushes all */}
+      {/* h-screen: Makes the container the full height of the viewport. */}
+      {/* pt-16: Adds 4rem (64px) of PADDING to the top. This pushes all */}
       {/*           children down, perfectly clearing the navbar. */}
       {/* (If your navbar is taller or shorter than 64px, adjust pt-16 accordingly) */}
-      <main className="h-screen pt-16">
+      <main className="h-screen pt-16 bg-white">
         {children}
       </main>
     </div>

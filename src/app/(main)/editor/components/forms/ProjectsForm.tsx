@@ -74,16 +74,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
   return (
     <div className="space-y-4  pr-2">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-bold text-gray-800">Projects</h2>
-        <button
-          type="button"
-          onClick={addProject}
-          className="bg-green-500 text-white px-3 py-1 rounded-md shadow hover:bg-green-600 transition"
-        >
-          + Add Project
-        </button>
-      </div>
+
 
       {/* Projects with DragDrop */}
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -331,6 +322,15 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
           )}
         </Droppable>
       </DragDropContext>
+          
+      
+        <button
+          type="button"
+          onClick={addProject}
+className="flex m-auto items-center border border-gray-600 text-black px-7 py-2 rounded-3xl shadow hover:bg-black hover:text-white transition"        >
+          Add Project
+        </button>
+   
     </div>
   );
 };
