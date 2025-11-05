@@ -2,15 +2,12 @@
 
 import React from "react";
 
-
 export type SaveStatus = "idle" | "saving" | "success" | "error";
-
 
 interface BottomBarProps {
   activeTemplate: string;
   onTemplateChange: (template: string) => void;
 }
-
 
 const templates = [
   "template1",
@@ -19,27 +16,29 @@ const templates = [
   "template4",
   "template5",
   "template6",
-];
 
+];
 
 const BottomBar: React.FC<BottomBarProps> = ({
   activeTemplate,
   onTemplateChange,
 }) => {
   return (
-
-    <div className=" bg-gray-900 px-6 py-3 overflow-x-auto shadow-md z-50">
-
-      <div className="flex items-center space-x-2 whitespace-nowrap">
-        <span className="font-semibold text-white mr-2">Templates:</span>
-        {templates.map((template) => (
+   <div className=" px-6  shadow-md z-50">
+  <div className="flex w-full gap-4">
+    
+    {/* Templates Container */}
+    <div className="flex-1 overflow-x-auto bg-white bg-gray-100 rounded-3xl no-scrollbar ">
+      <div className="flex items-center space-x-2 whitespace-nowrap p-3">
+        
+        {templates.map((template, index) => (
           <button
-            key={template}
+            key={${template}-${index}}
             onClick={() => onTemplateChange(template)}
-            className={`px-4 py-2 rounded-md text-sm transition ${
+            className={`px-4 py-2 rounded-2xl text-sm transition ${
               activeTemplate === template
-                ? "bg-blue-600 text-white font-bold"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gray-800 text-white font-bold"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
             {template.charAt(0).toUpperCase() + template.slice(1)}
@@ -47,6 +46,21 @@ const BottomBar: React.FC<BottomBarProps> = ({
         ))}
       </div>
     </div>
+
+    {/* Action Buttons Container */}
+    <div className="flex-none">
+      <div className="flex items-center space-x-3  p-3">
+        <button className="px-4 py-2 bg-black text-white rounded-3xl hover:bg-white text-black transition">
+          View
+        </button>
+        <button className="px-4 py-2 bg-green-600 text-white rounded-3xl hover:bg-green-700 transition">
+          Deploy
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
   );
 };
 
