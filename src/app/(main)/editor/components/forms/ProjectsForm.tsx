@@ -91,7 +91,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                 return (
                   <Draggable
                     key={index}
-                    draggableId={project-${index}}
+                    draggableId={`project-${index}`}
                     index={index}
                   >
                     {(provided) => (
@@ -115,7 +115,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               <GripVertical size={18} />
                             </span>
                             <span className="font-semibold text-gray-900">
-                              {project.title || Untitled Project ${index + 1}}
+                              {project.title || `Untitled Project ${index + 1}`}
                             </span>
                           </div>
                           <div className="flex items-center space-x-3">
@@ -165,7 +165,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 )}
                                 <input
                                   type="file"
-                                  id={file-input-${index}}
+                                  id={`file-input-${index}`}
                                   className="hidden"
                                   accept="image/png, image/jpeg, image/gif, image/webp"
                                   onChange={async (e) => {
@@ -187,7 +187,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                   onClick={() =>
                                     document
                                       .getElementById(
-                                        file-input-${index}
+                                        `file-input-${index}`
                                       )
                                       ?.click()
                                   }
@@ -273,7 +273,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                           href={link.url}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          title={Open ${link.label || 'link'} in new tab}
+                                          title={`Open ${link.label || 'link'} in new tab`}
                                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
                                         >
                                           <ExternalLink size={18} />

@@ -33,7 +33,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
         
         {templates.map((template, index) => (
           <button
-            key={${template}-${index}}
+            key={`${template}-${index}`}
             onClick={() => onTemplateChange(template)}
             className={`px-4 py-2 rounded-2xl text-sm transition ${
               activeTemplate === template

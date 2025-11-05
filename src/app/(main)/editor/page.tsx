@@ -28,8 +28,8 @@ export default function EditorPage() {
     const loadPortfolioData = async () => {
       if (!user || !token) return;
       try {
-        const response = await fetch(${API_BASE_URL}/portfolio/${user._id}, {
-          headers: { "Authorization": Bearer ${token} },
+        const response = await fetch(`${API_BASE_URL}/portfolio/${user._id}`, {
+          headers: { "Authorization": `Bearer ${token}` },
         });
 
         if (response.status === 404) {
@@ -72,11 +72,11 @@ export default function EditorPage() {
     }
     setSaveStatus("saving");
     try {
-      const response = await fetch(${API_BASE_URL}/portfolio, {
+      const response = await fetch(`${API_BASE_URL}/portfolio`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": Bearer ${token},
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           data: data,
@@ -109,9 +109,9 @@ export default function EditorPage() {
 
       {/* 
         This is the container for the three panels.
-        1. flex-1 makes it fill the available space.
-        2. items-start is correctly placed here to stop the panels from stretching.
-        3. p-6 and gap-6 provide the spacing.
+        1. `flex-1` makes it fill the available space.
+        2. `items-start` is correctly placed here to stop the panels from stretching.
+        3. `p-6` and `gap-6` provide the spacing.
       */}
       <div className="flex-1 flex items-start p-5 pb-0 gap-6 overflow-hidden">
         
