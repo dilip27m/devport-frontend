@@ -2,52 +2,67 @@
 
 import React, { useState } from "react";
 
-// Local Imports for the Shell
+// --- Import all View Components for this template ---
 import Navbar from "./components/Navbar";
 import HomeView from "./HomeView"; 
-import ProjectsView from "./projects/ProjectsView";
+import ProjectsView from "./projects/ProjectsView"; 
+import EducationView from "./Education/EducationView";
+import SkillsView from "./SkillsView";
+import ExperienceView from "./ExperienceView";
+import AchievementsView from "./AchievementsView";
+import BlogsView from "./BlogsView";
+import SocialsView from "./SocialsView";
 
-// A placeholder for other pages you might add
-const ContactView = () => (
-  <div className="p-6">
-    <h2 className="text-3xl font-bold">Contact Me</h2>
-    <p>This is a placeholder contact page.</p>
-  </div>
-);
+// --- Import all necessary Data Type definitions from your forms ---
+import type { AboutMeFormProps } from '@/app/(main)/editor/components/forms/AboutMe';
+import type { Project } from '@/app/(main)/editor/components/forms/ProjectsForm';
+import type { Education } from '@/app/(main)/editor/components/forms/EducationForm';
+import type { SkillCategory } from '@/app/(main)/editor/components/forms/SkillsForm';
+import type { Experience } from '@/app/(main)/editor/components/forms/ExperienceForm';
+import type { Achievement } from '@/app/(main)/editor/components/forms/AchievementsForm';
+import type { Blog } from '@/app/(main)/editor/components/forms/BlogsForm';
+import type { SocialNetworkFormProps } from '@/app/(main)/editor/components/forms/SocialNetworForm';
 
-// This component receives the entire data object from the editor
+// --- This is the complete data structure this template now expects ---
 interface Template1ShellProps {
   data: {
-    profile: { name: string; bio: string; email: string };
-    projects: { title: string; description: string; link: string }[];
-    // Add other data types here as you expand
+    aboutMe: AboutMeFormProps['data'];
+    projects: Project[];
+    education: Education[];
+    skills: SkillCategory[];
+    experiences: Experience[];
+    achievements: Achievement[];
+    blogs: Blog[];
+    socials: SocialNetworkFormProps['data'];
   };
 }
 
 const Template1Shell: React.FC<Template1ShellProps> = ({ data }) => {
-  // This state manages the "internal routing" of the template preview
   const [currentPage, setCurrentPage] = useState("home");
 
+  // This function renders the correct component based on the user's selection
   const renderCurrentPage = () => {
     switch (currentPage) {
+      case "projects":    return <ProjectsView projects={data.projects} />;
+      case "education":   return <EducationView education={data.education} />;
+      case "skills":      return <SkillsView skills={data.skills} />;
+      case "experience":  return <ExperienceView experiences={data.experiences} />;
+      case "achievements":return <AchievementsView achievements={data.achievements} />;
+      case "blogs":       return <BlogsView blogs={data.blogs} />;
+      case "socials":     return <SocialsView data={data.socials} />;
       case "home":
-        return <HomeView profile={data.profile} />;
-      case "projects":
-        return <ProjectsView projects={data.projects} />;
-      case "contact":
-        return <ContactView />;
       default:
-        return <HomeView profile={data.profile} />;
+        // The HomeView now receives the `aboutMe` object
+        return <HomeView aboutMe={data.aboutMe} />; 
     }
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50 font-sans rounded-xl">
+    <div className="h-full flex flex-col bg-white font-sans">
       <Navbar onNavigate={setCurrentPage} />
-      <main className="flex-1">
+      <main className="flex-1 overflow-y-auto">
         {renderCurrentPage()}
       </main>
-
     </div>
   );
 };
