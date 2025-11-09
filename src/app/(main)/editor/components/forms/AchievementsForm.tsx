@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 
-interface Achievement {
+export interface Achievement {
   title: string;
   description: string;
   year: string;

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
 
-interface SkillCategory {
+export interface SkillCategory {
   name: string;
   skills: string[];
 }

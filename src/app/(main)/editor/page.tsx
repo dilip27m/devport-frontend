@@ -6,66 +6,103 @@ import FormContainer from "@/app/(main)/editor/components/FormContainer";
 import LivePreview from "@/app/(main)/editor/components/LivePreview";
 import BottomBar, { SaveStatus } from "@/app/(main)/editor/components/Bottombar";
 import { useAuth } from "@/context/AuthContext";
-import { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+// --- START: Import all type definitions from every form ---
+import type { AboutMeFormProps } from "./components/forms/AboutMe";
+import type { Project } from "./components/forms/ProjectsForm";
+import type { Education } from "./components/forms/EducationForm";
+import type { SkillCategory } from "./components/forms/SkillsForm";
+import type { Experience } from "./components/forms/ExperienceForm";
+import type { Achievement } from "./components/forms/AchievementsForm";
+import type { Blog } from "./components/forms/BlogsForm";
+import type { SocialNetworkFormProps } from "./components/forms/SocialNetworForm";
+// --- END: Import all type definitions ---
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+// Helper function to define the complete, default state for the portfolio
+const getInitialData = () => ({
+  aboutMe: { greeting: "", name: "", role: "", bio: "", photo: "", resume: "", aboutMe: "" } as AboutMeFormProps['data'],
+  projects: [] as Project[],
+  education: [] as Education[],
+  skills: [] as SkillCategory[],
+  experiences: [] as Experience[],
+  achievements: [] as Achievement[],
+  blogs: [] as Blog[],
+  socials: { email: '', github: '', linkedin: '' } as SocialNetworkFormProps['data'],
+});
 
 export default function EditorPage() {
-  const [activeSection, setActiveSection] = useState("Profile");
+  const [activeSection, setActiveSection] = useState("About Me"); // Start with the new main form
   const [activeTemplate, setActiveTemplate] = useState("template1");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
-  const [lastSaved, setLastSaved] = useState<string | null>(null); // NEW: State for the timestamp
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
-  const [data, setData] = useState({
-    profile: { name: "", bio: "", email: "" },
-    projects: [] as Project[],
-  });
+  // Initialize the main data state using the complete helper function
+  const [data, setData] = useState(getInitialData());
 
   const { user, token } = useAuth();
-
 
   useEffect(() => {
     const loadPortfolioData = async () => {
       if (!user || !token) return;
+
       try {
         const response = await fetch(`${API_BASE_URL}/portfolio/${user._id}`, {
-          headers: { "Authorization": `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.status === 404) {
-          console.log("No existing portfolio found.");
-          setData(prevData => ({
-            ...prevData,
-            profile: { ...prevData.profile, name: user.name, email: user.email },
-          }));
-          return;
-        }
+        // Start with a clean base state pre-filled with the user's details
+        let baseData = getInitialData();
+        baseData.aboutMe.name = user.name;
+        baseData.socials.email = user.email;
 
-        if (!response.ok) {
-          throw new Error("Failed to load portfolio data.");
+        // If data was fetched successfully from the backend...
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data.data) {
+            // ...deep merge the saved data ON TOP of the defaults.
+            setData({
+              ...baseData,
+              ...result.data.data,
+              // Explicitly merge nested objects to avoid them being overwritten by empty ones
+              aboutMe: { ...baseData.aboutMe, ...result.data.data.aboutMe },
+              socials: { ...baseData.socials, ...result.data.data.socials },
+            });
+            setActiveTemplate(result.data.template || "template1");
+            setLastSaved(new Date(result.data.lastUpdatedAt).toLocaleString());
+            console.log("Portfolio data loaded successfully!");
+            return;
+          }
         }
         
-        const result = await response.json();
-        if (result.success) {
-          setData({
-            profile: { name: "", bio: "", email: "" },
-            projects: [],
-            ...result.data.data,
-          });
-          setActiveTemplate(result.data.template);
-          // NEW: Update the state with the loaded timestamp
-          setLastSaved(new Date(result.data.lastUpdatedAt).toLocaleString());
-          console.log("Portfolio data loaded successfully!");
-        }
+        // If fetch fails or no portfolio is found (404), use the pre-filled default data.
+        console.log("No existing portfolio found or fetch failed. Using default data.");
+        setData(baseData);
+
       } catch (error) {
-        console.error("Error loading data:", error);
+        // This catch block is crucial for the "not valid JSON" error.
+        console.error("Critical error during data loading:", error);
+        // If there's a JSON parse error, it likely means the backend sent HTML.
+        // We log the raw response to see what it was.
+        if (error instanceof SyntaxError) {
+          try {
+             // Re-fetch to get the response as text without trying to parse JSON
+             const errorResponse = await fetch(`${API_BASE_URL}/portfolio/${user._id}`, { headers: { Authorization: `Bearer ${token}` } });
+             const errorText = await errorResponse.text();
+             console.error("Backend sent non-JSON response:", errorText);
+          } catch (e) {
+             console.error("Could not read the error response from the backend.");
+          }
+        }
+        setData(getInitialData()); // Fallback to a completely empty state
       }
     };
 
     loadPortfolioData();
   }, [user, token]);
 
-  const handleSave = async () => {
+ const handleSave = async () => {
     if (!user || !token) {
       alert("You must be logged in to save.");
       return;
@@ -102,32 +139,19 @@ export default function EditorPage() {
       setTimeout(() => setSaveStatus("idle"), 2000);
     }
   };
- return (
-    // This root container is now simple. It fills the height its parent gives it.
+
+  return (
     <div className="flex flex-col h-full bg-white">
-
-
-      {/* 
-        This is the container for the three panels.
-        1. `flex-1` makes it fill the available space.
-        2. `items-start` is correctly placed here to stop the panels from stretching.
-        3. `p-6` and `gap-6` provide the spacing.
-      */}
       <div className="flex-1 flex items-start p-5 pb-0 gap-6 overflow-hidden">
-        
-        {/* Left Sidebar */}
-        <div className="w-[10%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto ">
+        <div className="w-[10%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto">
+          {/* IMPORTANT: Your Sidebar component will need to be updated to show all the new sections */}
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
-        
-        {/* Middle Live Preview Panel */}
-        <div className="w-[60%] h-full border border-gray-600 rounded-3xl overflow-hidden  ">
+        <div className="w-[60%] h-full border border-gray-600 rounded-3xl overflow-hidden">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
-        
-        {/* Right Form Panel */}
-        <div className="w-[30%] h-full border border-gray-600 bg-gray-100  shadow-inner flex flex-col rounded-3xl overflow-hidden">
-
+        <div className="w-[30%] h-full border border-gray-600 bg-gray-100 shadow-inner flex flex-col rounded-3xl overflow-hidden">
+          {/* IMPORTANT: Your FormContainer component will need cases for all the new forms */}
           <FormContainer
             section={activeSection}
             data={data}
@@ -138,10 +162,6 @@ export default function EditorPage() {
           />
         </div>
       </div>
-      
-
-      {/* The BottomBar sits correctly outside the scrolling content area */}
-
       <BottomBar
         activeTemplate={activeTemplate}
         onTemplateChange={setActiveTemplate}

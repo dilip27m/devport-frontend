@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
 
-interface Blog {
+export interface Blog {
   name: string;
   category: string;
   image: string;

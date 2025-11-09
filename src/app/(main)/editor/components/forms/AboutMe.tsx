@@ -3,7 +3,7 @@
 import React from "react";
 import { User, FileText, ImagePlus } from "lucide-react";
 
-interface IntroProfileFormProps {
+export interface AboutMeFormProps {
   data: {
     greeting: string;
     name: string;
@@ -16,7 +16,7 @@ interface IntroProfileFormProps {
   onChange: (field: string, value: any) => void;
 }
 
-const IntroProfileForm: React.FC<IntroProfileFormProps> = ({ data, onChange }) => {
+const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -35,7 +35,7 @@ const IntroProfileForm: React.FC<IntroProfileFormProps> = ({ data, onChange }) =
     <div className="space-y-6 text-sm text-gray-700 animate-fade-in">
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <User size={18} className="text-blue-600" />
-        Intro & Profile
+        About Me
       </h2>
 
       <div className="space-y-1">
@@ -136,4 +136,4 @@ const IntroProfileForm: React.FC<IntroProfileFormProps> = ({ data, onChange }) =
   );
 };
 
-export default IntroProfileForm;
+export default AboutMeForm;
