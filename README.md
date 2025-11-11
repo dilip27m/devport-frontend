@@ -1,52 +1,141 @@
-DevPort – Frontend Setup Guide 
-1. Project Overview
-DevPort is a full-stack web application that enables students, developers, and professionals to create and deploy personal portfolio websites without writing any code. The frontend is built using Next.js and offers an Editor UI, Live Preview, and Template Switching. This document provides a clear, one-page step-by-step guide for setting up and running the DevPort frontend locally.
-2. Prerequisites
-Before running the frontend, ensure the following software is installed on your system:
-•	• Node.js (v18 or above)
-• npm (comes with Node.js)
-• Git
-3. Folder Structure
-Ensure you are inside the frontend directory of the project (usually named `frontend` or `app`). You should see the following structure:
+ DevPort – Frontend Setup Guide 
+1) Project Overview
+
+DevPort is a full-stack web application that enables students, developers, and professionals to create, preview, and deploy personal portfolios — all without coding.
+
+The frontend (built using Next.js) provides:
+
+An intuitive Editor UI
+
+A Live Preview section
+
+Template Switching to view different designs
+
+Integration with Cloudinary for image uploads
+
+This guide explains, step-by-step, how to run the frontend locally for testing and evaluation.
+
+2) Prerequisites
+
+Before starting, make sure these are installed:
+
+Node.js (version 18 or above)
+
+npm (comes with Node.js)
+
+Git
+
+Optional: Backend should already be running at http://localhost:5000/api for full functionality.
+
+3) Folder Structure
+
+Make sure you’re inside the frontend directory (commonly named frontend/ or app/).
+
+You should see files like:
+
 package.json
 next.config.js
 .env.local
 app/
 components/
-4. Create .env.local File
-Inside your frontend folder, create a `.env.local` file with the following content:
+
+4) Create .env.local File
+
+Inside your frontend folder, create a file named .env.local and add the following lines:
+
 NEXT_PUBLIC_API_URL="http://localhost:5000/api"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dd2ltpkk1
-If your backend is running on port 4000 instead of 5000, update the first line as:
+
+
+Explanation:
+
+NEXT_PUBLIC_API_URL → Backend API base URL
+
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME → Cloudinary configuration for image uploads
+
+If your backend runs on port 4000, change the first line to:
+
 NEXT_PUBLIC_API_URL="http://localhost:4000/api"
-5. Install Dependencies
-Run the following commands in your terminal:
-cd frontend
+
+5) Install Dependencies
+
+Open a terminal in the frontend folder and run:
+
 npm install
-This installs all the necessary packages required for running the project.
-6. Start Development Server
-Once installation completes, start the server using:
+
+
+This command installs all required dependencies (Next.js, React, Zustand, etc.).
+
+6) Start the Development Server
+
+After installation completes, start the app with:
+
 npm run dev
-You should see the message: '✔ Ready - started server on 0.0.0.0:3000'.
-Open your browser and visit http://localhost:3000.
-7. Verify Setup
-After opening the app, ensure the following features work correctly:
-• The landing page loads with Navbar (Templates | Pricing | Profile)
-• The Editor page (`/editor`) opens with Sidebar, Live Preview, and FormContainer
-• Live Preview updates as you type
-• Template Switcher and Deploy buttons appear correctly
-8. Common Issues & Fixes
-• Error: Fetch failed → Check backend URL & port in `.env.local`
-• Page not loading → Restart server (Ctrl + C → npm run dev)
-• CSS not applying → Delete `.next/` folder and rerun
-• Images not uploading → Verify Cloudinary configuration
-• 'next' not found → Run `npm install next`
-9. Build for Production (Optional)
-To test production mode locally, use the following commands:
+
+
+If successful, you’ll see:
+
+✔ Ready - started server on 0.0.0.0:3000
+
+
+Now open your browser and go to:
+👉 http://localhost:3000
+
+7) Verify the Setup
+
+Once the app opens, verify these points:
+
+Landing page loads with Navbar (Templates | Pricing | Profile)
+
+Go to /editor → Sidebar, FormContainer, and Live Preview are visible
+
+Typing in form fields updates Live Preview instantly
+
+Template switcher changes layout but keeps your data
+
+Deploy button is visible (it may simulate deployment locally)
+
+8️) Common Errors & Fixes
+ Issue	 Fix
+Error: Fetch failed	Check backend URL and port in .env.local
+Page not loading	Stop & restart server: Ctrl + C → npm run dev
+CSS not applying	Delete .next/ folder → run npm run dev again
+Images not uploading	Verify your Cloudinary name and credentials
+“next not found”	Run npm install next again
+9️) Optional: Build for Production
+
+To test a production build locally:
+
 npm run build
 npm start
-Then open http://localhost:3000 in your browser.
-10. Project Summary
-DevPort eliminates the complexity of creating professional portfolios by providing an intuitive, no-code solution. Users can fill out their profile, add projects, skills,  and instantly see real-time updates in the Live Preview section. Multiple template designs are supported, and all user data is stored centrally, allowing seamless switching between designs. The final portfolio can be deployed with a single click.
 
-This frontend module demonstrates modern web development practices including React hooks, Next.js App Router, and integration with Cloudinary for image handling.
+
+Then visit http://localhost:3000
+.
+
+10) Project Summary
+
+DevPort helps users focus on content instead of coding.
+It provides a zero-code portfolio builder with:
+
+Real-time Live Preview
+
+Multiple customizable templates
+
+Data stored in a central model shared across all templates
+
+Integration with MongoDB backend and Cloudinary image uploads
+
+The frontend uses:
+
+Next.js App Router for modern routing
+
+React hooks for interactivity
+
+Zustand (or Context API) for global state management
+
+Clean, responsive design for smooth user experience
+
+In short:
+Once the faculty runs npm install → npm run dev → opens http://localhost:3000,
+they’ll see a fully functional, editable, and dynamic portfolio editor UI — ready for demonstration.
