@@ -53,9 +53,9 @@ NEXT_PUBLIC_API_URL → Backend API base URL
 
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME → Cloudinary configuration for image uploads
 
-If your backend runs on port 4000, change the first line to:
+If your backend runs on port 5000, change the first line to:
 
-NEXT_PUBLIC_API_URL="http://localhost:4000/api"
+NEXT_PUBLIC_API_URL="http://localhost:5000/api"
 
 5) Install Dependencies
 
