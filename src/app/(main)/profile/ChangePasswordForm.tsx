@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-// 1. Import the useAuth hook
 import { useAuth } from "@/context/AuthContext";
 
 const ChangePasswordForm = () => {
@@ -9,44 +8,34 @@ const ChangePasswordForm = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 2. Add state for success and error messages
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 3. Get the updatePassword function from our context
   const { updatePassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-      
-  if (newPassword.length < 6) {
-    setError("New password must be at least 6 characters long.");
-    return; // Stop the function before the API call
-  }
-    
-    // Basic validation
+
+    if (newPassword.length < 6) {
+      setError("New password must be at least 6 characters long.");
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setError("New passwords do not match.");
       return;
     }
-    
+
     setLoading(true);
-
     try {
-      // 4. Call the context function with the form data
       const message = await updatePassword({ currentPassword, newPassword });
-      setSuccess(message); // On success, show the success message
-
-      // Clear the form fields
+      setSuccess(message);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-
     } catch (err: any) {
-      // On failure, show the error message from the backend
       setError(err.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
@@ -54,52 +43,81 @@ const ChangePasswordForm = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700">Change Password</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 5. Display success or error messages */}
-        {error && <p className="bg-red-100 text-red-700 p-3 rounded-md text-center">{error}</p>}
-        {success && <p className="bg-green-100 text-green-700 p-3 rounded-md text-center">{success}</p>}
-        
+    <section className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
+      <div className="mb-2">
+        <h2 className="text-base font-semibold text-neutral-900">Change Password</h2>
+        <p className="mt-1 text-sm text-neutral-600">
+          Keep your account secure with a strong password.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-1">
+        {error && (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+            {error}
+          </p>
+        )}
+        {success && (
+          <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+            {success}
+          </p>
+        )}
+
         <div>
-          <label className="block text-sm font-medium text-gray-700">Current Password</label>
+          <label className="block text-sm font-medium text-neutral-700">
+            Current Password
+          </label>
           <input
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="mt-1 w-full border rounded p-2"
+            className="mt-1 w-full rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-200 focus:outline-none"
             required
+            autoComplete="current-password"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">New Password</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="mt-1 w-full border rounded p-2"
-            required
-          />
+
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700">
+              New Password
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-200 focus:outline-none"
+              required
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-200 focus:outline-none"
+              required
+              autoComplete="new-password"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 w-full border rounded p-2"
-            required
-          />
+
+        <div className="flex items-center justify-end pt-1">
+          <button
+            type="submit"
+            disabled={loading}
+            className="rounded-full bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1 disabled:opacity-60 transition"
+          >
+            {loading ? "Updating..." : "Update Password"}
+          </button>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:bg-blue-300"
-        >
-          {loading ? "Updating..." : "Update Password"}
-        </button>
       </form>
-    </div>
+    </section>
   );
 };
 
