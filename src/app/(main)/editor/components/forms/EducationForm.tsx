@@ -23,10 +23,6 @@ const degreeOptions = [
   "Diploma",
   "B.Tech",
   "M.Tech",
-  "B.Sc",
-  "M.Sc",
-  "BCA",
-  "MCA",
   "Ph.D",
   "Other",
 ];
@@ -86,7 +82,6 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-900">Education</h2>
         <button
@@ -94,17 +89,15 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
           onClick={addEducation}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          ➕ Add Education
+           Add Education
         </button>
       </div>
 
-      {/* Education Cards */}
       {education.map((edu, index) => (
         <div
           key={index}
           className="border border-gray-200 rounded-xl bg-white shadow-sm transition-all"
         >
-          {/* Header */}
           <div
             className="flex justify-between items-center px-5 py-3 bg-gray-50 rounded-t-xl border-b cursor-pointer"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -129,10 +122,8 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
             </button>
           </div>
 
-          {/* Body */}
           {openIndex === index && (
             <div className="p-5 space-y-4">
-              {/* Degree */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Degree / Qualification</label>
                 <select
@@ -149,7 +140,6 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                 </select>
               </div>
 
-              {/* Institution */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
                 <input
@@ -161,7 +151,6 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                 />
               </div>
 
-              {/* Duration - start and end month/year */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Month</label>
@@ -220,7 +209,6 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                 </div>
               </div>
 
-              {/* Grade */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Grade / GPA</label>
                 <input

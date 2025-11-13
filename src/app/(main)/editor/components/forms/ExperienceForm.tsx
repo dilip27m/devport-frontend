@@ -80,7 +80,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
 
   return (
     <div className="space-y-6 text-sm text-gray-800" ref={containerRef}>
-      {/* Header with Add Button */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
           <Briefcase size={20} className="text-blue-600" />
@@ -96,13 +95,11 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
         </button>
       </div>
 
-      {/* Experience Cards */}
       {experiences.map((exp, i) => (
         <div
           key={i}
           className="border border-gray-200 rounded-xl bg-white shadow-sm transition-all"
         >
-          {/* Card Header */}
           <div className="flex justify-between items-center px-5 py-4 bg-gray-50 rounded-t-xl border-b">
             <button
               type="button"
@@ -131,7 +128,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
             </div>
           </div>
 
-          {/* Card Body */}
           {openIndex === i && (
             <div className="p-5 space-y-4 border-t border-gray-100">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

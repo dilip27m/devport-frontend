@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
@@ -19,7 +20,9 @@ interface AuthContextType {
   registerUser: (userData: any) => Promise<void>;
   loginUser: (userData: any) => Promise<void>;
   logoutUser: () => void;
-  updatePassword: (passwordData: any) => Promise<string>; 
+  updatePassword: (passwordData: any) => Promise<string>;
+  forgotPassword: (email: string) => Promise<string>;
+  resetPassword: (resetData: any) => Promise<string>; // <-- NEW: Added to the interface
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,9 +30,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // Checks for token on initial load
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -42,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  // --- 1. REGISTER FUNCTION ---
+  // --- REGISTER FUNCTION (Unchanged) ---
   const registerUser = async (userData: any) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -50,29 +53,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to register");
-      }
-
-      // On success, update state and localStorage
+      if (!response.ok) { throw new Error(data.error || "Failed to register"); }
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-
-      // Redirect to the editor
       router.push("/editor");
-
-    } catch (error) {
-      // Re-throw the error to be caught by the UI component
-      throw error;
-    }
+    } catch (error) { throw error; }
   };
 
-  // --- 2. LOGIN FUNCTION ---
+  // --- LOGIN FUNCTION (Unchanged) ---
   const loginUser = async (userData: any) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -80,73 +71,72 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to log in");
-      }
-
-      // On success, update state and localStorage
+      if (!response.ok) { throw new Error(data.error || "Failed to log in"); }
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      
-      // Redirect to the editor
       router.push("/editor");
-
-    } catch (error) {
-      // Re-throw the error to be caught by the UI component
-      throw error;
-    }
+    } catch (error) { throw error; }
   };
 
-  // --- 3. LOGOUT FUNCTION ---
+  // --- LOGOUT FUNCTION (Unchanged) ---
   const logoutUser = () => {
-    // Clear state
     setUser(null);
     setToken(null);
-    
-    // Clear localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    
-    // Redirect to the login page
     router.push("/login");
   };
 
+  // --- UPDATE PASSWORD FUNCTION (Unchanged) ---
   const updatePassword = async (passwordData: any): Promise<string> => {
-    if (!token) {
-      throw new Error("You must be logged in to change your password.");
-    }
-
+    if (!token) { throw new Error("You must be logged in to change your password."); }
     try {
       const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Send the user's token for authentication
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(passwordData),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        // If the server sends an error (e.g., "Incorrect current password"), throw it
-        throw new Error(data.error || "Failed to update password.");
-      }
-
-      // On success, return the success message from the server
+      if (!response.ok) { throw new Error(data.error || "Failed to update password."); }
       return data.message;
+    } catch (error) { throw error; }
+  };
 
+  // --- FORGOT PASSWORD FUNCTION (Unchanged) ---
+  const forgotPassword = async (email: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) { throw new Error(data.error || "Failed to send reset email."); }
+      return data.message;
+    } catch (error) { throw error; }
+  };
+  
+  // --- NEW RESET PASSWORD FUNCTION ---
+  const resetPassword = async (resetData: any): Promise<string> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(resetData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to reset password.");
+      }
+      return data.message;
     } catch (error) {
-      // Re-throw the error to be caught by the UI component
       throw error;
     }
   };
-
+  // ---------------------------------
 
   const isAuthenticated = !!token;
 
@@ -160,7 +150,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         registerUser,
         loginUser,
         logoutUser,
-        updatePassword, // <-- Add the new function to the context's value
+        updatePassword,
+        forgotPassword,
+        resetPassword, // <-- NEW: Added to the provider value
       }}
     >
       {!loading && children}

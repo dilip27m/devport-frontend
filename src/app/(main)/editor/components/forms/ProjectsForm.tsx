@@ -73,10 +73,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
 
   return (
     <div className="space-y-4  pr-2">
-      {/* Header */}
-
-
-      {/* Projects with DragDrop */}
+   
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="projects">
           {(provided) => (
@@ -100,7 +97,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                         {...provided.draggableProps}
                         className="border rounded-xl bg-white shadow-md overflow-hidden"
                       >
-                        {/* Accordion Header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-50 hover:bg-gray-100"
                           onClick={() =>
@@ -141,7 +137,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                           </div>
                         </div>
 
-                        {/* Accordion Body */}
                         <AnimatePresence initial={false}>
                           {isExpanded && (
                             <motion.div
@@ -151,7 +146,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               transition={{ duration: 0.3 }}
                               className="p-4 space-y-4 border-t bg-gray-50"
                             >
-                              {/* Project Image */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Project Image
@@ -197,7 +191,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 </button>
                               </div>
 
-                              {/* Project Title */}
                               <input
                                 type="text"
                                 placeholder="Project Title"
@@ -208,7 +201,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
                               />
 
-                              {/* Project Description */}
                               <textarea
                                 placeholder="Project Description"
                                 value={project.description}
@@ -222,7 +214,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
                               />
 
-                              {/* Multiple Project Links */}
                               <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
                                   Project Links
