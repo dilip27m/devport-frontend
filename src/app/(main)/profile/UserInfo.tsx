@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// Define a simple type for the user prop
 interface User {
   name: string;
   username: string;
@@ -13,29 +12,49 @@ const UserInfo = ({ user }: { user: User }) => {
   const portfolioUrl = `${window.location.origin}/p/${user.username}`;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700">Your Information</h2>
-      <div className="space-y-3">
-        <div>
-          <label className="text-sm font-medium text-gray-500">Name</label>
-          <p className="text-lg text-gray-800">{user.name}</p>
+    <section className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+      <div className="flex items-center gap-2 border-b border-neutral-100 px-4 py-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-900 text-white shadow">
+          <span className="text-lg font-semibold">{user.name?.[0] || "U"}</span>
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-500">Username</label>
-          <p className="text-lg text-gray-800">{user.username}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-500">Email</label>
-          <p className="text-lg text-gray-800">{user.email}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-500">Public Portfolio URL</label>
-          <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-lg text-blue-500 hover:underline break-all">
-            {portfolioUrl}
-          </a>
+          <h2 className="text-xl font-semibold text-neutral-900">YOUR INFORMATION</h2>
         </div>
       </div>
-    </div>
+
+      <div className="px-2 py-2">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="rounded-xl border border-neutral-100 bg-white p-3">
+            <dt className="text-xs font-medium uppercase tracking-wide text-neutral-500">Name</dt>
+            <dd className="mt-1 text-base text-neutral-900">{user.name}</dd>
+          </div>
+
+          <div className="rounded-xl border border-neutral-100 bg-white p-3">
+            <dt className="text-xs font-medium uppercase tracking-wide text-neutral-500">Username</dt>
+            <dd className="mt-1 text-base text-neutral-900">{user.username}</dd>
+          </div>
+
+          <div className="rounded-xl border border-neutral-100 bg-white p-3">
+            <dt className="text-xs font-medium uppercase tracking-wide text-neutral-500">Email</dt>
+            <dd className="mt-1 text-base text-neutral-900 break-all">{user.email}</dd>
+          </div>
+
+          <div className="rounded-xl border border-neutral-100 bg-white p-3">
+            <dt className="text-xs font-medium uppercase tracking-wide text-neutral-500">Public Portfolio URL</dt>
+            <dd className="mt-1 text-base">
+              <a
+                href={portfolioUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-900 underline-offset-2 hover:underline break-all"
+              >
+                {portfolioUrl}
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
   );
 };
 
