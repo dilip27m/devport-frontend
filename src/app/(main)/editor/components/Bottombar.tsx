@@ -50,12 +50,14 @@ const BottomBar: React.FC<BottomBarProps> = ({
     {/* Action Buttons Container */}
     <div className="flex-none">
       <div className="flex items-center space-x-3  p-3">
-        <button className="px-4 py-2 bg-black text-white rounded-3xl hover:bg-white text-black transition">
-          View
-        </button>
-        <button className="px-4 py-2 bg-green-600 text-white rounded-3xl hover:bg-green-700 transition">
-          Deploy
-        </button>
+<button className="px-4 py-2 bg-black text-white rounded-3xl border border-black transition-all duration-300 hover:bg-white hover:text-black">
+  View
+</button>
+
+
+<button className="px-4 py-2 bg-green-600 text-white rounded-3xl border border-transparent  hover:border-black transition-all duration-300">
+  Deploy
+</button>
       </div>
     </div>
 
