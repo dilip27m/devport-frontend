@@ -34,17 +34,14 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
         throw new Error("Failed to get upload signature from server.");
       }
 
-      //  Use correct field names from backend response
       const { signature, timestamp, apiKey, cloudName } = signatureData;
 
-      // Step 2: Prepare upload data for Cloudinary
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("api_key", apiKey); // snake_case for Cloudinary
+      formData.append("api_key", apiKey); 
       formData.append("signature", signature);
       formData.append("timestamp", timestamp.toString());
 
-      // Step 3: Upload directly to Cloudinary
       const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
       const uploadResponse = await fetch(uploadUrl, {
         method: "POST",
@@ -56,7 +53,7 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
         throw new Error(uploadData.error?.message || "Cloudinary upload failed.");
       }
 
-      return uploadData.secure_url; // final image URL
+      return uploadData.secure_url; 
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
