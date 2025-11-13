@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProfileForm from "./forms/ProfileForm";
 import ProjectsForm from "./forms/ProjectsForm";
 import EducationForm from "./forms/EducationForm";
@@ -29,6 +29,8 @@ const FormContainer: React.FC<FormContainerProps> = ({
   saveStatus,
   lastSaved,
 }) => {
+
+  // 🔥 Updated Save Button Styling
   const getSaveButtonContent = () => {
     switch (saveStatus) {
       case "saving":
@@ -36,8 +38,9 @@ const FormContainer: React.FC<FormContainerProps> = ({
           text: "Saving...",
           disabled: true,
           className:
-            "bg-white text-gray-500 border border-gray-300 cursor-not-allowed",
+            "bg-gray-100 text-gray-500 border border-gray-300 cursor-not-allowed",
         };
+
       case "error":
         return {
           text: "Save Failed",
@@ -45,18 +48,35 @@ const FormContainer: React.FC<FormContainerProps> = ({
           className:
             "bg-red-500 text-white border border-red-600 hover:bg-red-600 hover:border-black",
         };
+
       default:
         return {
           text: "Save",
           disabled: false,
-          className: "",
+          className:
+            "bg-white text-black border border-black hover:bg-gray-100 active:scale-[0.98]",
         };
     }
   };
 
   const saveButton = getSaveButtonContent();
 
-  // Defaults for safe merging
+  // Highlight animation for timestamp
+  const [highlight, setHighlight] = useState(false);
+
+  useEffect(() => {
+    if (saveStatus === "success" && lastSaved) {
+      setHighlight(false);
+      const startTimer = setTimeout(() => setHighlight(true), 10);
+      const stopTimer = setTimeout(() => setHighlight(false), 1000);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(stopTimer);
+      };
+    }
+  }, [saveStatus, lastSaved ?? ""]);
+
+  // Defaults for sections
   const socialDefault = {
     email: data?.profile?.email || "",
     github: "",
@@ -74,7 +94,6 @@ const FormContainer: React.FC<FormContainerProps> = ({
     aboutMe: data?.about?.aboutMe ?? "",
   };
 
-  // 🧩 Central registry for all forms
   const registry: Record<string, React.ReactNode> = {
     Profile: (
       <ProfileForm
@@ -157,10 +176,10 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header line */}
+      {/* Divider */}
       <div className="border-b bg-gray-50" />
 
-      {/* Dynamic form area */}
+      {/* Form area */}
       <div className="flex-1 p-6 overflow-y-auto no-scrollbar pb-32">
         {registry[section] ?? (
           <p className="text-gray-500 text-sm italic">
@@ -171,23 +190,24 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
       {/* Save bar */}
       <div className="sticky bottom-0 w-full bg-white border-t px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-md">
+
+        {/* 🔥 Updated Save Button */}
         <button
           onClick={onSave}
           disabled={saveButton.disabled}
-          className={`font-bold py-2 px-6 rounded-3xl transition duration-300 ease-in-out
-            ${
-              saveStatus === "error"
-                ? ""
-                : "bg-white text-green-800 border border-green-500 hover:bg-green-600 hover:text-black hover:border-black"
-            }
-            ${saveButton.className}`}
+          className={`font-bold py-2 px-6 rounded-3xl transition duration-300 ease-in-out ${saveButton.className}`}
         >
           {saveButton.text}
         </button>
 
+        {/* Timestamp animation */}
         {lastSaved && (
-          <p className="text-xs text-gray-500 text-right sm:text-left">
-            Last saved: {lastSaved}
+          <p
+            className={`text-xs font-semibold transition-all duration-[1000ms] ease-in-out ${
+              highlight ? "text-black scale-105" : "text-gray-600 scale-100"
+            }`}
+          >
+            {lastSaved}
           </p>
         )}
       </div>
