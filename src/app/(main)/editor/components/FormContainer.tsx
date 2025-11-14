@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ProfileForm from "./forms/ProfileForm";
 import ProjectsForm from "./forms/ProjectsForm";
 import EducationForm from "./forms/EducationForm";
 import AchievementsForm from "./forms/AchievementsForm";
@@ -95,17 +94,7 @@ const FormContainer: React.FC<FormContainerProps> = ({
   };
 
   const registry: Record<string, React.ReactNode> = {
-    Profile: (
-      <ProfileForm
-        data={data.profile}
-        onChange={(field, value) =>
-          setData({
-            ...data,
-            profile: { ...data.profile, [field]: value },
-          })
-        }
-      />
-    ),
+
 
     Projects: (
       <ProjectsForm

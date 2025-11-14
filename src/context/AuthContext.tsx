@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
@@ -59,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/editor");
+      router.push("/");
     } catch (error) { throw error; }
   };
 
@@ -77,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/editor");
+      router.push("/");
     } catch (error) { throw error; }
   };
 
@@ -87,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    router.push("/login");
+    router.push("/");
   };
 
   // --- UPDATE PASSWORD FUNCTION (Unchanged) ---
