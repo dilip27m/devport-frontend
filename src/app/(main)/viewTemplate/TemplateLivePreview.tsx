@@ -3,8 +3,8 @@
 import React, { Suspense } from "react";
 import type { TemplateKey } from "./page";
 
-import Template1Shell from "@/app/templates/template1/Template1Shell";
-import Template2Shell from "@/app/templates/template2/Template2shell";
+import Template1Shell from "@/app/templates/template1/Template1shell";
+import Template2Shell from "@/app/templates/template2/Template2Shell";
 import Template3Shell from "@/app/templates/template3/Template3Shell";
 
 const templateRegistry = {

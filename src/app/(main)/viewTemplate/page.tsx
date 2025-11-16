@@ -8,7 +8,7 @@ export type TemplateKey = "template1" | "template2" | "template3";
 
 const ViewTemplatePage = () => {
   const [selectedTemplate, setSelectedTemplate] =
-    useState<TemplateKey>("template2");
+    useState<TemplateKey>("template1");
 
   return (
     <div className="h-[calc(100vh-64px)] flex bg-slate-50 overflow-hidden gap-4 p-4">

@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiEdit, FiLayers, FiCode, FiZap, FiGithub, FiLinkedin } from "react-icons/fi";
+import {
+  FiEdit,
+  FiLayers,
+  FiCode,
+  FiZap,
+  FiGithub,
+  FiLinkedin,
+} from "react-icons/fi";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -18,33 +25,33 @@ const LandingPage = () => {
     {
       name: "M Dilip Kumar Reddy",
       role: "Developer",
-      image: "/team/dilip.jpg", // update with real path
-      github: "#",
-      linkedin: "#",
+      image: "/images/dilip.jpeg",
+      github: "https://github.com/dilip27m",
+      linkedin: "https://www.linkedin.com/in/mdilipkumarreddy/",
       bio: "Frontend-focused dev who loves clean UI, smooth UX, and pixel-perfect details.",
     },
     {
       name: "B Krishna Subhash",
       role: "Developer",
-      image: "/images/profile.jpeg",
-      github: "#",
-      linkedin: "#",
+      image: "/images/subhash.jpeg",
+      github: "https://github.com/subhash865",
+      linkedin: "https://www.linkedin.com/in/bkrishnasubhash/",
       bio: "Full-stack dev working with React, Next.js, and scalable systems. Always shipping.",
     },
     {
       name: "B Chakradhar",
       role: "Developer",
-      image: "/team/chakri.jpg",
-      github: "#",
-      linkedin: "#",
+      image: "/images/chakri.jpeg",
+      github: "https://github.com/chakri1184",
+      linkedin: "https://www.linkedin.com/in/b-chakradhar-bb839531b/",
       bio: "Backend enthusiast, APIs, databases, and performance optimization are his playground.",
     },
     {
       name: "K Harish",
       role: "Developer",
-      image: "/team/harish.jpg",
-      github: "#",
-      linkedin: "#",
+      image: "/images/harish.jpeg",
+      github: "https://github.com/Harishkonanki45",
+      linkedin: "https://www.linkedin.com/in/harish-konanki-02181b290/",
       bio: "Problem-solver who enjoys building efficient logic and robust systems.",
     },
   ];
@@ -83,7 +90,8 @@ const LandingPage = () => {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-600">
-            Showcase your projects with stunning, ready-to-use templates. No coding required. Just add your content and go live.
+            Showcase your projects with stunning, ready-to-use templates. No
+            coding required. Just add your content and go live.
           </p>
           <div className="mt-8">
             {isAuthenticated ? (
@@ -119,23 +127,30 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div className="flex flex-col items-center">
               <FiLayers size={48} className="text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">1. Choose a Template</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                1. Choose a Template
+              </h3>
               <p className="text-gray-600">
-                Select from a library of professionally designed templates built for developers.
+                Select from a library of professionally designed templates built
+                for developers.
               </p>
             </div>
             <div className="flex flex-col items-center">
               <FiEdit size={48} className="text-blue-500 mb-4" />
               <h3 className="text-xl font-semibold mb-2">2. Add Your Content</h3>
               <p className="text-gray-600">
-                Use our simple editor to add your profile, projects, skills, and images.
+                Use our simple editor to add your profile, projects, skills, and
+                images.
               </p>
             </div>
             <div className="flex flex-col items-center">
               <FiZap size={48} className="text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">3. Publish Your Site</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                3. Publish Your Site
+              </h3>
               <p className="text-gray-600">
-                Your portfolio goes live instantly at a shareable URL. No waiting for deployments.
+                Your portfolio goes live instantly at a shareable URL. No
+                waiting for deployments.
               </p>
             </div>
           </div>
@@ -151,30 +166,42 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="p-6">
               <FiCode size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">Built for Developers</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Built for Developers
+              </h3>
               <p className="text-gray-600">
-                Templates designed to highlight your GitHub projects, technical skills, and experience.
+                Templates designed to highlight your GitHub projects, technical
+                skills, and experience.
               </p>
             </div>
             <div className="p-6">
               <FiEdit size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">Live Real-Time Editor</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Live Real-Time Editor
+              </h3>
               <p className="text-gray-600">
-                See your changes instantly in the live preview as you type. No more guessing.
+                See your changes instantly in the live preview as you type. No
+                more guessing.
               </p>
             </div>
             <div className="p-6">
               <FiLayers size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">Growing Template Library</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Growing Template Library
+              </h3>
               <p className="text-gray-600">
-                More templates are added regularly, giving you fresh new looks for your portfolio.
+                More templates are added regularly, giving you fresh new looks
+                for your portfolio.
               </p>
             </div>
             <div className="p-6">
               <FiZap size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">Fast and Optimized</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Fast and Optimized
+              </h3>
               <p className="text-gray-600">
-                Your final portfolio is a fast, static-like site, perfect for performance and SEO.
+                Your final portfolio is a fast, static-like site, perfect for
+                performance and SEO.
               </p>
             </div>
           </div>
@@ -186,7 +213,8 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-4">Meet Our Team</h2>
           <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
-            The minds behind DevPort building tools that help developers launch a professional portfolio in minutes.
+            The minds behind DevPort building tools that help developers launch
+            a professional portfolio in minutes.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -196,7 +224,9 @@ const LandingPage = () => {
                 className={`relative w-full h-80 [perspective:1200px] group transition-all duration-500 ${
                   mounted ? "opacity-100" : "opacity-0"
                 }`}
-                style={{ transitionDelay: mounted ? `${index * 120}ms` : "0ms" }}
+                style={{
+                  transitionDelay: mounted ? `${index * 120}ms` : "0ms",
+                }}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
               >
@@ -213,28 +243,10 @@ const LandingPage = () => {
                         className="w-24 h-24 rounded-full object-cover mb-4 border border-gray-200"
                       />
                       <h3 className="text-lg font-semibold">{member.name}</h3>
-                      <p className="text-gray-600 text-sm mt-1">{member.role}</p>
-
-                      <div className="flex items-center gap-4 mt-4">
-                        <a
-                          href={member.github}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-gray-600 hover:text-gray-900 transition-colors"
-                          aria-label={`${member.name} GitHub`}
-                        >
-                          <FiGithub size={20} />
-                        </a>
-                        <a
-                          href={member.linkedin}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-gray-600 hover:text-blue-600 transition-colors"
-                          aria-label={`${member.name} LinkedIn`}
-                        >
-                          <FiLinkedin size={20} />
-                        </a>
-                      </div>
+                      <p className="text-gray-600 text-sm mt-1">
+                        {member.role}
+                      </p>
+                      {/* Icons removed from front */}
                     </div>
                   </div>
 
@@ -243,10 +255,34 @@ const LandingPage = () => {
                     className="absolute inset-0 rounded-2xl bg-white p-6 flex flex-col justify-center items-center text-center 
                       [transform:rotateY(180deg)] [backface-visibility:hidden] border shadow-lg"
                   >
-                    <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      {member.name}
+                    </h3>
                     <p className="text-gray-700 text-sm leading-relaxed">
                       {member.bio}
                     </p>
+
+                    {/* Icons after flip */}
+                    <div className="flex items-center gap-4 mt-4">
+                      <a
+                        href={member.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                        aria-label={`${member.name} GitHub`}
+                      >
+                        <FiGithub size={20} />
+                      </a>
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-gray-600 hover:text-blue-600 transition-colors"
+                        aria-label={`${member.name} LinkedIn`}
+                      >
+                        <FiLinkedin size={20} />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -259,7 +295,9 @@ const LandingPage = () => {
       <section className="bg-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
           <h2 className="text-4xl font-bold mb-4">
-            {isAuthenticated ? "Ready to Continue?" : "Ready to Build Your Professional Presence?"}
+            {isAuthenticated
+              ? "Ready to Continue?"
+              : "Ready to Build Your Professional Presence?"}
           </h2>
           <p className="text-lg text-gray-300 mb-8">
             {isAuthenticated

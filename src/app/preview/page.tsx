@@ -5,8 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 // We will dynamically import the templates just like on the public page
-import Template1Shell from "@/app/templates/template1/Template1Shell";
-import Template2Shell from "@/app/templates/template2/Template2shell";
+import Template1Shell from "@/app/templates/template1/Template1shell";
+import Template2Shell from "@/app/templates/template2/Template2Shell";
 import Template3Shell from "@/app/templates/template3/Template3Shell";
 
 const templateMap: { [key: string]: React.ComponentType<{ data: any }> } = {

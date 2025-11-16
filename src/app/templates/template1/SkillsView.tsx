@@ -1,49 +1,45 @@
 "use client";
-
 import React from 'react';
-
-// --- THIS IS THE FIX ---
-// By adding the `type` keyword, we tell TypeScript exactly what we're importing.
-// This resolves the "no exported member" error.
 import type { SkillCategory } from '@/app/(main)/editor/components/forms/SkillsForm';
-// --------------------
+import { Code2 } from 'lucide-react';
 
-interface SkillsViewProps {
-  skills: SkillCategory[];
-}
-
-const SkillsView: React.FC<SkillsViewProps> = ({ skills }) => {
-
+const SkillsView: React.FC<{ skills: SkillCategory[] }> = ({ skills }) => {
   if (!skills || !Array.isArray(skills) || skills.length === 0) {
-    return (
-      <section id="skills" className="p-6 md:p-8 text-center">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Skills</h2>
-        <p className="text-gray-500">No skills have been added yet.</p>
-      </section>
-    );
+    return null;
   }
-  
+
   return (
-    <section id="skills" className="p-6 md:p-8">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">Skills</h2>
-      
+    <section className="py-12">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-1">Technical Skills</h2>
+        <p className="text-gray-400 text-xs">Technologies and tools I work with</p>
+      </div>
+
       <div className="space-y-8">
-        {(skills).map((category, index) => (
+        {skills.map((category, index) => (
           <div key={index}>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">{category.name}</h3>
-            <div className="flex flex-wrap gap-4">
-              {category.skills.map((skill, skillIndex) => (
-                <div key={skillIndex} className="flex flex-col items-center justify-center p-4 bg-gray-100 rounded-lg shadow-sm w-28 h-28 text-center transition-transform hover:scale-105">
+            <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
+              <Code2 size={16} className="text-green-400" />
+              {category.name}
+            </h3>
+
+            <div className="flex flex-wrap gap-2.5">
+              {(category.skills || []).map((skill, skillIndex) => (
+                <div 
+                  key={skillIndex} 
+                  className="group flex items-center gap-2 bg-[#161b22] px-3 py-1.5 rounded-md border border-gray-800 hover:border-green-400 transition-all duration-200 cursor-default"
+                >
                   <img
-                    src={`https://skillicons.dev/icons?i=${skill}`}
-                    alt={skill}
-                    className="w-12 h-12"
-                    // Add an error handler for icons that don't exist
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                    src={`https://skillicons.dev/icons?i=${skill.toLowerCase()}`}
+                    alt={`${skill} icon`}
+                    className="w-5 h-5"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    }}
                   />
-                  <p className="mt-2 text-sm font-medium text-gray-700 capitalize">
+                  <span className="font-semibold capitalize text-gray-300 text-xs group-hover:text-green-400 transition-colors">
                     {skill}
-                  </p>
+                  </span>
                 </div>
               ))}
             </div>
