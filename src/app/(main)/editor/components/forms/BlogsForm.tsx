@@ -331,11 +331,14 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
           )}
         </Droppable>
       </DragDropContext>
-      <div className="text-xs text-gray-500">
-  Tip: Add a clear blog title, short description, and the full link to your published post 
-  (e.g., Medium article, Dev.to post, Hashnode blog, or LinkedIn article). 
-  Make sure the link opens directly to your full blog.
-</div>
+
+      {/* TIPS */}
+        <div className="text-xs text-gray-500">
+          Tip: Add a clear <strong> Blog Title </strong>, a short <strong> Description </strong>, 
+          and the full <strong> Link </strong> to your published post (e.g., Medium article, 
+          Dev.to post, Hashnode blog, or LinkedIn article). Make sure the link opens 
+          directly to your full <strong> Blog </strong>.
+        </div>
 
 
       {/* inline confirmation modal */}

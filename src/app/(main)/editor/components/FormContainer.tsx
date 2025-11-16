@@ -216,7 +216,7 @@ const FormContainer: React.FC<FormContainerProps> = ({
                 highlight ? "text-black scale-105" : "text-gray-600 scale-100"
               }`}
             >
-              Last saved: {lastSaved}
+               {lastSaved}
             </p>
           )}
         </div>

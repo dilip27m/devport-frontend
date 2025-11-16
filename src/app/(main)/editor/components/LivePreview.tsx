@@ -18,6 +18,9 @@ const templateRegistry = {
   template2: React.lazy(
     () => import("@/app/templates/template2/Template2shell")
   ),
+    template3: React.lazy(
+    () => import("@/app/templates/template3/Template3Shell")
+  )
 } satisfies Record<string, LazyTemplateComponent>;
 
 type TemplateKey = keyof typeof templateRegistry;

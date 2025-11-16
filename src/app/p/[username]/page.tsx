@@ -2,12 +2,14 @@ import React from "react";
 // 1. Import the 'notFound' function from Next.js
 import { notFound } from "next/navigation";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
-import Template2Shell from "@/app/templates/template2/Template2shell"; 
+import Template2Shell from "@/app/templates/template2/Template2shell";
+import Template3Shell from "@/app/templates/template3/Template3Shell";
 
 
 const templateMap: Record<string, React.ComponentType<{ data: any }>> = {
   template1: Template1Shell,
-  template2: Template2Shell, 
+  template2: Template2Shell,
+  template3: Template3Shell
 };
 
 // Your environment variable setup is correct

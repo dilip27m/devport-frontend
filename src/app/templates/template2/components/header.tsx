@@ -13,24 +13,25 @@ type SectionId =
   | "contact";
 
 interface HeaderProps {
-  activeSection: string; // can be any string from your observer/router
+  activeSection: SectionId;
   onNavigate: (sectionId: SectionId) => void;
+  userName?: string;
 }
 
 const NAV_ITEMS: { id: SectionId; label: string }[] = [
-  { id: "about", label: "About" },
+  { id: "about", label: "Home" }, 
   { id: "projects", label: "Projects" },
-  { id: "education", label: "Education" },
-  { id: "skills", label: "Skills" },
-  { id: "experience", label: "Experience" },
-  { id: "achievements", label: "Achievements" },
-  { id: "blogs", label: "Blogs" },
-  { id: "socials", label: "Socials" }, // ✅ lowercase to match <section id="socials">
-  { id: "contact", label: "Contact" },
+  { id: "blogs", label: "Blog" },
 ];
 
-const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate }) => {
+const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate, userName }) => {
   const current = (activeSection || "").toLowerCase();
+
+  // Get first letter of name, default to "A" if no name provided
+  const getInitial = () => {
+    if (!userName || !userName.trim()) return "A";
+    return userName.trim().charAt(0).toUpperCase();
+  };
 
   const NavLink: React.FC<{ id: SectionId; children: React.ReactNode }> = ({
     id,
@@ -40,8 +41,8 @@ const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate }) => {
     return (
       <button
         onClick={() => onNavigate(id)}
-        className={`px-4 py-2 font-semibold text-sm transition-colors duration-200 rounded-lg ${
-          isActive ? "text-cyan-400" : "text-gray-400 hover:text-white"
+        className={`px-4 py-2 font-semibold text-base transition-colors duration-200 ${
+          isActive ? "text-green-400" : "text-gray-300 hover:text-white"
         }`}
         aria-current={isActive ? "page" : undefined}
         aria-label={`Go to ${children}`}
@@ -53,15 +54,26 @@ const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate }) => {
 
   return (
     <nav
-      className="inline-flex items-center p-2 bg-black/20 border border-gray-700 rounded-2xl space-x-1 flex-wrap justify-center"
+      className="flex items-center justify-between w-full"
       role="navigation"
       aria-label="Primary"
     >
-      {NAV_ITEMS.map((item) => (
-        <NavLink key={item.id} id={item.id}>
-          {item.label}
-        </NavLink>
-      ))}
+      {/* Logo - Dynamic based on user name */}
+      <button 
+        onClick={() => onNavigate("about")}
+        className="text-2xl font-bold text-white hover:text-green-400 transition-colors"
+      >
+        {`{${getInitial()}}`}
+      </button>
+      
+      {/* Navigation Links */}
+      <div className="flex items-center gap-2">
+        {NAV_ITEMS.map((item) => (
+          <NavLink key={item.id} id={item.id}>
+            {item.label}
+          </NavLink>
+        ))}
+      </div>
     </nav>
   );
 };

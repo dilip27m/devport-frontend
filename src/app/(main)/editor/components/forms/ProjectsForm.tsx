@@ -8,7 +8,6 @@ import {
   ChevronUp,
   Trash2,
   GripVertical,
-  ExternalLink,
   Plus,
   X,
 } from "lucide-react";
@@ -24,10 +23,12 @@ export interface Project {
   description: string;
   links: ProjectLink[];
   image?: string;
+
   // dates & metadata
   startDate?: string; // yyyy-mm-dd
   endDate?: string;
-  stack?: string[]; // stored as array
+  stack?: string[];   // array for internal logic
+  techStack?: string; // string for view layer
   type?: string;
 }
 
@@ -103,6 +104,30 @@ const computeDuration = (start?: string, end?: string) => {
   return `${y} yr${y > 1 ? "s" : ""} ${m} mo${m > 1 ? "s" : ""}`;
 };
 
+/** helper: normalize GitHub username into full URL if it's just a username */
+const normalizeGithubUsername = (raw: string) => {
+  const value = raw.trim();
+  if (!value) return "";
+
+  // already full URL
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  // github.com/username
+  if (value.startsWith("github.com/")) {
+    return `https://${value}`;
+  }
+
+  // simple username -> https://github.com/username
+  if (!value.includes("/")) {
+    return `https://github.com/${value}`;
+  }
+
+  // username/repo or something else – leave as is
+  return value;
+};
+
 const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
   const safeProjects: Project[] = Array.isArray(projects) ? projects : [];
   const { upload } = useCloudinaryUpload();
@@ -126,6 +151,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
       startDate: "",
       endDate: "",
       stack: [],
+      techStack: "",
       type: "",
     };
     setProjects([...safeProjects, newProject]);
@@ -138,15 +164,24 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
     setProjects(updated);
   };
 
+  /** sync techStack string + stack array */
   const updateStackFromInput = (index: number, raw: string) => {
+    const techStack = raw;
     const arr = raw
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
-    updateProject(index, "stack", arr);
+
+    const updated = [...safeProjects];
+    updated[index].techStack = techStack;
+    updated[index].stack = arr;
+    setProjects(updated);
   };
 
-  const stackToString = (stack?: string[]) => (stack || []).join(", ");
+  const stackToString = (stack?: string[], techStack?: string) => {
+    if (techStack && techStack.trim() !== "") return techStack;
+    return (stack || []).join(", ");
+  };
 
   const requestDelete = (index: number) => {
     setConfirmIndex(index);
@@ -159,7 +194,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
     setExpandedIndex(null);
   };
 
-  const handleImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
@@ -182,13 +220,33 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
     setProjects(reordered);
   };
 
-  const stackPreview = (stack?: string[]) => {
-    const s = stack || [];
-    if (s.length === 0) return null;
-    if (s.length <= 2) return s.join(", ");
-    const firstTwo = s.slice(0, 2).join(", ");
-    const rest = s.length - 2;
+  const stackPreview = (stack?: string[], techStack?: string) => {
+    let arr: string[] = [];
+    if (stack && stack.length > 0) {
+      arr = stack;
+    } else if (techStack) {
+      arr = techStack
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    if (arr.length === 0) return null;
+    if (arr.length <= 2) return arr.join(", ");
+    const firstTwo = arr.slice(0, 2).join(", ");
+    const rest = arr.length - 2;
     return `${firstTwo} +${rest}`;
+  };
+
+  const getStackArray = (project: Project) => {
+    if (project.stack && project.stack.length > 0) return project.stack;
+    if (project.techStack) {
+      return project.techStack
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return [];
   };
 
   return (
@@ -209,35 +267,68 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="projects-droppable">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="space-y-3"
+            >
               {safeProjects.map((project, index) => {
                 const isExpanded = expandedIndex === index;
                 const isUploading = uploadingIndex === index;
 
                 // date validation
                 const invalidDate =
-                  project.startDate && project.endDate && project.endDate < project.startDate;
+                  project.startDate &&
+                  project.endDate &&
+                  project.endDate < project.startDate;
 
                 const friendlyDates =
                   project.startDate || project.endDate
-                    ? `${formatDate(project.startDate) || "—"} → ${formatDate(project.endDate) || "Present"}`
+                    ? `${formatDate(project.startDate) || "—"} → ${
+                        formatDate(project.endDate) || "Present"
+                      }`
                     : "";
 
-                const duration = project.startDate ? computeDuration(project.startDate, project.endDate) : "";
+                const duration = project.startDate
+                  ? computeDuration(project.startDate, project.endDate)
+                  : "";
+
+                // derive github + others from project.links
+                const links = project.links ?? [];
+                const githubLink =
+                  links.find((l) => l.label === "GitHub") || {
+                    label: "GitHub",
+                    url: "",
+                  };
+                const othersLink =
+                  links.find((l) => l.label === "Others") || {
+                    label: "Others",
+                    url: "",
+                  };
+
+                const stackArr = getStackArray(project);
 
                 return (
-                  <Draggable key={index} draggableId={`project-${index}`} index={index}>
+                  <Draggable
+                    key={index}
+                    draggableId={`project-${index}`}
+                    index={index}
+                  >
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={`border rounded-xl bg-white shadow-md overflow-hidden transition
-                          ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""}`}
+                          ${
+                            snapshot.isDragging ? "ring-2 ring-blue-200" : ""
+                          }`}
                       >
                         {/* header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
-                          onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                          onClick={() =>
+                            setExpandedIndex(isExpanded ? null : index)
+                          }
                         >
                           <div className="flex items-center space-x-2 min-w-0">
                             <span
@@ -248,18 +339,25 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                             </span>
                             <div className="min-w-0">
                               <div className="font-semibold text-gray-900 truncate">
-                                {project.title || `Untitled Project ${index + 1}`}
+                                {project.title ||
+                                  `Untitled Project ${index + 1}`}
                               </div>
 
                               {/* stack preview */}
-                              {project.stack && project.stack.length > 0 && (
-                                <div className="text-xs text-gray-500 truncate">{stackPreview(project.stack)}</div>
+                              {stackPreview(project.stack, project.techStack) && (
+                                <div className="text-xs text-gray-500 truncate">
+                                  {stackPreview(
+                                    project.stack,
+                                    project.techStack
+                                  )}
+                                </div>
                               )}
 
                               {/* dates + duration */}
                               {friendlyDates && (
                                 <div className="text-xs text-gray-500 truncate">
-                                  {friendlyDates} {duration ? ` · ${duration}` : ""}
+                                  {friendlyDates}{" "}
+                                  {duration ? ` · ${duration}` : ""}
                                 </div>
                               )}
                             </div>
@@ -278,9 +376,15 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               <Trash2 size={16} />
                             </button>
                             {isExpanded ? (
-                              <ChevronUp className="text-gray-600" size={18} />
+                              <ChevronUp
+                                className="text-gray-600"
+                                size={18}
+                              />
                             ) : (
-                              <ChevronDown className="text-gray-600" size={18} />
+                              <ChevronDown
+                                className="text-gray-600"
+                                size={18}
+                              />
                             )}
                           </div>
                         </div>
@@ -298,13 +402,17 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {/* left: image */}
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Project Image</label>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Project Image
+                                  </label>
 
                                   <input
                                     type="file"
                                     id={`file-input-${index}`}
                                     accept="image/png, image/jpeg, image/gif, image/webp"
-                                    onChange={(e) => handleImageUpload(index, e)}
+                                    onChange={(e) =>
+                                      handleImageUpload(index, e)
+                                    }
                                     className="hidden"
                                   />
 
@@ -327,7 +435,11 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                         px-4 py-1 text-sm font-medium
                                         bg-white text-gray-700 border border-gray-300
                                         rounded-full cursor-pointer hover:bg-gray-50 transition shadow-sm
-                                        ${isUploading ? "opacity-60 cursor-wait" : ""}`}
+                                        ${
+                                          isUploading
+                                            ? "opacity-60 cursor-wait"
+                                            : ""
+                                        }`}
                                     >
                                       Upload
                                     </label>
@@ -335,7 +447,9 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                     {project.image && (
                                       <button
                                         type="button"
-                                        onClick={() => updateProject(index, "image", "")}
+                                        onClick={() =>
+                                          updateProject(index, "image", "")
+                                        }
                                         className="inline-flex items-center justify-center gap-1
                                           px-3 py-1 text-sm font-medium text-red-600
                                           bg-white border border-gray-300 rounded-full cursor-pointer
@@ -359,93 +473,157 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
 
                                 {/* right: form fields */}
                                 <div className="md:col-span-2 space-y-3">
-                                  {/* Title (label fixed) */}
+                                  {/* Title */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Project Title
+                                    </label>
                                     <input
                                       type="text"
                                       placeholder="Project Title"
                                       value={project.title}
-                                      onChange={(e) => updateProject(index, "title", e.target.value)}
-                                      className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
+                                      onChange={(e) =>
+                                        updateProject(
+                                          index,
+                                          "title",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
                                     />
                                   </div>
 
-                                  {/* Description (label fixed) */}
+                                  {/* Description */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Project Description</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Project Description
+                                    </label>
                                     <textarea
                                       placeholder="Project Description"
                                       value={project.description}
-                                      onChange={(e) => updateProject(index, "description", e.target.value)}
-                                      className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
+                                      onChange={(e) =>
+                                        updateProject(
+                                          index,
+                                          "description",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
                                       rows={3}
                                     />
                                   </div>
 
-                                  {/* Project Type above dates */}
-                                  
-                                    <div >
-                                      <label className="block text-sm font-medium text-gray-700 mb-1">Project Type</label>
-                                      <input
-                                        type="text"
-                                        value={project.type ?? ""}
-                                        onChange={(e) => updateProject(index, "type", e.target.value)}
-                                        placeholder="e.g. Web, AI, Mobile..."
-                                        className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
-                                      />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                  {/* Project Type */}
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Project Type
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={project.type ?? ""}
+                                      onChange={(e) =>
+                                        updateProject(
+                                          index,
+                                          "type",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="e.g. Web, AI, Mobile..."
+                                      className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                                    />
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div className="md:col-span-1">
-                                      <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Start Date
+                                      </label>
                                       <input
                                         type="date"
                                         value={project.startDate ?? ""}
-                                        onChange={(e) => updateProject(index, "startDate", e.target.value)}
-                                        className={`w-full border rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2
-                                          ${project.endDate && project.startDate && project.startDate > project.endDate
-                                            ? "border-red-400 ring-red-200"
-                                            : "border-gray-300 focus:ring-blue-400"}`}
+                                        onChange={(e) =>
+                                          updateProject(
+                                            index,
+                                            "startDate",
+                                            e.target.value
+                                          )
+                                        }
+                                        className={`w-full border rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2
+                                          ${
+                                            project.endDate &&
+                                            project.startDate &&
+                                            project.startDate >
+                                              project.endDate
+                                              ? "border-red-400 ring-red-200"
+                                              : "border-gray-300 focus:ring-blue-400 focus:border-blue-400"
+                                          }`}
                                       />
                                     </div>
 
                                     <div>
-                                      <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        End Date
+                                      </label>
                                       <input
                                         type="date"
                                         value={project.endDate ?? ""}
-                                        onChange={(e) => updateProject(index, "endDate", e.target.value)}
-                                        className={`w-full border rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2
-                                          ${project.endDate && project.startDate && project.endDate < project.startDate
-                                            ? "border-red-400 ring-red-200"
-                                            : "border-gray-300 focus:ring-blue-400"}`}
+                                        onChange={(e) =>
+                                          updateProject(
+                                            index,
+                                            "endDate",
+                                            e.target.value
+                                          )
+                                        }
+                                        className={`w-full border rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2
+                                          ${
+                                            project.endDate &&
+                                            project.startDate &&
+                                            project.endDate <
+                                              project.startDate
+                                              ? "border-red-400 ring-red-200"
+                                              : "border-gray-300 focus:ring-blue-400 focus:border-blue-400"
+                                          }`}
                                       />
                                     </div>
                                   </div>
 
                                   {/* validation message */}
-                                  {project.startDate &&
-                                    project.endDate &&
-                                    project.endDate < project.startDate && (
-                                      <p className="text-red-500 text-xs mt-1">End date cannot be earlier than start date.</p>
-                                    )}
+                                  {invalidDate && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                      End date cannot be earlier than start
+                                      date.
+                                    </p>
+                                  )}
 
-                                  {/* Tech stack input */}
+                                  {/* Tech stack input (pill-style) */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tech Stack (comma-separated)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Tech Stack (use comma)
+                                    </label>
                                     <input
                                       type="text"
-                                      value={stackToString(project.stack)}
-                                      onChange={(e) => updateStackFromInput(index, e.target.value)}
-                                      placeholder="React, Node.js, Tailwind"
-                                      className="w-full border border-gray-300 rounded-md p-2 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400"
+                                      value={stackToString(
+                                        project.stack,
+                                        project.techStack
+                                      )}
+                                      onChange={(e) =>
+                                        updateStackFromInput(
+                                          index,
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Next.js, TailwindCSS"
+                                      className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
                                     />
 
                                     {/* badges */}
-                                    {project.stack && project.stack.length > 0 && (
+                                    {stackArr.length > 0 && (
                                       <div className="flex flex-wrap gap-2 mt-2">
-                                        {project.stack.map((tech, tI) => (
-                                          <span key={tI} className="px-3 py-1 text-xs bg-gray-100 border border-gray-300 rounded-full text-gray-800 shadow-sm">
+                                        {stackArr.map((tech, tI) => (
+                                          <span
+                                            key={tI}
+                                            className="px-3 py-1 text-xs bg-gray-100 border border-gray-300 rounded-full text-gray-800 shadow-sm"
+                                          >
                                             {tech}
                                           </span>
                                         ))}
@@ -453,94 +631,95 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                     )}
                                   </div>
 
-                                  {/* Links - elevated card design integrated */}
-                                  <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Project Links</label>
+                                  {/* Project Links: one GitHub, one Others */}
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        GitHub Link
+                                      </label>
+                                      <input
+                                        type="text"
+                                        placeholder="https://github.com/username or username"
+                                        value={githubLink.url}
+                                        onChange={(e) => {
+                                          const currentLinks =
+                                            project.links ?? [];
+                                          const withoutGithub =
+                                            currentLinks.filter(
+                                              (l) => l.label !== "GitHub"
+                                            );
+                                          const updatedLinks = [
+                                            ...withoutGithub,
+                                            {
+                                              label: "GitHub",
+                                              url: e.target.value,
+                                            },
+                                          ];
+                                          updateProject(
+                                            index,
+                                            "links",
+                                            updatedLinks
+                                          );
+                                        }}
+                                        onBlur={(e) => {
+                                          const normalized =
+                                            normalizeGithubUsername(
+                                              e.target.value
+                                            );
+                                          const currentLinks =
+                                            project.links ?? [];
+                                          const withoutGithub =
+                                            currentLinks.filter(
+                                              (l) => l.label !== "GitHub"
+                                            );
+                                          const updatedLinks = [
+                                            ...withoutGithub,
+                                            {
+                                              label: "GitHub",
+                                              url: normalized,
+                                            },
+                                          ];
+                                          updateProject(
+                                            index,
+                                            "links",
+                                            updatedLinks
+                                          );
+                                        }}
+                                        className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                                      />
+                                    </div>
 
-                                    {(project.links ?? []).map((link, linkIndex) => (
-                                      <div
-                                        key={linkIndex}
-                                        className="p-3 rounded-xl bg-gray-50 border border-gray-200 shadow-sm"
-                                      >
-                                        {/* Header Row */}
-                                        <div className="flex justify-between items-center mb-2">
-                                          <div className="flex items-center gap-2 text-gray-700 font-medium">
-                                            
-                                            <input
-                                              type="text"
-                                              placeholder="Label (e.g. GitHub, Live)"
-                                              value={link.label}
-                                              onChange={(e) => {
-                                                const updatedLinks = [...(project.links ?? [])];
-                                                updatedLinks[linkIndex].label = e.target.value;
-                                                updateProject(index, "links", updatedLinks);
-                                              }}
-                                              className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-grey-500 focus:border-transparent w-32"
-                                            />
-                                          </div>
-
-                                          <div className="flex items-center gap-2">
-                                            {link.url && (
-                                              <a
-                                                href={link.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:text-blue-800 text-sm"
-                                                title="Open link"
-                                              >
-                                                ⧉
-                                              </a>
-                                            )}
-
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                const updatedLinks = (project.links ?? []).filter(
-                                                  (_, i) => i !== linkIndex
-                                                );
-                                                updateProject(index, "links", updatedLinks);
-                                              }}
-                                              className="text-red-500 hover:bg-red-100 px-2 py-1 rounded-md"
-                                              title="Remove Link"
-                                            >
-                                              <X size={14} />
-                                            </button>
-                                          </div>
-                                        </div>
-
-                                        {/* URL Field */}
-                                        <input
-                                          type="text"
-                                          placeholder="URL"
-                                          value={link.url}
-                                          onChange={(e) => {
-                                            const updatedLinks = [...(project.links ?? [])];
-                                            updatedLinks[linkIndex].url = e.target.value;
-                                            updateProject(index, "links", updatedLinks);
-                                          }}
-                                          className="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        />
-                                      </div>
-                                    ))}
-
-                                    {/* Add Link Button */}
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const updatedLinks = [
-                                              ...(project.links ?? []),
-                                              { label: "", url: "" },
-                                            ];
-                                            updateProject(index, "links", updatedLinks);
-                                          }}
-                                          className="inline-flex items-center gap-2 px-3 py-1.5 
-                                                    text-sm text-gray-800 border border-gray-400 
-                                                    rounded-full shadow-sm bg-white
-                                                    hover:bg-gray-100 transition"
-                                        >
-                                          <Plus size={14} /> Add Link
-                                        </button>
-
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Other Project Link
+                                      </label>
+                                      <input
+                                        type="text"
+                                        placeholder="https://yourproject.com"
+                                        value={othersLink.url}
+                                        onChange={(e) => {
+                                          const currentLinks =
+                                            project.links ?? [];
+                                          const withoutOthers =
+                                            currentLinks.filter(
+                                              (l) => l.label !== "Others"
+                                            );
+                                          const updatedLinks = [
+                                            ...withoutOthers,
+                                            {
+                                              label: "Others",
+                                              url: e.target.value,
+                                            },
+                                          ];
+                                          updateProject(
+                                            index,
+                                            "links",
+                                            updatedLinks
+                                          );
+                                        }}
+                                        className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -558,28 +737,13 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
           )}
         </Droppable>
       </DragDropContext>
+      {/* TIPS */}
       <div className="text-xs text-gray-500">
-  Tip: Use a clear <strong>Project Title</strong> and select accurate 
-  <strong>Start–End</strong> dates (or “Present”). Write your description using the 
-  <strong>STAR method</strong> — explain the <strong>Situation</strong>, your <strong>Task</strong>, 
-  the <strong>Action</strong> you took, and the <strong>Result</strong> achieved. Add useful 
-  links such as your <strong>GitHub repo</strong>, <strong>live website</strong>
-  or <strong>README in git</strong> for more project context. Keep your tech stack precise and relevant.
-  select correct project image.
-  you can rearrange entries by dragging the grip icon.
-</div>
-
-{/* 
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={addProject}
-          className="flex items-center border border-gray-600 text-black px-7 py-2 rounded-3xl shadow hover:bg-black hover:text-white transition"
-        >
-          Add Project
-        </button>
-      </div> */}
-
+        Tip: Enter a precise <strong> Role </strong>, <strong> Company </strong>, and correct dates, 
+        including the <strong> tenure </strong> for roles or projects. Describe your work by focusing 
+        on your <strong> main responsibilities </strong> and <strong> notable achievements </strong>. 
+        Use the drag handle to reorder your experience entries.
+      </div>
       {showConfirm && confirmIndex !== null && (
         <ConfirmBox
           message="Are you sure you want to delete this project?"
@@ -595,7 +759,6 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
         />
       )}
     </div>
-    
   );
 };
 

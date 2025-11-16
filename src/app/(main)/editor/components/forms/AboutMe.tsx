@@ -107,6 +107,7 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           type="text"
           value={safe.greeting}
           onChange={(e) => onChange("greeting", e.target.value)}
+          placeholder={`Hey there! I'm`}
           className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
                      focus:ring-2 focus:ring-blue-400"
         />
@@ -119,6 +120,7 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           type="text"
           value={safe.name}
           onChange={(e) => onChange("name", e.target.value)}
+          placeholder="Your name (e.g., Krishna Subhash)"
           className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
                      focus:ring-2 focus:ring-blue-400"
         />
@@ -131,6 +133,7 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           type="text"
           value={safe.role}
           onChange={(e) => onChange("role", e.target.value)}
+          placeholder="e.g., Full-Stack Developer, CS Student"
           className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
                      focus:ring-2 focus:ring-blue-400"
         />
@@ -143,6 +146,7 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           value={safe.bio}
           onChange={(e) => onChange("bio", e.target.value)}
           rows={3}
+          placeholder="Short one-liner intro about you..."
           className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
                      focus:ring-2 focus:ring-blue-400"
         />
@@ -155,18 +159,20 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           value={safe.aboutMe}
           onChange={(e) => onChange("aboutMe", e.target.value)}
           rows={5}
+          placeholder="Share your journey, interests, tech stack, goals, and what you’re passionate about..."
           className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
                      focus:ring-2 focus:ring-blue-400"
         />
       </div>
-
+      
+      {/* TIPS */}
       <div className="text-xs text-gray-500">
         Tip: Your <strong>Greeting</strong> appears before your name  
         (e.g., “Hey there! I’m”). Keep the <strong>Name</strong> & 
-        <strong>Role</strong> short. Write a short <strong>Bio</strong> 
-        for quick intro and a detailed <strong>About Me</strong> section 
+        <strong>Role</strong> short. Write a short <strong> Bio </strong> 
+        for quick intro and a detailed <strong> About Me </strong> section 
         for your journey. Upload a clean, professional <strong>Profile Photo</strong>.
-      </div>
+       </div>
     </div>
   );
 };

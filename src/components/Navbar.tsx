@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -8,14 +7,12 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const { isAuthenticated, user, logoutUser } = useAuth();
   const pathname = usePathname();
-  
 
   return (
-<nav
-  className="fixed top-0 left-0 right-0 z-50  bg-gray-100 backdrop-blur-md border-b border-gray-00 px-4 py-3 flex items-center justify-between shadow-md"
-
->
-    <Link href="/" className="text-2xl font-bold  font-weight-300 text-gray-900 hover:text-gray-800 transition">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50  bg-gray-100 backdrop-blur-md border-b border-gray-00 px-4 py-3 flex items-center justify-between shadow-md"
+    >
+      <Link href="/" className="text-2xl font-bold  font-weight-300 text-gray-900 hover:text-gray-800 transition">
         DEVport
       </Link>
 
@@ -23,7 +20,16 @@ const Navbar = () => {
       <div className="flex items-center space-x-6 text-base font-medium text-gray-700">
         {isAuthenticated ? (
           <>
-            <span className="text-gray-600 text-base">Welcome, {user?.name}!</span>
+            <span className="text-gray-600 text-base">Welcome, {user?.name}</span>
+            <Link
+              href="/viewTemplate"
+              className={`hover:text-black transition ${
+                pathname === "/viewTemplate" ? "text-base text-black drop-shadow-md font-semibold" : ""
+              }`}
+            >
+              Templates
+            </Link>
+
 
             <Link
               href="/editor"
@@ -37,31 +43,28 @@ const Navbar = () => {
             <Link
               href="/profile"
               className={`hover:text-black transition ${
-                pathname === "/profile" ? "text-xl text-black drop-shadow-md font-semibold" : ""
+                pathname === "/profile" ? "text-base text-black drop-shadow-md font-semibold" : ""
               }`}
             >
               Profile
             </Link>
-
-<button
-  onClick={logoutUser}
-  className="px-4 py-2 text-red-500 border border-red-500 bg-transparent hover:bg-red-500 hover:text-white rounded-3xl transition-all duration-300 ease-in-out"
->
-  Logout
-</button>
-
+            <button
+              onClick={logoutUser}
+              className="px-4 py-2 text-red-500 border border-red-500 bg-transparent hover:bg-red-500 hover:text-white rounded-3xl transition-all duration-300 ease-in-out"
+            >
+              Logout
+            </button>
           </>
         ) : (
           <>
             <Link
-              href="/templates"
+              href="/viewTemplate"
               className={`hover:text-black transition ${
-                pathname === "/templates" ? "text-black drop-shadow-md font-semibold" : ""
+                pathname === "/viewTemplate" ? "text-base text-black drop-shadow-md font-semibold" : ""
               }`}
             >
               Templates
             </Link>
-
             <Link
               href="/login"
               className={`hover:text-black transition ${

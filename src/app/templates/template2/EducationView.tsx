@@ -1,59 +1,59 @@
 "use client";
 
 import React from 'react';
-// Import the Education type definition from your form
 import type { Education } from '@/app/(main)/editor/components/forms/EducationForm';
-import { GraduationCap } from 'lucide-react'; // Import a relevant icon
+import { GraduationCap } from 'lucide-react';
 
-// Helper function to format the start and end years
 const formatYearDuration = (startYear?: string, endYear?: string) => {
-    if (!startYear) return null;
-    return `${startYear} - ${endYear || 'Present'}`;
+  if (!startYear) return null;
+  return `${startYear} - ${endYear || 'Present'}`;
 };
 
 const EducationView: React.FC<{ education: Education[] }> = ({ education }) => {
-  // If there's no education data, render a placeholder message
   if (!education || education.length === 0) {
-    return (
-      <section>
-        <h2 className="text-4xl font-bold text-white mb-8">Education</h2>
-        <p className="text-gray-400">No education details have been added yet.</p>
-      </section>
-    );
+    return null;
   }
   
   return (
-    <section>
-      <h2 className="text-4xl font-bold text-white mb-8">Education</h2>
+    <section className="py-12">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-1">Education</h2>
+        <p className="text-gray-400 text-xs">My academic background</p>
+      </div>
       
-      {/* Container for the list of education cards */}
-      <div className="space-y-6">
-        {(education).map((edu, index) => (
-          <div key={index} className="flex items-start gap-4 p-6 bg-black/20 border border-gray-800 rounded-lg">
-            
-            {/* Icon */}
-            <div className="p-3 bg-gray-800 rounded-lg">
-              <GraduationCap className="text-cyan-400" size={24}/>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-bold text-white">{edu.institution}</h3>
-                    <p className="text-gray-300">{edu.degree}</p>
-                  </div>
-                  <p className="text-sm text-gray-400 flex-shrink-0 ml-4">
-                    {formatYearDuration(edu.startYear, edu.endYear)}
-                  </p>
+      <div className="space-y-4">
+        {education.map((edu, index) => (
+          <div 
+            key={index} 
+            className="group bg-[#0d1117] border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-all duration-300"
+          >
+            <div className="flex flex-col md:flex-row md:items-start gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 flex items-center justify-center bg-[#161b22] border border-gray-800 rounded-lg group-hover:border-green-400 transition-colors">
+                  <GraduationCap className="text-green-400" size={18}/>
+                </div>
               </div>
 
-              {/* Grade (only if it exists) */}
-              {edu.grade && (
-                  <p className="text-gray-500 mt-2 text-sm">Grade: {edu.grade}</p>
-              )}
-            </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1 mb-1">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-bold text-white group-hover:text-green-400 transition-colors truncate">
+                      {edu.institution}
+                    </h3>
+                    <p className="text-gray-400 text-xs">{edu.degree}</p>
+                  </div>
+                  <p className="text-xs text-gray-500 flex-shrink-0">
+                    {formatYearDuration(edu.startYear, edu.endYear)}
+                  </p>
+                </div>
 
+                {edu.grade && (
+                  <p className="text-gray-500 text-xs mt-1">
+                    Grade: <span className="text-gray-400 font-medium">{edu.grade}</span>
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>

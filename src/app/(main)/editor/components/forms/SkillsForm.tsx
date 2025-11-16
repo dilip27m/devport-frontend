@@ -417,9 +417,12 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
           )}
         </Droppable>
       </DragDropContext>
-
+      {/* TIPS */}
       <div className="text-xs text-gray-500">
-        Tip: Drag the grip to reorder categories or drag skills between categories. Paste comma-separated items to add multiple at once.If skill is not found, you can still add it and a fallback icon will be shown just press enter or click add.
+        Tip: Enter a precise <strong> Role </strong>, <strong> Company </strong>, and correct dates, 
+        including the <strong> tenure </strong> for roles or projects. Describe your work by focusing 
+        on your <strong> main responsibilities </strong> and <strong> notable achievements </strong>. 
+        Use the drag handle to reorder your experience entries.
       </div>
     </div>
   );

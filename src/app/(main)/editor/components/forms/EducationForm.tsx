@@ -304,13 +304,13 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
           )}
         </Droppable>
       </DragDropContext>
+      {/* TIPS */}
       <div className="text-xs text-gray-500">
-  Tip: Use a clear <strong>Degree</strong> and <strong>Institution</strong> name. Select accurate 
-  <strong>Start</strong> and <strong>End</strong> dates (use “Present” if ongoing). Add your 
-  <strong>Grade/GPA</strong> only if it strengthens your profile. Keep descriptions short and 
-  achievement-focused.
-  you can rearrange entries by dragging the grip icon.
-</div>
+        Tip: Add a clear <strong> Blog Title </strong>, a short <strong> Description </strong>, 
+        and the full <strong> Link </strong> to your published post (e.g., Medium article, 
+        Dev.to post, Hashnode blog, or LinkedIn article). Make sure the link opens 
+        directly to your full <strong> Blog </strong>.
+      </div>
 
     </div>
   );
