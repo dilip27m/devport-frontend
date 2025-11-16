@@ -3,11 +3,12 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
 import Template2Shell from "@/app/templates/template2/Template2shell"; 
-
+import Template3Shell from "@/app/templates/template3/Template3shell"; 
 
 const templateMap: Record<string, React.ComponentType<{ data: any }>> = {
   template1: Template1Shell,
   template2: Template2Shell, 
+  template3: Template1Shell,
 };
 
 // Your environment variable setup is correct

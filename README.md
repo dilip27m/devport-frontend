@@ -1,141 +1,206 @@
- DevPort – Frontend Setup Guide 
-1) Project Overview
+# 🚀 DevPort — Dynamic Portfolio Builder for Developers
 
-DevPort is a full-stack web application that enables students, developers, and professionals to create, preview, and deploy personal portfolios — all without coding.
+DevPort is built to go far beyond a traditional, static résumé. Instead of limiting your achievements to a single page, DevPort transforms your entire professional journey into a dynamic, interactive, and personalized portfolio—specially crafted for Computer Science Engineering students.
 
-The frontend (built using Next.js) provides:
+With DevPort, you can:
 
-An intuitive Editor UI
+- Showcase your projects, skills, achievements, and experience in an engaging, modern format.  
+- Store and manage all your career data in one place, update it effortlessly, and customize your portfolio style.  
+- Deploy your portfolio instantly and share a professional link across platforms like LinkedIn, GitHub, LeetCode, CodeChef, Hackathons, and even your résumé.  
+- Stand out from your peers with a portfolio that reflects your work, growth, and identity—much more effectively than any static PDF.  
 
-A Live Preview section
+DevPort empowers students to present themselves with clarity, creativity, and confidence, helping them reach the right opportunities and make a strong impact in the tech community.
 
-Template Switching to view different designs
+---
 
-Integration with Cloudinary for image uploads
+## ✨ Features
 
-This guide explains, step-by-step, how to run the frontend locally for testing and evaluation.
+### 🔹 Core User Features
+- **User Signup & Login** (email or username based)  
+- **Complete Account Management** — update password, delete account  
+- **Real-Time Live Editor** with instant preview  
+- **Private Preview Mode** (only the owner can see unpublished versions)  
+- **View & Select Portfolio Templates**  
+- **Multiple Portfolio Templates** designed for developers  
+- **Auto-Generated Public Portfolio Link** at `/p/[username]`  
+- **Upload résumé, certificates, images** using Cloudinary  
+- **Store all portfolio data in clean JSON format**  
+- **Edit/Update your portfolio anytime**  
+- **Secure public portfolio rendering**
 
-2) Prerequisites
+### 🔹 Developer & System Features
+- **Dynamic template loader** (scalable architecture)  
+- **Cloudinary direct uploads**  
+- **JWT-based authentication**  
+- **MongoDB Atlas database**  
+- **Next.js App Router + Express.js API**  
+- **Responsive UI built with Tailwind CSS**  
 
-Before starting, make sure these are installed:
+---
 
-Node.js (version 18 or above)
+## 🛠️ Technology Stack
 
-npm (comes with Node.js)
+### **Frontend**
+- Next.js 14+ (App Router)  
+- Tailwind CSS  
+- lucide-react / react-icons  
+- Context API for global state (AuthContext)
 
-Git
+### **Backend**
+- Express.js  
+- MongoDB Atlas  
+- Cloudinary SDK  
+- JWT Authentication  
+- Nodemailer (Gmail SMTP)
 
-Optional: Backend should already be running at http://localhost:5000/api for full functionality.
+---
 
-3) Folder Structure
+## 🔗 Repository Links
 
-Make sure you’re inside the frontend directory (commonly named frontend/ or app/).
+- **Frontend Repository:**  
+  [https://github.com/dilip27m/devport-frontend](https://github.com/dilip27m/devport-frontend)
 
-You should see files like:
+- **Backend Repository:**  
+  [https://github.com/dilip27m/devport-backend](https://github.com/dilip27m/devport-backend)
 
-package.json
-next.config.js
-.env.local
-app/
-components/
+---
 
-4) Create .env.local File
+## ⚙️ Frontend Setup (Next.js)
 
-Inside your frontend folder, create a file named .env.local and add the following lines:
+### 📦 Prerequisites
+- Node.js v18+  
+- npm or yarn  
 
-NEXT_PUBLIC_API_URL="http://localhost:5000/api"
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dd2ltpkk1
+### 📥 Clone & Install
 
-
-Explanation:
-
-NEXT_PUBLIC_API_URL → Backend API base URL
-
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME → Cloudinary configuration for image uploads
-
-If your backend runs on port 5000, change the first line to:
-
-NEXT_PUBLIC_API_URL="http://localhost:5000/api"
-
-5) Install Dependencies
-
-Open a terminal in the frontend folder and run:
-
+```bash
+git clone https://github.com/dilip27m/devport-frontend
+cd devport-frontend
 npm install
+```
 
+### 🔐 Environment Variables
 
-This command installs all required dependencies (Next.js, React, Zustand, etc.).
+Create `.env.local`:
 
-6) Start the Development Server
+```bash
+cp .env.example .env.local
+```
 
-After installation completes, start the app with:
+Inside `.env.local`:
 
+```env
+# Backend API URL
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+```
+
+### ▶️ Run Development Server
+
+```bash
 npm run dev
+```
 
+App runs at: 👉 [http://localhost:3000](http://localhost:3000)
 
-If successful, you’ll see:
+---
 
-✔ Ready - started server on 0.0.0.0:3000
+## 🖥️ Backend Setup (Express.js)
 
+### 📦 Clone & Install
 
-Now open your browser and go to:
-👉 http://localhost:3000
+```bash
+git clone https://github.com/dilip27m/devport-backend
+cd devport-backend
+npm install
+```
 
-7) Verify the Setup
+### 🔐 Environment Variables
 
-Once the app opens, verify these points:
+Create `.env`:
 
-Landing page loads with Navbar (Templates | Pricing | Profile)
+```env
+PORT=5000
+MONGO_URI=your-mongodb-uri-here
+JWT_SECRET=choose-a-secret-key
 
-Go to /editor → Sidebar, FormContainer, and Live Preview are visible
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
-Typing in form fields updates Live Preview instantly
+FRONTEND_URL=http://localhost:3000
 
-Template switcher changes layout but keeps your data
+GMAIL_USER=
+GMAIL_APP_PASSWORD=
+```
 
-Deploy button is visible (it may simulate deployment locally)
+**Note:** Make sure to replace `MONGO_URI` with your real MongoDB connection string and set a secure `JWT_SECRET`.
 
-8️) Common Errors & Fixes
- Issue	 Fix
-Error: Fetch failed	Check backend URL and port in .env.local
-Page not loading	Stop & restart server: Ctrl + C → npm run dev
-CSS not applying	Delete .next/ folder → run npm run dev again
-Images not uploading	Verify your Cloudinary name and credentials
-“next not found”	Run npm install next again
-9️) Optional: Build for Production
+### ▶️ Run Backend Server
 
-To test a production build locally:
+```bash
+npm run dev
+```
 
-npm run build
-npm start
+---
 
+## 📁 Folder Structure (Frontend)
 
-Then visit http://localhost:3000
-.
+```
+src/
+ ├── app/(main)/         → Main pages: "/", "/login", "/editor", "/profile"
+ ├── app/p/[username]/   → Public portfolio routes
+ ├── app/preview/        → Private preview
+ ├── app/templates/      → Portfolio templates
+ ├── context/            → Auth Context
+ └── hooks/              → useCloudinaryUpload and other hooks
+```
 
-10) Project Summary
+---
 
-DevPort helps users focus on content instead of coding.
-It provides a zero-code portfolio builder with:
+##  Screenshots & Preview
 
-Real-time Live Preview
+*(Add real images later)*
 
-Multiple customizable templates
+-  Landing Page
+-  Editor Page
+-  Templates Page
+-  Profile Page
+-  Deployed Portfolio Page
 
-Data stored in a central model shared across all templates
+---
 
-Integration with MongoDB backend and Cloudinary image uploads
+##  Future Scope
 
-The frontend uses:
+- More customizable templates
+- AI-generated portfolio summaries
+- Custom domain support
+- SEO meta customization
+- Analytics dashboard
+- Dark/light mode templates
+- Admin dashboard for managing users, templates, reports, and platform operations
+- **One-to-one premium template creation**
+  - Users can request a custom portfolio
+  - A developer/designer builds it according to their needs
+  - Payment processed like a freelancing workflow
+- More fields and sections for deeper personalization
+- **Template Marketplace**
+  - Developers can create and sell their own premium templates
+  - Users can purchase templates built by other creators
+- **Community template builder**
+  - Space where users can create, publish, customize, and sell templates
 
-Next.js App Router for modern routing
+---
 
-React hooks for interactivity
+## 🤝 Contributing
 
-Zustand (or Context API) for global state management
+Contributions, feature requests, and issues are welcome!  
+Feel free to open a PR or start a discussion.
 
-Clean, responsive design for smooth user experience
+---
 
-In short:
-Once the faculty runs npm install → npm run dev → opens http://localhost:3000,
-they’ll see a fully functional, editable, and dynamic portfolio editor UI — ready for demonstration.
+## 📄 License
+
+This project is licensed under the MIT License.
