@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+// We no longer need useRouter or useAuth, simplifying this component.
 
 export type SaveStatus = "idle" | "saving" | "success" | "error";
 
@@ -28,23 +27,16 @@ const BottomBar: React.FC<BottomBarProps> = ({
   onPublishToggle,
   publishStatus,
 }) => {
-  // Add a log to see what props the component is receiving
-  console.log("5. BottomBar RENDERED. It received isPublished:", isPublished);
 
-  const router = useRouter();
-  const { user } = useAuth();
-
+  // --- UPDATED LOGIC for the "View" button ---
   const handleViewClick = () => {
-    if (user?.username) {
-      const url = `/p/${user.username}`;
-      console.log("View button clicked. Opening URL:", url);
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      console.error("View button clicked, but user?.username is not available.");
-      alert("User information is not available yet. Please wait a moment and try again.");
-    }
+    // This now simply opens our new, protected /preview page in a new tab.
+    // That page will handle its own authentication and data fetching.
+    const previewUrl = "/preview";
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
   };
 
+  // The logic for the publish button text and style is still correct.
   const publishButtonText = isPublished ? "Unpublish" : "Publish";
   const publishButtonClass = isPublished
     ? "bg-yellow-500 text-white border-transparent hover:bg-yellow-600"
@@ -53,6 +45,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
   return (
    <div className=" px-6  shadow-md z-50">
       <div className="flex w-full gap-4">
+        {/* Template switcher section */}
         <div className="flex-1 overflow-x-auto bg-white bg-gray-100 rounded-3xl no-scrollbar ">
           <div className="flex items-center space-x-2 whitespace-nowrap p-3">
             {templates.map((template, index) => (
@@ -71,10 +64,11 @@ const BottomBar: React.FC<BottomBarProps> = ({
           </div>
         </div>
 
+        {/* Action buttons section */}
         <div className="flex-none">
           <div className="flex items-center space-x-3  p-3">
             <button
-              onClick={handleViewClick}
+              onClick={handleViewClick} // The logic inside this function has changed.
               className="px-4 py-2 bg-black text-white rounded-3xl border border-black transition-all duration-300 hover:bg-white hover:text-black"
             >
               View
