@@ -35,7 +35,6 @@ const FormContainer: React.FC<FormContainerProps> = ({
   const [unsaved, setUnsaved] = useState(false);
   const [highlight, setHighlight] = useState(false);
 
-  // Timestamp animation on successful save
   useEffect(() => {
     if (saveStatus === "success" && lastSaved) {
       setHighlight(false);
@@ -48,7 +47,6 @@ const FormContainer: React.FC<FormContainerProps> = ({
     }
   }, [saveStatus, lastSaved ?? ""]);
 
-  // Save button UI
   const getSaveButtonContent = () => {
     switch (saveStatus) {
       case "saving":
@@ -77,16 +75,14 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
   const saveButton = getSaveButtonContent();
 
-  // Wrapper update function
   const applyUpdate = (fn: (prev: PortfolioData) => PortfolioData) => {
     setData(prev => {
       const updated = fn(prev);
       return JSON.parse(JSON.stringify(updated));
     });
-    setUnsaved(true); // Trigger toggle to "Unsaved changes"
+    setUnsaved(true); 
   };
 
-  // Form registry
   const registry: Record<string, React.ReactNode> = {
     "About Me": (
       <AboutMeForm
@@ -170,10 +166,8 @@ const FormContainer: React.FC<FormContainerProps> = ({
   return (
     <div className="flex flex-col h-full">
 
-      {/* Divider */}
       <div className="border-b bg-gray-50" />
 
-      {/* Form Area */}
       <div className="flex-1 p-6 overflow-y-auto no-scrollbar pb-32">
         {registry[section] ?? (
           <p className="text-gray-500 text-sm italic">
@@ -182,16 +176,14 @@ const FormContainer: React.FC<FormContainerProps> = ({
         )}
       </div>
 
-      {/* ⭐ Save Bar (Perfect Toggle Version) */}
       <div className="sticky bottom-0 w-full bg-white border-t px-6 py-4 
                         flex flex-col sm:flex-row sm:items-center sm:justify-between 
                         gap-2 shadow-md">
 
-        {/* Save Button */}
         <button
           onClick={() => {
             onSave();
-            setUnsaved(false); // Switch to "Last saved"
+            setUnsaved(false); 
           }}
           disabled={saveButton.disabled}
           className={`font-bold py-2 px-6 rounded-3xl transition duration-300 ease-in-out ${saveButton.className}`}
@@ -199,17 +191,14 @@ const FormContainer: React.FC<FormContainerProps> = ({
           {saveButton.text}
         </button>
 
-        {/* TOGGLE: Unsaved OR Last Saved */}
         <div className="min-w-[150px] text-right">
 
-          {/* UNSAVED MODE */}
           {unsaved && (
             <p className="text-xs text-red-500 font-semibold">
               ● Unsaved changes
             </p>
           )}
 
-          {/* SAVED MODE */}
           {!unsaved && lastSaved && (
             <p
               className={`text-xs font-semibold transition-all duration-[1000ms] ease-in-out ${
