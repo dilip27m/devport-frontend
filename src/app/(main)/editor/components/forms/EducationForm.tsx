@@ -84,6 +84,9 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
     return `${start}${start ? " – " : ""}${end}`;
   };
 
+  // helper to generate unique ids for inputs/selects
+  const getId = (index: number, field: string) => `education-${index}-${field}`;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -134,8 +137,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
             <div className="p-5 space-y-4">
               {/* Degree */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Degree / Qualification</label>
+                <label htmlFor={getId(index, "degree")} className="block text-sm font-medium text-gray-700 mb-1">
+                  Degree / Qualification
+                </label>
                 <select
+                  id={getId(index, "degree")}
                   value={edu.degree}
                   onChange={(e) => updateEducation(index, "degree", e.target.value)}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -151,8 +157,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
 
               {/* Institution */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                <label htmlFor={getId(index, "institution")} className="block text-sm font-medium text-gray-700 mb-1">
+                  Institution
+                </label>
                 <input
+                  id={getId(index, "institution")}
                   type="text"
                   value={edu.institution}
                   onChange={(e) => updateEducation(index, "institution", e.target.value)}
@@ -164,8 +173,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
               {/* Duration - start and end month/year */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Month</label>
+                  <label htmlFor={getId(index, "startMonth")} className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Month
+                  </label>
                   <select
+                    id={getId(index, "startMonth")}
                     value={edu.startMonth}
                     onChange={(e) => updateEducation(index, "startMonth", e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -177,8 +189,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Year</label>
+                  <label htmlFor={getId(index, "startYear")} className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Year
+                  </label>
                   <select
+                    id={getId(index, "startYear")}
                     value={edu.startYear}
                     onChange={(e) => updateEducation(index, "startYear", e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -193,8 +208,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Month</label>
+                  <label htmlFor={getId(index, "endMonth")} className="block text-sm font-medium text-gray-700 mb-1">
+                    End Month
+                  </label>
                   <select
+                    id={getId(index, "endMonth")}
                     value={edu.endMonth}
                     onChange={(e) => updateEducation(index, "endMonth", e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -206,8 +224,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Year (or Present)</label>
+                  <label htmlFor={getId(index, "endYear")} className="block text-sm font-medium text-gray-700 mb-1">
+                    End Year (or Present)
+                  </label>
                   <select
+                    id={getId(index, "endYear")}
                     value={edu.endYear}
                     onChange={(e) => updateEducation(index, "endYear", e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -222,8 +243,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
 
               {/* Grade */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Grade / GPA</label>
+                <label htmlFor={getId(index, "grade")} className="block text-sm font-medium text-gray-700 mb-1">
+                  Grade / GPA
+                </label>
                 <input
+                  id={getId(index, "grade")}
                   type="text"
                   value={edu.grade}
                   onChange={(e) => updateEducation(index, "grade", e.target.value)}

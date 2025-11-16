@@ -16,8 +16,14 @@ const templateRegistry = {
     () => import("@/app/templates/template1/Template1Shell")
   ),
   template2: React.lazy(
+    // Note: Ensuring the path is capitalized correctly to avoid casing errors
     () => import("@/app/templates/template2/Template2shell")
   ),
+  // --- THIS IS THE CHANGE ---
+  template3: React.lazy(
+    () => import("@/app/templates/template3/Template3Shell")
+  ),
+  // --------------------------
 } satisfies Record<string, LazyTemplateComponent>;
 
 type TemplateKey = keyof typeof templateRegistry;
@@ -25,7 +31,7 @@ type TemplateKey = keyof typeof templateRegistry;
 interface LivePreviewProps {
   data: any;
   /** Must be a key of templateRegistry */
-  activeTemplate: TemplateKey | string; // allow string, but we guard at runtime
+  activeTemplate: TemplateKey | string;
 }
 
 const LivePreview: React.FC<LivePreviewProps> = ({ data, activeTemplate }) => {

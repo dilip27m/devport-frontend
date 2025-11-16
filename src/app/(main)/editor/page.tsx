@@ -32,6 +32,9 @@ const getInitialData = () => ({
   socials: { email: '', github: '', linkedin: '' } as SocialNetworkFormProps['data'],
 });
 
+// <<< FIX: export PortfolioData so other files can `import { PortfolioData } from "../page"` >>>
+export type PortfolioData = ReturnType<typeof getInitialData>;
+
 export default function EditorPage() {
   const [activeSection, setActiveSection] = useState("About Me"); // Start with the new main form
   const [activeTemplate, setActiveTemplate] = useState("template1");

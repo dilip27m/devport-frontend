@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-type SectionId =
+export type SectionId =
   | "about"
   | "projects"
   | "education"

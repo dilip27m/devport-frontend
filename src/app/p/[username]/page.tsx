@@ -1,11 +1,16 @@
 import React from "react";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
-import Template2Shell from "@/app/templates/template2/Template2shell"; // ← Enable this when ready
+import Template2Shell from "@/app/templates/template2/Template2shell"; // Note: Corrected capitalization from your original
+
+// --- THIS IS THE CHANGE ---
+import Template3Shell from "@/app/templates/template3/Template3Shell";
+// --------------------------
 
 /** --- Template Map --- */
 const templateMap: Record<string, React.ComponentType<{ data: any }>> = {
   template1: Template1Shell,
-  template2: Template2Shell, // ← Add more templates easily here
+  template2: Template2Shell,
+  template3: Template3Shell, // <-- ADDED
 };
 
 /** --- API Base --- */
@@ -15,7 +20,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 async function getPortfolioData(username: string) {
   try {
     const response = await fetch(`${API_BASE_URL}/public/portfolio/${username}`, {
-      cache: "no-cache",
+      cache: "no-store", // Use 'no-store' for Next.js 13+ App Router for non-caching
     });
     if (!response.ok) return null;
     const result = await response.json();
@@ -34,22 +39,13 @@ export default async function PublicPortfolioPage({
 }) {
   const portfolio = await getPortfolioData(username);
 
-  // If portfolio not found
   if (!portfolio) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">404</h1>
-          <p className="text-xl">Portfolio not found.</p>
-        </div>
-      </div>
-    );
+    const { notFound } = await import('next/navigation');
+    return notFound(); // Standard way to 404 in App Router
   }
 
-  // Pick correct template dynamically
   const SelectedTemplate = templateMap[portfolio.template];
 
-  // If invalid or missing template
   if (!SelectedTemplate) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -62,7 +58,6 @@ export default async function PublicPortfolioPage({
       </div>
     );
   }
-
-  // Render selected template with portfolio data
+  
   return <SelectedTemplate data={portfolio.data} />;
 }

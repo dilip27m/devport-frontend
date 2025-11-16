@@ -14,8 +14,7 @@ const templates = [
   "template2",
   "template3",
   "template4",
-  "template5",
-  "template6",
+
 
 ];
 
@@ -27,7 +26,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
    <div className=" px-6  shadow-md z-50">
   <div className="flex w-full gap-4">
     
-    {/* Templates Container */}
+ 
     <div className="flex-1 overflow-x-auto bg-white bg-gray-100 rounded-3xl no-scrollbar ">
       <div className="flex items-center space-x-2 whitespace-nowrap p-3">
         
@@ -47,15 +46,16 @@ const BottomBar: React.FC<BottomBarProps> = ({
       </div>
     </div>
 
-    {/* Action Buttons Container */}
     <div className="flex-none">
       <div className="flex items-center space-x-3  p-3">
-        <button className="px-4 py-2 bg-black text-white rounded-3xl hover:bg-white text-black transition">
-          View
-        </button>
-        <button className="px-4 py-2 bg-green-600 text-white rounded-3xl hover:bg-green-700 transition">
-          Deploy
-        </button>
+<button className="px-4 py-2 bg-black text-white rounded-3xl border border-black transition-all duration-300 hover:bg-white hover:text-black">
+  View
+</button>
+
+
+<button className="px-4 py-2 bg-green-600 text-white rounded-3xl border border-transparent  hover:border-black transition-all duration-300">
+  Deploy
+</button>
       </div>
     </div>
 

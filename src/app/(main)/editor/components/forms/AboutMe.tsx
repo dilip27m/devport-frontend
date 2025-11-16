@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { User, FileText, ImagePlus } from "lucide-react";
+import React, { useState } from "react";
+import { User, X } from "lucide-react";
+import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
 export interface AboutMeFormProps {
   data: {
@@ -10,42 +11,99 @@ export interface AboutMeFormProps {
     role: string;
     bio: string;
     photo: string;
-    resume: string;
     aboutMe: string;
   };
   onChange: (field: string, value: any) => void;
 }
 
 const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { upload } = useCloudinaryUpload();
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => onChange("photo", reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      setUploadingPhoto(true);
+
+      const url = await upload(file);  // Upload to Cloudinary
+      onChange("photo", url);          // Save only URL
+
+      // IMPORTANT: Prevent sending image file in payload → Fixes 413 error
+      e.target.value = "";
+
+    } catch (err) {
+      console.error(err);
+      alert("Photo upload failed.");
+    } finally {
+      setUploadingPhoto(false);
     }
   };
 
-  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) onChange("resume", file.name);
-  };
-
   return (
-    <div className="space-y-6 text-sm text-gray-700 animate-fade-in">
+    <div className="space-y-6 text-sm text-gray-700">
+      {/* SECTION HEADER */}
       <h2 className="text-lg font-semibold flex items-center gap-2">
         <User size={18} className="text-blue-600" />
         About Me
       </h2>
 
+      {/* ============================== */}
+      {/*       PROFILE PHOTO           */}
+      {/* ============================== */}
+      <div className="space-y-2">
+        <label className="block font-medium">Profile Photo</label>
+
+        <input
+          key={data.photo}   // Ensures input resets after upload
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
+          className="block w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3
+                     file:rounded-full file:border file:border-gray-300
+                     file:bg-white file:text-gray-800 hover:file:bg-gray-100"
+        />
+
+        {uploadingPhoto && (
+          <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+            <span className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></span>
+            Uploading...
+          </div>
+        )}
+
+        {data.photo && !uploadingPhoto && (
+          <div className="flex items-center gap-4 mt-3">
+            <img
+              src={data.photo}
+              alt="Profile"
+              className="w-24 h-24 rounded-md object-cover border shadow-sm"
+            />
+
+            <button
+              type="button"
+              onClick={() => onChange("photo", "")}
+              className="px-3 py-1.5 text-sm text-red-600 border border-gray-300 rounded-full 
+                         hover:bg-red-50 transition shadow-sm inline-flex items-center gap-1"
+            >
+              <X size={14} />
+              Remove
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ============================== */}
+      {/*          TEXT FIELDS           */}
+      {/* ============================== */}
       <div className="space-y-1">
         <label className="block font-medium">Greeting</label>
         <input
           type="text"
           value={data.greeting ?? ""}
           onChange={(e) => onChange("greeting", e.target.value)}
-          placeholder="e.g. Hey there! I'm"
-          className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
+                     focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -55,8 +113,8 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           type="text"
           value={data.name ?? ""}
           onChange={(e) => onChange("name", e.target.value)}
-          placeholder="e.g. Krishna"
-          className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
+                     focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -66,8 +124,8 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           type="text"
           value={data.role ?? ""}
           onChange={(e) => onChange("role", e.target.value)}
-          placeholder="e.g. Full Stack Developer"
-          className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
+                     focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -76,9 +134,9 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
         <textarea
           value={data.bio ?? ""}
           onChange={(e) => onChange("bio", e.target.value)}
-          placeholder="Write a short overview about yourself..."
-          className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-          rows={4}
+          rows={3}
+          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
+                     focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
@@ -87,50 +145,18 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
         <textarea
           value={data.aboutMe ?? ""}
           onChange={(e) => onChange("aboutMe", e.target.value)}
-          placeholder="Write a detailed About Me section..."
-          className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           rows={5}
+          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
+                     focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 font-medium">
-          <ImagePlus size={16} className="text-blue-500" />
-          Profile Photo
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
-        {data.photo && (
-          <div className="flex justify-center mt-3">
-            <img
-              src={data.photo}
-              alt="Profile Preview"
-              className="w-20 h-20 rounded-full object-cover border shadow-md transition-transform hover:scale-105"
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 font-medium">
-          <FileText size={16} className="text-blue-500" />
-          Résumé (PDF)
-        </label>
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={handleResumeUpload}
-          className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
-        {data.resume && (
-          <p className="text-sm text-green-600 mt-1">
-            Uploaded: <span className="font-medium">{data.resume}</span>
-          </p>
-        )}
+      <div className="text-xs text-gray-500">
+        Tip: Your <strong>Greeting</strong> appears before your name  
+        (e.g., “Hey there! I’m”). Keep the <strong>Name</strong> & 
+        <strong>Role</strong> short. Write a short <strong>Bio</strong> 
+        for quick intro and a detailed <strong>About Me</strong> section 
+        for your journey. Upload a clean, professional <strong>Profile Photo</strong>.
       </div>
     </div>
   );
