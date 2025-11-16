@@ -7,12 +7,13 @@ export default function Template1Layout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
+    // CHANGE: Set a deep gray/black background and white text
+    <div className="min-h-screen flex flex-col bg-neutral-900 text-white font-sans">
       <DeployedNavbar />
-      <main className="flex-1">
+      {/* Retain flex-1 and center main content without the inner white box */}
+      <main className="flex-1 max-w-full mx-auto w-full">
         {children}
       </main>
-
     </div>
   );
 }

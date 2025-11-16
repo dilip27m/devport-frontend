@@ -2,84 +2,63 @@
 
 import React from "react";
 import type { SocialNetworkFormProps } from "@/app/(main)/editor/components/forms/SocialNetworForm";
-import { Mail, Github, Linkedin } from "lucide-react";
+import { Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react";
 
 type SocialsViewProps = {
-  /** Make the prop optional so the page can render while data loads */
-  data?: SocialNetworkFormProps["data"];
+  data?: SocialNetworkFormProps["data"] & { twitter?: string; instagram?: string };
 };
 
 const SocialsView: React.FC<SocialsViewProps> = ({ data }) => {
-  // If socials haven't been passed yet, show a friendly placeholder.
   if (!data) {
     return (
       <section
-        id="socials"
-        className="p-6 md:p-8 flex items-center justify-center min-h-[300px]"
+        id="contact-section"
+        className="p-8 min-h-[300px] flex items-center justify-center animate-section"
       >
-        <p className="text-gray-500">Loading social links...</p>
+        <p className="text-slate-400">Loading social links...</p>
       </section>
     );
   }
 
-  // Basic normalizer that ensures we don't render empty anchors
-  const normalize = (url?: string) => (url && url.trim().length > 0 ? url.trim() : "");
+  const normalize = (url?: string) =>
+    url && url.trim().length > 0 ? url.trim() : "";
 
-  const emailHref = normalize(data.email) ? `mailto:${data.email.trim()}` : "";
-  const githubHref = normalize(data.github);
-  const linkedinHref = normalize(data.linkedin);
-
-  const socialLinks = [
-    {
-      name: "Email",
-      href: emailHref,
-      icon: <Mail className="w-8 h-8 text-white" />,
-      bgColor: "bg-red-500",
-    },
-    {
-      name: "GitHub",
-      href: githubHref,
-      icon: <Github className="w-8 h-8 text-white" />,
-      bgColor: "bg-gray-800",
-    },
-    {
-      name: "LinkedIn",
-      href: linkedinHref,
-      icon: <Linkedin className="w-8 h-8 text-white" />,
-      bgColor: "bg-blue-600",
-    },
+  const socials = [
+    { label: "Email", href: normalize(data.email) ? `mailto:${data.email}` : "", icon: <Mail size={26} /> },
+    { label: "GitHub", href: normalize(data.github), icon: <Github size={26} /> },
+    { label: "LinkedIn", href: normalize(data.linkedin), icon: <Linkedin size={26} /> },
+    { label: "Twitter", href: normalize(data.twitter), icon: <Twitter size={26} /> },
+    { label: "Instagram", href: normalize(data.instagram), icon: <Instagram size={26} /> },
   ];
 
-  const linksToShow = socialLinks.filter((l) => !!l.href);
-  const hasLinks = linksToShow.length > 0;
+  const available = socials.filter((s) => s.href);
 
   return (
-    <section
-      id="socials"
-      className="p-6 md:p-8 flex flex-col items-center justify-center min-h-[300px]"
-    >
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">Connect With Me</h2>
+    <section id="contact-section" className="p-8 lg:p-12 min-h-[300px] animate-section">
+      <h2 className="text-3xl font-extrabold mb-10">Connect</h2>
 
-      {hasLinks ? (
-        <div className="flex flex-wrap justify-center gap-6">
-          {linksToShow.map((link, index) => (
+      {available.length > 0 ? (
+        <div className="flex flex-wrap gap-6 justify-center">
+          {available.map((item, idx) => (
             <a
-              key={index}
-              href={link.href}
+              key={idx}
+              href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Connect on ${link.name}`}
-              className={`flex items-center justify-center w-24 h-24 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl ${link.bgColor}`}
+              className="
+                glass-bg neon-border px-6 py-4 
+                rounded-xl flex items-center gap-3
+                hover:scale-[1.05] transition-all
+                text-white shadow-lg
+              "
             >
-              {link.icon}
-              <span className="sr-only">{link.name}</span>
+              <span className="neon-hover">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
             </a>
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">
-        
-        </p>
+        <p className="text-slate-400 text-center">No social links available.</p>
       )}
     </section>
   );

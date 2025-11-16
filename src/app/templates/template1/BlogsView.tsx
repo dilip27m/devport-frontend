@@ -1,55 +1,95 @@
-// src/app/templates/template1/BlogsView.tsx
-
 "use client";
 
-import React from 'react';
-// Correctly import the Blog type definition
-import type { Blog } from '@/app/(main)/editor/components/forms/BlogsForm';
-import { ExternalLink, Image as ImageIcon } from 'lucide-react';
+import React from "react";
+import { Blog } from "@/app/(main)/editor/components/forms/BlogsForm";
+import { ExternalLink } from "lucide-react";
 
-const BlogsView: React.FC<{ blogs: Blog[] }> = ({ blogs }) => {
+interface BlogsViewProps {
+  blogs: Blog[];
+}
 
-  if (!blogs || blogs.length === 0) {
-    return (
-      <section id="blogs" className="p-6 md:p-8 text-center">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">My Blogs</h2>
-        <p className="text-gray-500">No blog posts have been added yet.</p>
-      </section>
-    );
-  }
-  
+// ⭐ Default sample blogs (only for display when list is empty)
+const defaultBlogs: Blog[] = [
+  {
+    name: "How to Learn Git Fast",
+    category: "Technical",
+    image: "https://picsum.photos/seed/git/600/400",
+    description: "A beginner-friendly introduction to Git, commits, branching, and collaboration.",
+    link: "#",
+  },
+  {
+    name: "My Journey Into Coding",
+    category: "Non-Technical",
+    image: "https://picsum.photos/seed/coding/600/400",
+    description: "How I started coding, mistakes I made, and how I improved over time.",
+    link: "#",
+  },
+  {
+    name: "Top 5 VS Code Extensions",
+    category: "Technical",
+    image: "https://picsum.photos/seed/vscode/600/400",
+    description: "These extensions boosted my productivity and coding speed significantly.",
+    link: "#",
+  },
+];
+
+const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
+  // ❗ DO NOT CHANGE your logic
+  const displayBlogs = blogs && blogs.length > 0 ? blogs : defaultBlogs;
+
   return (
-    <section id="blogs" className="p-6 md:p-8">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">My Blogs</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {(blogs).map((blog, index) => (
-          <div key={index} className="bg-white border rounded-lg shadow-md overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-            {/* Image Section */}
-            <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
-              {blog.image ? (
-                <img src={blog.image} alt={blog.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              ) : (
-                <ImageIcon className="text-gray-400" size={48} />
-              )}
-            </div>
+    <section className="p-6 lg:p-12 animate-section">
+      <h2 className="text-3xl font-extrabold mb-10">Blogs</h2>
 
-            {/* Content Section */}
-            <div className="p-6 flex-grow flex flex-col">
-              <p className="text-sm font-semibold text-blue-500 uppercase">{blog.category || 'General'}</p>
-              <h3 className="text-xl font-bold text-gray-900 mt-2">{blog.name}</h3>
-              <p className="text-gray-600 mt-2 flex-grow">{blog.description}</p>
-              
-              <a 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {displayBlogs.map((blog, idx) => (
+          <article
+            key={idx}
+            className="
+              glass-bg p-6 rounded-xl 
+              neon-border shadow-xl
+              hover:scale-[1.03] transition-all
+            "
+          >
+            {/* OPTIONAL IMAGE */}
+            {blog.image && (
+              <img
+                src={blog.image}
+                alt="Blog Image"
+                className="w-full h-44 object-cover rounded-lg mb-4 shadow-md"
+              />
+            )}
+
+            {/* Title */}
+            <h3 className="text-xl font-semibold text-white">
+              {blog.name || "Untitled Post"}
+            </h3>
+
+            {/* Category */}
+            {blog.category && (
+              <p className="text-xs text-[#9b5cff] mt-1">{blog.category}</p>
+            )}
+
+            {/* Description / Excerpt */}
+            <p className="text-slate-300 mt-3 text-sm leading-relaxed line-clamp-3">
+              {blog. description || "No preview available."}
+            </p>
+
+            {/* Blog Link */}
+            {blog.link && (
+              <a
                 href={blog.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-blue-600 font-semibold mt-4"
+                className="
+                  inline-flex items-center gap-2 mt-4 text-[#00b3ff]
+                  neon-hover
+                "
               >
                 Read More <ExternalLink size={16} />
               </a>
-            </div>
-          </div>
+            )}
+          </article>
         ))}
       </div>
     </section>

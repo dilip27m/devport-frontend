@@ -1,50 +1,77 @@
 "use client";
 
-import React from 'react';
-// Import the Education type definition from your form
-import { Education } from '@/app/(main)/editor/components/forms/EducationForm';
+import React from "react";
+import { Education } from "@/app/(main)/editor/components/forms/EducationForm";
 
-// Helper function to format the start and end dates
 const formatDuration = (edu: Education) => {
-    const { startMonth, startYear, endMonth, endYear } = edu;
-    if (!startYear && !startMonth) return null; // Don't render if no start date
+  const { startMonth, startYear, endMonth, endYear } = edu;
+  if (!startYear && !startMonth) return null;
 
-    const start = [startMonth, startYear].filter(Boolean).join(' ');
-    const end = endYear === 'Present' ? 'Present' : [endMonth, endYear].filter(Boolean).join(' ');
+  const start = [startMonth, startYear].filter(Boolean).join(" ");
+  const end =
+    endYear === "Present"
+      ? "Present"
+      : [endMonth, endYear].filter(Boolean).join(" ");
 
-    return `${start} - ${end}`;
+  return `${start} - ${end}`;
 };
 
 const EducationView: React.FC<{ education: Education[] }> = ({ education }) => {
-  // If there's no education data, we can show a placeholder.
+  // ⭐ DEFAULT SAMPLE when empty
   if (!education || education.length === 0) {
-    return (
-      <section id="education" className="p-6 md:p-8 text-center">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Education</h2>
-        <p className="text-gray-500">No education details have been added yet.</p>
-      </section>
-    );
+    education = [
+      {
+        degree: "Bachelor of Technology (B.Tech) in Computer Science",
+        institution: "Amrita Vishwa Vidyapeetham",
+        startMonth: "July",
+        startYear: "2023",
+        endMonth: "",
+        endYear: "Present",
+        grade: "—",
+      } as Education,
+    ];
   }
-  
+
   return (
-    <section id="education" className="p-6 md:p-8">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">Education</h2>
-      
-      {/* A container for the timeline items */}
-      <div className="border-l-2 border-blue-200 pl-8 space-y-10 relative">
-        {(education).map((edu, index) => (
-          <div key={index} className="relative">
-            {/* The dot on the timeline for each entry */}
-            <div className="absolute -left-[37px] top-1.5 w-5 h-5 bg-blue-500 rounded-full border-4 border-white"></div>
-            
-            <p className="text-sm font-semibold text-gray-500 mb-1">{formatDuration(edu)}</p>
-            <h3 className="text-2xl font-bold text-gray-900">{edu.degree}</h3>
-            <p className="text-lg text-gray-700">{edu.institution}</p>
-            {edu.grade && (
-              <p className="text-md text-gray-600 mt-2">Grade: {edu.grade}</p>
-            )}
-          </div>
-        ))}
+    <section
+      id="education-section"
+      className="p-6 lg:p-12 max-w-4xl mx-auto animate-section"
+    >
+      <h2 className="text-3xl font-extrabold mb-10 text-center">Education</h2>
+
+      <div className="relative pl-10">
+        <div className="absolute left-4 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#00b3ff55] to-[#9b5cff55] rounded-full"></div>
+
+        <div className="space-y-10">
+          {education.map((edu, index) => (
+            <div
+              key={index}
+              className="relative glass-bg p-6 rounded-xl neon-border hover:scale-[1.015] transition-all shadow-xl"
+            >
+              <div
+                className="absolute -left-[33px] top-5 w-7 h-7 rounded-full
+                bg-gradient-to-br from-[#00b3ff] to-[#9b5cff]
+                shadow-[0_0_15px_rgba(0,180,255,0.5)] border border-white/10"
+              ></div>
+
+              <p className="text-sm text-slate-300 mb-1">
+                {formatDuration(edu)}
+              </p>
+
+              <h3 className="text-2xl font-semibold text-white">
+                {edu.degree}
+              </h3>
+
+              <p className="text-lg text-[#9b5cff] font-medium">
+                {edu.institution}
+              </p>
+
+              {edu.grade && (
+                <p className="text-slate-300 mt-3">Grade: {edu.grade}</p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

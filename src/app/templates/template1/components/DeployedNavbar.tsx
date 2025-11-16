@@ -4,17 +4,20 @@ import Link from "next/link";
 
 const DeployedNavbar = () => {
   return (
-    <nav className="bg-gray-900 text-white p-4 flex space-x-6 sticky top-0 z-10">
-      {/* These are real links for the final deployed site */}
-      <Link href="/templates/template1" className="hover:text-blue-300 transition">
-        About
+    // CHANGE: Dark, earthy brown background for the header, creamy text
+    <nav className="bg-amber-800 text-stone-100 p-4 flex justify-end space-x-8 sticky top-0 z-10 shadow-lg border-b border-stone-700 max-w-7xl mx-auto w-full">
+      {/* CHANGE: Links align to the right side of the main container (like the example) */}
+      <Link href="/templates/template1/experience" className="hover:text-yellow-300 transition font-semibold">
+        Experience
       </Link>
-      <Link href="/templates/template1/projects" className="hover:text-blue-300 transition">
+      <Link href="/templates/template1/projects" className="hover:text-yellow-300 transition font-semibold">
         Projects
       </Link>
-      {/* Add a placeholder for contact */}
-      <Link href="#" className="hover:text-blue-300 transition">
+      <Link href="#" className="hover:text-yellow-300 transition font-semibold">
         Contact
+      </Link>
+      <Link href="#" className="hover:text-yellow-300 transition font-semibold">
+        Resume
       </Link>
     </nav>
   );
