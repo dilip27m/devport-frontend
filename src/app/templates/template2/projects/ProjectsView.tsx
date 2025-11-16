@@ -1,86 +1,102 @@
 "use client";
 
-import React, { JSX } from "react";
-import type { ProjectStatus } from "@/app/(main)/editor/components/forms/ProjectsForm";
+import React from "react";
 import { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
-import { CheckCircle, Clock, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
+import { ExternalLink, Github, Image as ImageIcon } from 'lucide-react';
 
-const StatusBadge = ({ status }: { status: ProjectStatus | undefined }) => {
-  if (!status) return null;
+interface ProjectsViewProps {
+  projects: Project[];
+  limit?: number;
+}
 
-  const statusStyles: { [key: string]: { icon: JSX.Element; text: string; bg: string; textColor: string; } } = {
-    'Completed': {
-      icon: <CheckCircle size={14} />,
-      text: 'Completed',
-      bg: 'bg-green-500/10',
-      textColor: 'text-green-400',
-    },
-    'In Progress': {
-      icon: <Clock size={14} />,
-      text: 'In Progress',
-      bg: 'bg-yellow-500/10',
-      textColor: 'text-yellow-400',
-    },
-    'Planned': {
-      icon: <Clock size={14} />,
-      text: 'Planned',
-      bg: 'bg-blue-500/10',
-      textColor: 'text-blue-400',
-    },
-    'Archived': {
-      icon: <CheckCircle size={14} />,
-      text: 'Archived',
-      bg: 'bg-gray-500/10',
-      textColor: 'text-gray-400',
-    },
-  };
-
-  const currentStatus = statusStyles[status];
-  if (!currentStatus) return null;
+const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
+  const displayProjects = limit ? projects.slice(0, limit) : projects;
+  const isLatestSection = !!limit;
+  
+  if (!displayProjects || displayProjects.length === 0) {
+    if (isLatestSection) return null;
+    return (
+      <section className="py-12 px-4">
+        <h2 className="text-5xl font-bold text-white mb-8">Projects</h2>
+        <p className="text-gray-400">No projects have been added yet.</p>
+      </section>
+    );
+  }
 
   return (
-    <div className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${currentStatus.bg} ${currentStatus.textColor}`}>
-      {currentStatus.icon}
-      <span>{currentStatus.text}</span>
-    </div>
-  );
-};
+    <section className="py-12">
+      {isLatestSection && (
+        <div className="mb-6 flex justify-between items-end">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-1">
+              All Creative Works.
+            </h2>
+            <p className="text-gray-400 text-xs">Here's some of my projects that I have worked on.</p>
+          </div>
+          <button 
+            onClick={() => {
+              const event = new CustomEvent('navigate-to-projects');
+              window.dispatchEvent(event);
+            }}
+            className="flex items-center gap-1.5 text-green-400 hover:text-green-300 transition-colors text-xs font-medium cursor-pointer"
+          >
+            Explore more <ExternalLink size={14} />
+          </button>
+        </div>
+      )}
 
-const ProjectsView: React.FC<{ projects: Project[] }> = ({ projects }) => {
-  return (
-    <section>
-      <h2 className="text-4xl font-bold text-white mb-2">Projects</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {(projects || []).map((project, index) => (
-          
-          <div key={index} className="bg-black/20 border border-gray-800 rounded-2xl flex flex-col hover:border-gray-700 transition-colors duration-300">
-            
-            <div className="h-48 w-full border-b border-gray-800 rounded-t-2xl overflow-hidden bg-black flex items-center justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {displayProjects.map((project, index) => (
+          <div 
+            key={index} 
+            className="group bg-[#0d1117] border border-gray-800 rounded-lg overflow-hidden hover:border-gray-700 transition-all duration-300"
+          >
+            {/* Project Image */}
+            <div className="relative h-32 w-full bg-[#0a0e14] overflow-hidden">
               {project.image ? (
-                <img src={project.image} alt={project.title} className="w-full h-full object-contain" />
+                <img 
+                  src={project.image} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                />
               ) : (
-                <ImageIcon size={48} className="text-gray-700" />
+                <div className="w-full h-full flex items-center justify-center">
+                  <ImageIcon size={32} className="text-gray-700" />
+                </div>
               )}
             </div>
             
-            <div className="p-6 flex-grow flex flex-col">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-xl font-bold text-white">{project.title}</h3>
-                <StatusBadge status={project.status} />
-              </div>
+            {/* Project Content */}
+            <div className="p-3">
+              <h3 className="text-sm font-bold text-white mb-1 group-hover:text-green-400 transition-colors line-clamp-1">
+                {project.title}
+              </h3>
               
-              <p className="text-gray-400 text-sm flex-grow mb-4 break-words">
+              <p className="text-gray-500 text-xs leading-relaxed mb-2 line-clamp-2">
                 {project.description}
               </p>
               
-              <div className="mt-auto pt-4">
-                 {(project.links || []).map((link, linkIndex) => (
-                    <a key={linkIndex} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-400 font-semibold text-sm hover:text-blue-300 transition">
-                      {link.label || 'Source Code'} <LinkIcon size={14} className="ml-1.5"/>
+              {/* Project Links */}
+              {project.links && project.links.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {project.links.map((link, linkIndex) => (
+                    <a 
+                      key={linkIndex} 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-xs font-medium"
+                    >
+                      {link.label?.toLowerCase().includes('github') ? (
+                        <Github size={12} />
+                      ) : (
+                        <ExternalLink size={12} />
+                      )}
+                      <span>{link.label || 'View'}</span>
                     </a>
                   ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

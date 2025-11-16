@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { User, FileText, ImagePlus } from "lucide-react";
+import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
 export interface AboutMeFormProps {
   data: {
@@ -9,26 +10,55 @@ export interface AboutMeFormProps {
     name: string;
     role: string;
     bio: string;
-    photo: string;
-    resume: string;
+    photo: string;   // should hold public URL after upload
+    resume: string;  // should hold public URL after upload
     aboutMe: string;
   };
   onChange: (field: string, value: any) => void;
 }
 
 const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { upload } = useCloudinaryUpload();
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => onChange("photo", reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // optional: validate file type/size here
+    try {
+      setUploadingPhoto(true);
+      const imageUrl = await upload(file); // same as ProjectsForm
+      onChange("photo", imageUrl);
+    } catch (err) {
+      console.error("Profile photo upload failed", err);
+      alert("Profile photo upload failed. Please try again.");
+    } finally {
+      setUploadingPhoto(false);
     }
   };
 
-  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) onChange("resume", file.name);
+    if (!file) return;
+
+    // ensure PDF
+    if (file.type !== "application/pdf") {
+      alert("Please select a PDF file for the résumé.");
+      return;
+    }
+
+    try {
+      setUploadingResume(true);
+      const resumeUrl = await upload(file); // upload pdf to cloudinary (or other)
+      onChange("resume", resumeUrl);
+    } catch (err) {
+      console.error("Resume upload failed", err);
+      alert("Résumé upload failed. Please try again.");
+    } finally {
+      setUploadingResume(false);
+    }
   };
 
   return (
@@ -98,21 +128,32 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           <ImagePlus size={16} className="text-blue-500" />
           Profile Photo
         </label>
+
         <input
           type="file"
           accept="image/*"
           onChange={handleImageUpload}
           className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
-        {data.photo && (
-          <div className="flex justify-center mt-3">
+
+        {uploadingPhoto ? (
+          <p className="text-sm text-gray-500 mt-2">Uploading photo...</p>
+        ) : data.photo ? (
+          <div className="flex flex-col items-center mt-3">
             <img
               src={data.photo}
               alt="Profile Preview"
               className="w-20 h-20 rounded-full object-cover border shadow-md transition-transform hover:scale-105"
             />
+            <button
+              type="button"
+              onClick={() => onChange("photo", "")}
+              className="mt-2 text-xs text-red-600"
+            >
+              Remove photo
+            </button>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -120,17 +161,29 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
           <FileText size={16} className="text-blue-500" />
           Résumé (PDF)
         </label>
+
         <input
           type="file"
           accept=".pdf"
           onChange={handleResumeUpload}
           className="block w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
-        {data.resume && (
+
+        {uploadingResume ? (
+          <p className="text-sm text-gray-500 mt-1">Uploading résumé...</p>
+        ) : data.resume ? (
           <p className="text-sm text-green-600 mt-1">
-            Uploaded: <span className="font-medium">{data.resume}</span>
+            Uploaded:{" "}
+            <a
+              href={data.resume}
+              className="font-medium underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View résumé
+            </a>
           </p>
-        )}
+        ) : null}
       </div>
     </div>
   );

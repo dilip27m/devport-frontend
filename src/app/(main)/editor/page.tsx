@@ -32,6 +32,9 @@ const getInitialData = () => ({
   socials: { email: '', github: '', linkedin: '' } as SocialNetworkFormProps['data'],
 });
 
+// <<< FIX: export PortfolioData so other files can `import { PortfolioData } from "../page"` >>>
+export type PortfolioData = ReturnType<typeof getInitialData>;
+
 export default function EditorPage() {
   const [activeSection, setActiveSection] = useState("About Me"); // Start with the new main form
   const [activeTemplate, setActiveTemplate] = useState("template1");
@@ -143,14 +146,14 @@ export default function EditorPage() {
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="flex-1 flex items-start p-5 pb-0 gap-6 overflow-hidden">
-        <div className="w-[10%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto">
+        <div className="w-[12%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto">
           {/* IMPORTANT: Your Sidebar component will need to be updated to show all the new sections */}
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
         <div className="w-[60%] h-full border border-gray-600 rounded-3xl overflow-hidden">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
-        <div className="w-[30%] h-full border border-gray-600 bg-gray-100 shadow-inner flex flex-col rounded-3xl overflow-hidden">
+        <div className="w-[28%] h-full border border-gray-600 bg-gray-100 shadow-inner flex flex-col rounded-3xl overflow-hidden">
           {/* IMPORTANT: Your FormContainer component will need cases for all the new forms */}
           <FormContainer
             section={activeSection}

@@ -1,88 +1,100 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import type { SocialNetworkFormProps } from '@/app/(main)/editor/components/forms/SocialNetworForm';
+import { Mail, Linkedin, FileText } from "lucide-react";
 
-// --- CHANGE: Added a prop to receive the user's email ---
 interface ContactViewProps {
   userEmail?: string;
+  socials: SocialNetworkFormProps["data"];
+  resume?: string;
 }
 
-const ContactView: React.FC<ContactViewProps> = ({ userEmail }) => {
-  const [formData, setFormData] = useState({
-    senderEmail: "",
-    message: "",
-  });
-  const [status, setStatus] = useState("idle"); // "idle", "sending", "success", "error"
+const t = (v?: string) => (v ?? "").trim();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+const normalizeEmail = (email?: string) => {
+  const e = t(email);
+  if (!e || !e.includes("@")) return "";
+  return `mailto:${e}`;
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("sending");
+const normalizeLinkedIn = (linkedin?: string) => {
+  let l = t(linkedin);
+  if (!l) return "";
+  if (/^https?:\/\//i.test(l)) return l;
+  if (/^linkedin\.com\//i.test(l)) return `https://${l}`;
+  const slug = l.startsWith("in/") ? l : `in/${l}`;
+  return `https://www.linkedin.com/${slug}`;
+};
 
-    // --- In a real application, your API call would go here ---
-    // Note: You would send `formData.senderEmail`, `formData.message`,
-    // and `userEmail` (the portfolio owner's email) to your backend.
-    console.log("Sending to:", userEmail);
-    console.log("Form Data:", formData);
-    
-    setTimeout(() => { // Simulate API call
-      setStatus("success");
-      setFormData({ senderEmail: "", message: "" });
-      
-      setTimeout(() => setStatus("idle"), 3000); // Reset after 3 seconds
-    }, 1500);
-  };
+const isUrlLike = (s?: string) =>
+  !!s && /^(https?:\/\/|data:application\/pdf;|\/|blob:)/i.test(s);
 
-  // --- START: REDESIGNED JSX to match the new style ---
+const ContactView: React.FC<ContactViewProps> = ({ socials, resume }) => {
+  const linkedinHref = normalizeLinkedIn(socials?.linkedin);
+  const emailHref = normalizeEmail(socials?.email);
+
   return (
-    <section className="p-6 md:p-12 text-center">
-      <div className="max-w-2xl mx-auto bg-[#161b22] border border-gray-800 rounded-2xl p-8">
-        <h2 className="text-3xl font-bold text-white mb-6 text-left">Contact Me</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Field with Placeholder */}
-          <input
-            type="email"
-            name="senderEmail"
-            value={formData.senderEmail}
-            onChange={handleChange}
-            placeholder="Your Email"
-            required
-            className="w-full bg-[#0d1117] border border-gray-700 rounded-lg p-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          />
-          
-          {/* Message Field with Placeholder */}
-          <textarea
-            name="message"
-            rows={7}
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Your message"
-            required
-            className="w-full bg-[#0d1117] border border-gray-700 rounded-lg p-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          />
+    <section className="text-center py-20 border-t border-gray-800">
+      <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-5">
+        Keep In Touch.
+      </h2>
+      
+      <p className="text-gray-400 text-base mb-10 max-w-2xl mx-auto leading-relaxed">
+        I'm currently specializing in <span className="text-green-400 font-medium">Front-end Development</span>. 
+        Feel free to get in touch and talk more about your projects.
+      </p>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={status === "sending"}
-            className="w-full bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-800 disabled:cursor-not-allowed"
+      {/* Social Buttons */}
+      <div className="flex justify-center flex-wrap gap-4 mb-16">
+        {linkedinHref && (
+          <a
+            href={linkedinHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#161b22] border border-gray-700 text-gray-200 hover:text-green-400 hover:border-green-400 transition-all duration-200"
+            aria-label="LinkedIn"
           >
-            {status === "sending" && "Sending..."}
-            {status === "success" && "Message Sent!"}
-            {status === "idle" && "Send"}
-          </button>
-        </form>
+            <Linkedin size={18} />
+            <span>LinkedIn</span>
+          </a>
+        )}
+        
+        {emailHref && (
+          <a
+            href={emailHref}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#161b22] border border-gray-700 text-gray-200 hover:text-green-400 hover:border-green-400 transition-all duration-200"
+            aria-label="Email"
+          >
+            <Mail size={18} />
+            <span>Email</span>
+          </a>
+        )}
+        
+        {resume && isUrlLike(resume) && (
+          <a
+            href={resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#161b22] border border-gray-700 text-gray-200 hover:text-green-400 hover:border-green-400 transition-all duration-200"
+            aria-label="Resume"
+          >
+            <FileText size={18} />
+            <span>Resume</span>
+          </a>
+        )}
+      </div>
+      
+      {/* Footer */}
+      <div className="text-xs text-gray-600 space-y-1">
+        <p>Designed and Developed by Abdul Rahman.</p>
+        <p>
+          Built with <span className="text-green-400">Next.js</span> & <span className="text-green-400">Chakra UI</span>. 
+          Hosted on <span className="text-green-400">Vercel</span>.
+        </p>
       </div>
     </section>
   );
-  // --- END: REDESIGNED JSX ---
 };
 
 export default ContactView;

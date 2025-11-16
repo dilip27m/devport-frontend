@@ -56,45 +56,38 @@ const SocialsView: React.FC<SocialsViewProps> = ({ data }) => {
   const githubHref = normalizeGithub(data.github);
   const linkedinHref = normalizeLinkedIn(data.linkedin);
 
-  // quick sanity log while you test
-  console.debug("SocialsView data:", data, {
-    emailHref,
-    githubHref,
-    linkedinHref,
-  });
-
   const socialLinks = [
     {
       name: "Email",
       href: emailHref,
       icon: <Mail className="w-8 h-8 text-white" />,
-      bg: "bg-red-500",
+      bg: "bg-red-700", // Adjusted for dark theme
       label: data.email ? `Email ${data.email}` : "Email",
     },
     {
       name: "GitHub",
       href: githubHref,
       icon: <Github className="w-8 h-8 text-white" />,
-      bg: "bg-gray-800",
+      bg: "bg-gray-800", // Adjusted for dark theme
       label: data.github ? `GitHub ${data.github}` : "GitHub",
     },
     {
       name: "LinkedIn",
       href: linkedinHref,
       icon: <Linkedin className="w-8 h-8 text-white" />,
-      bg: "bg-blue-600",
+      bg: "bg-blue-700", // Adjusted for dark theme
       label: data.linkedin ? `LinkedIn ${data.linkedin}` : "LinkedIn",
     },
   ];
 
-  const linksToShow = socialLinks.filter((s) => s.href); // now href will be present for your GitHub example
+  const linksToShow = socialLinks.filter((s) => s.href);
 
   return (
     <section
       id="socials"
       className="p-6 md:p-8 flex flex-col items-center justify-center min-h-[300px]"
     >
-      <h2 className="text-3xl font-bold mb-8 text-white">Connect With Me</h2>
+      <h2 className="text-3xl font-bold mb-8 text-white">Social Networks</h2>
 
       {linksToShow.length ? (
         <div className="flex flex-wrap justify-center gap-6">
