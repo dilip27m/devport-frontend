@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+
 import ProjectsForm from "./forms/ProjectsForm";
 import EducationForm from "./forms/EducationForm";
+import SkillsForm from "./forms/SkillsForm";
+import ExperienceForm from "./forms/ExperienceForm";
 import AchievementsForm from "./forms/AchievementsForm";
 import BlogsForm from "./forms/BlogsForm";
-import ExperienceForm from "./forms/ExperienceForm";
-import SkillsForm from "./forms/SkillsForm";
 import SocialNetworkForm from "./forms/SocialNetworForm";
-import AboutMeForm from "./forms/AboutMe"; 
+import AboutMeForm from "./forms/AboutMe";
+
 import { SaveStatus } from "./Bottombar";
+import { PortfolioData } from "../page";
 
 interface FormContainerProps {
   section: string;
-  data: any;
-  setData: React.Dispatch<React.SetStateAction<any>>;
+  data: PortfolioData;
+  setData: React.Dispatch<React.SetStateAction<PortfolioData>>;
   onSave: () => void;
   saveStatus: SaveStatus;
   lastSaved: string | null;
@@ -29,7 +32,23 @@ const FormContainer: React.FC<FormContainerProps> = ({
   lastSaved,
 }) => {
 
-  // 🔥 Updated Save Button Styling
+  const [unsaved, setUnsaved] = useState(false);
+  const [highlight, setHighlight] = useState(false);
+
+  // Timestamp animation on successful save
+  useEffect(() => {
+    if (saveStatus === "success" && lastSaved) {
+      setHighlight(false);
+      const t1 = setTimeout(() => setHighlight(true), 10);
+      const t2 = setTimeout(() => setHighlight(false), 1000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, [saveStatus, lastSaved ?? ""]);
+
+  // Save button UI
   const getSaveButtonContent = () => {
     switch (saveStatus) {
       case "saving":
@@ -39,7 +58,6 @@ const FormContainer: React.FC<FormContainerProps> = ({
           className:
             "bg-gray-100 text-gray-500 border border-gray-300 cursor-not-allowed",
         };
-
       case "error":
         return {
           text: "Save Failed",
@@ -47,7 +65,6 @@ const FormContainer: React.FC<FormContainerProps> = ({
           className:
             "bg-red-500 text-white border border-red-600 hover:bg-red-600 hover:border-black",
         };
-
       default:
         return {
           text: "Save",
@@ -60,104 +77,91 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
   const saveButton = getSaveButtonContent();
 
-  // Highlight animation for timestamp
-  const [highlight, setHighlight] = useState(false);
-
-  useEffect(() => {
-    if (saveStatus === "success" && lastSaved) {
-      setHighlight(false);
-      const startTimer = setTimeout(() => setHighlight(true), 10);
-      const stopTimer = setTimeout(() => setHighlight(false), 1000);
-      return () => {
-        clearTimeout(startTimer);
-        clearTimeout(stopTimer);
-      };
-    }
-  }, [saveStatus, lastSaved ?? ""]);
-
-  // Defaults for sections
-  const socialDefault = {
-    email: data?.profile?.email || "",
-    github: "",
-    linkedin: "",
-    ...(data?.social || {}),
+  // Wrapper update function
+  const applyUpdate = (fn: (prev: PortfolioData) => PortfolioData) => {
+    setData(prev => {
+      const updated = fn(prev);
+      return JSON.parse(JSON.stringify(updated));
+    });
+    setUnsaved(true); // Trigger toggle to "Unsaved changes"
   };
 
-  const aboutDefault = {
-    greeting: data?.about?.greeting ?? "",
-    name: data?.about?.name ?? data?.profile?.name ?? "",
-    role: data?.about?.role ?? "",
-    bio: data?.about?.bio ?? data?.profile?.bio ?? "",
-    photo: data?.about?.photo ?? "",
-    resume: data?.about?.resume ?? "",
-    aboutMe: data?.about?.aboutMe ?? "",
-  };
-
+  // Form registry
   const registry: Record<string, React.ReactNode> = {
-
+    "About Me": (
+      <AboutMeForm
+        data={data.aboutMe}
+        onChange={(field, value) =>
+          applyUpdate(prev => ({
+            ...prev,
+            aboutMe: { ...prev.aboutMe, [field]: value },
+          }))
+        }
+      />
+    ),
 
     Projects: (
       <ProjectsForm
-        projects={data.projects || []}
-        onChange={(projects) => setData({ ...data, projects })}
+        projects={data.projects}
+        onChange={(projects) =>
+          applyUpdate(prev => ({ ...prev, projects }))
+        }
       />
     ),
 
     Education: (
       <EducationForm
-        education={data.education || []}
-        onChange={(education) => setData({ ...data, education })}
+        education={data.education}
+        onChange={(education) =>
+          applyUpdate(prev => ({ ...prev, education }))
+        }
       />
     ),
 
     Achievements: (
       <AchievementsForm
-        achievements={data.achievements || []}
-        onChange={(achievements) => setData({ ...data, achievements })}
+        achievements={data.achievements}
+        onChange={(achievements) =>
+          applyUpdate(prev => ({ ...prev, achievements }))
+        }
       />
     ),
 
     Blogs: (
       <BlogsForm
-        blogs={data.blogs || []}
-        onChange={(blogs) => setData({ ...data, blogs })}
+        blogs={data.blogs}
+        onChange={(blogs) =>
+          applyUpdate(prev => ({ ...prev, blogs }))
+        }
       />
     ),
 
     Experience: (
       <ExperienceForm
-        experiences={data.experiences || []}
-        onChange={(experiences) => setData({ ...data, experiences })}
+        experiences={data.experiences}
+        onChange={(experiences) =>
+          applyUpdate(prev => ({ ...prev, experiences }))
+        }
       />
     ),
 
     Skills: (
       <SkillsForm
-        skills={data.skills || []}
-        onChange={(skills) => setData({ ...data, skills })}
+        skills={data.skills}
+        onChange={(skills) =>
+          applyUpdate(prev => ({ ...prev, skills }))
+        }
       />
     ),
 
     Social: (
       <SocialNetworkForm
-        data={socialDefault}
+        data={data.socials}
         onChange={(field, value) =>
-          setData({
-            ...data,
-            social: { ...socialDefault, [field]: value },
-          })
-        }
-      />
-    ),
-
-    "About Me": (
-      <AboutMeForm
-        data={aboutDefault}
-        onChange={(field, value) =>
-          setData({
-            ...data,
-            about: { ...aboutDefault, [field]: value },
-          })
+          applyUpdate(prev => ({
+            ...prev,
+            socials: { ...prev.socials, [field]: value },
+          }))
         }
       />
     ),
@@ -165,10 +169,11 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
   return (
     <div className="flex flex-col h-full">
+
       {/* Divider */}
       <div className="border-b bg-gray-50" />
 
-      {/* Form area */}
+      {/* Form Area */}
       <div className="flex-1 p-6 overflow-y-auto no-scrollbar pb-32">
         {registry[section] ?? (
           <p className="text-gray-500 text-sm italic">
@@ -177,28 +182,44 @@ const FormContainer: React.FC<FormContainerProps> = ({
         )}
       </div>
 
-      {/* Save bar */}
-      <div className="sticky bottom-0 w-full bg-white border-t px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-md">
+      {/* ⭐ Save Bar (Perfect Toggle Version) */}
+      <div className="sticky bottom-0 w-full bg-white border-t px-6 py-4 
+                        flex flex-col sm:flex-row sm:items-center sm:justify-between 
+                        gap-2 shadow-md">
 
-        {/* 🔥 Updated Save Button */}
+        {/* Save Button */}
         <button
-          onClick={onSave}
+          onClick={() => {
+            onSave();
+            setUnsaved(false); // Switch to "Last saved"
+          }}
           disabled={saveButton.disabled}
           className={`font-bold py-2 px-6 rounded-3xl transition duration-300 ease-in-out ${saveButton.className}`}
         >
           {saveButton.text}
         </button>
 
-        {/* Timestamp animation */}
-        {lastSaved && (
-          <p
-            className={`text-xs font-semibold transition-all duration-[1000ms] ease-in-out ${
-              highlight ? "text-black scale-105" : "text-gray-600 scale-100"
-            }`}
-          >
-            {lastSaved}
-          </p>
-        )}
+        {/* TOGGLE: Unsaved OR Last Saved */}
+        <div className="min-w-[150px] text-right">
+
+          {/* UNSAVED MODE */}
+          {unsaved && (
+            <p className="text-xs text-red-500 font-semibold">
+              ● Unsaved changes
+            </p>
+          )}
+
+          {/* SAVED MODE */}
+          {!unsaved && lastSaved && (
+            <p
+              className={`text-xs font-semibold transition-all duration-[1000ms] ease-in-out ${
+                highlight ? "text-black scale-105" : "text-gray-600 scale-100"
+              }`}
+            >
+              Last saved: {lastSaved}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

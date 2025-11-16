@@ -1,17 +1,19 @@
 import React from "react";
+// 1. Import the 'notFound' function from Next.js
+import { notFound } from "next/navigation";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
-import Template2Shell from "@/app/templates/template2/Template2shell"; // ← Enable this when ready
+import Template2Shell from "@/app/templates/template2/Template2shell"; 
 
-/** --- Template Map --- */
+
 const templateMap: Record<string, React.ComponentType<{ data: any }>> = {
   template1: Template1Shell,
-  template2: Template2Shell, // ← Add more templates easily here
+  template2: Template2Shell, 
 };
 
-/** --- API Base --- */
+// Your environment variable setup is correct
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-/** --- Fetch Portfolio Data --- */
+// Your data fetching function is correct and unchanged
 async function getPortfolioData(username: string) {
   try {
     const response = await fetch(`${API_BASE_URL}/public/portfolio/${username}`, {
@@ -26,7 +28,7 @@ async function getPortfolioData(username: string) {
   }
 }
 
-/** --- Public Portfolio Page --- */
+// Your page component function signature is correct and unchanged
 export default async function PublicPortfolioPage({
   params: { username },
 }: {
@@ -34,35 +36,24 @@ export default async function PublicPortfolioPage({
 }) {
   const portfolio = await getPortfolioData(username);
 
-  // If portfolio not found
+  // --- THIS IS THE UPDATED LOGIC ---
+  // Instead of returning a custom div, we call notFound()
+  // This tells Next.js to render your global not-found.tsx file
   if (!portfolio) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">404</h1>
-          <p className="text-xl">Portfolio not found.</p>
-        </div>
-      </div>
-    );
+    notFound();
   }
+  // --------------------------------
 
-  // Pick correct template dynamically
   const SelectedTemplate = templateMap[portfolio.template];
 
-  // If invalid or missing template
+  // --- THIS IS ALSO UPDATED for consistency ---
   if (!SelectedTemplate) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">Error</h1>
-          <p className="text-xl">
-            The selected template "{portfolio.template}" is not available.
-          </p>
-        </div>
-      </div>
-    );
+    // If the template name from the database is invalid,
+    // we should also show the proper 404 page.
+    notFound();
   }
+  // -------------------------------------------
 
-  // Render selected template with portfolio data
+  // This return statement is correct and unchanged
   return <SelectedTemplate data={portfolio.data} />;
 }

@@ -6,17 +6,20 @@ import { useRouter } from "next/navigation";
 import UserInfo from "./UserInfo";
 import ChangePasswordForm from "./ChangePasswordForm";
 import DeleteAccount from "./DeleteAccount";
+import PortfolioSummary from "./PortfolioSummary"; // Import the new component
 
 const ProfilePage = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    // This effect handles redirecting unauthenticated users
     if (!loading && !isAuthenticated) {
       router.push("/login");
     }
   }, [loading, isAuthenticated, router]);
 
+  // This block handles the loading state while checking authentication
   if (loading || !isAuthenticated || !user) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-neutral-50">
@@ -28,10 +31,11 @@ const ProfilePage = () => {
     );
   }
 
+  // This is the main content for authenticated users
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-4 sm:px-6 lg:px-8">
-        {/* header */}
+        {/* Header Section */}
         <div className="mb-2">
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
             Account Settings
@@ -41,17 +45,19 @@ const ProfilePage = () => {
           </p>
         </div>
 
-        {/* grid */}
+        {/* Main Grid Layout */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* left */}
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             <UserInfo user={user} />
 
-            {/* (Optional) future sections go here, will match spacing */}
-            {/* <YourSection /> */}
+            {/* --- NEW COMPONENT ADDED HERE --- */}
+            <PortfolioSummary />
+            {/* -------------------------------- */}
+
           </div>
 
-          {/* right (password on top, delete below) */}
+          {/* Right Column (Sidebar) */}
           <aside className="lg:col-span-1">
             <div className="flex flex-col gap-6">
               <ChangePasswordForm />
