@@ -305,9 +305,9 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
         </Droppable>
       </DragDropContext>
       <div className="text-xs text-gray-500">
-  Tip: Use a clear <strong>Degree</strong> and <strong>Institution</strong> name. Select accurate 
-  <strong>Start</strong> and <strong>End</strong> dates (use “Present” if ongoing). Add your 
-  <strong>Grade/GPA</strong> only if it strengthens your profile. Keep descriptions short and 
+  Tip: Use a clear <strong> Degree </strong> and <strong> Institution </strong> name. Select accurate 
+  <strong> Start </strong> and <strong> End </strong> dates (use “Present” if ongoing). Add your 
+  <strong> Grade/GPA </strong> only if it strengthens your profile. Keep descriptions short and 
   achievement-focused.
   you can rearrange entries by dragging the grip icon.
 </div>

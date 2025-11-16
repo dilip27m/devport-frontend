@@ -401,11 +401,14 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({ experiences = [], onCha
           )}
         </Droppable>
       </DragDropContext>
-      <div className="text-xs text-gray-500">
-  Tip: Enter a precise <strong>Role</strong>, <strong>Company</strong>, and correct dates. 
-  Write a brief description highlighting your <strong>key contributions and results</strong>.
-  you can rearrange entries by dragging the grip icon.
+ <div className="text-xs text-gray-500">
+  Tip: Enter a precise <strong> Role </strong>, <strong> Company </strong>, and correct dates, 
+  including the <strong> tenure </strong> for roles or projects. Describe your work by focusing 
+  on your <strong> main responsibilities </strong> and <strong> notable achievements </strong>. 
+  Use the drag handle to reorder your experience entries.
 </div>
+
+
     </div>
   );
 };

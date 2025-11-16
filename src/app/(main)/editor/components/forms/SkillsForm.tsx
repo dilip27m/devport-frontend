@@ -418,9 +418,14 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
         </Droppable>
       </DragDropContext>
 
-      <div className="text-xs text-gray-500">
-        Tip: Drag the grip to reorder categories or drag skills between categories. Paste comma-separated items to add multiple at once.If skill is not found, you can still add it and a fallback icon will be shown just press enter or click add.
-      </div>
+<div className="text-xs text-gray-500">
+  Tip: Drag the grip to reorder <strong> Categories </strong> or move <strong> Skills </strong> between them. 
+  Paste comma-separated items to quickly add multiple <strong> Skills </strong>. 
+  If a skill isn’t found, you can still add it — a <strong>fallback icon</strong> will appear automatically. 
+  Press <strong> Enter </strong> or click <strong> Add </strong> to confirm each skill.
+</div>
+
+
     </div>
   );
 };

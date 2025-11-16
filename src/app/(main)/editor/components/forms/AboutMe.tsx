@@ -164,7 +164,7 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
         Tip: Your <strong>Greeting</strong> appears before your name  
         (e.g., “Hey there! I’m”). Keep the <strong>Name</strong> & 
         <strong>Role</strong> short. Write a short <strong>Bio</strong> 
-        for quick intro and a detailed <strong>About Me</strong> section 
+        for quick intro and a detailed <strong> About Me</strong> section 
         for your journey. Upload a clean, professional <strong>Profile Photo</strong>.
       </div>
     </div>

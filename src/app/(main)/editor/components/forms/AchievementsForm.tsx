@@ -308,11 +308,15 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
           )}
         </Droppable>
       </DragDropContext>
-      <div className="text-xs text-gray-500">
-  Tip: Use clear, measurable achievements such as <strong>“Solved 100+ LeetCode problems”</strong>, 
-  <strong>“Won 1st prize in Hackathon”</strong>, or <strong>“Published a research paper”</strong>. 
-  Add a short description only if helpful. Mention the <strong>year</strong> when relevant, otherwise you can leave it empty.
+  <div className="text-xs text-gray-500">
+  Tip: Use clear, measurable <strong> Achievements </strong> such as 
+  “<strong> Solved 100+ LeetCode problems </strong>”, 
+  “<strong> Won 1st prize in a Hackathon </strong>”, or 
+  “<strong> Published a research paper </strong>”. 
+  Add a short <strong> Description </strong> only if needed. 
+  Mention the <strong> Year </strong> when relevant, or leave it empty if not applicable.
 </div>
+
 
     </div>
   );
