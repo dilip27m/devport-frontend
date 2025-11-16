@@ -1,197 +1,411 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Plus,
   Trash2,
-  Briefcase,
+  GripVertical,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
+  X,
 } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { differenceInDays } from "date-fns";
 
 export interface Experience {
   role: string;
   company: string;
-  startDate: string;
-  endDate: string;
-  description: string;
+  startDate: string; // yyyy-mm-dd
+  endDate: string; // yyyy-mm-dd or "" when Present
+  isPresent?: boolean;
+  descriptionBullets: string[]; // bullet points
+  stack: string[]; // tech stack
+  links: { label: string; url: string }[]; // experience-related links
 }
 
 export interface ExperienceFormProps {
-  experiences: Experience[];
+  experiences?: Experience[]; // optional from parent
   onChange: (experiences: Experience[]) => void;
 }
 
-const ExperienceForm: React.FC<ExperienceFormProps> = ({
-  experiences,
-  onChange,
-}) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+/** helper: format date as 'MMM yyyy' */
+const formatDateMMMYYYY = (dateStr?: string) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+};
 
-  const toggleOpen = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+/** helper: compute human-friendly duration between two yyyy-mm-dd strings */
+const computeDurationFriendly = (start?: string, end?: string, isPresent?: boolean) => {
+  if (!start) return "";
+  const s = new Date(start);
+  const e = isPresent || !end ? new Date() : new Date(end);
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
+
+  // months difference
+  let years = e.getFullYear() - s.getFullYear();
+  let months = e.getMonth() - s.getMonth();
+  let totalMonths = years * 12 + months;
+
+  // adjust by days
+  if (e.getDate() < s.getDate()) totalMonths -= 1;
+  if (totalMonths < 0) totalMonths = 0;
+
+  if (totalMonths < 1) return "<1 mo";
+  if (totalMonths < 12) return `${totalMonths} mo${totalMonths > 1 ? "s" : ""}`;
+  const y = Math.floor(totalMonths / 12);
+  const m = totalMonths % 12;
+  if (m === 0) return `${y} yr${y > 1 ? "s" : ""}`;
+  return `${y} yr${y > 1 ? "s" : ""} ${m} mo${m > 1 ? "s" : ""}`;
+};
+
+const emptyExperience = (): Experience => ({
+  role: "",
+  company: "",
+  startDate: "",
+  endDate: "",
+  isPresent: false,
+  descriptionBullets: [""],
+  stack: [],
+  links: [],
+});
+
+const ExperienceForm: React.FC<ExperienceFormProps> = ({ experiences = [], onChange }) => {
+  // local open index for expand/collapse
+  const [openIndex, setOpenIndex] = useState<number | null>(experiences.length > 0 ? 0 : null);
+
+  // ensure controlled: always use a copy
+  const safeExperiences = Array.isArray(experiences) ? experiences : [];
+
+  // utility to update and bubble up
+  const setExperiences = (updated: Experience[]) => {
+    onChange(updated);
   };
 
   const addExperience = () => {
-    const newEntry = {
-      role: "",
-      company: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-    };
-    onChange([...experiences, newEntry]);
-    setTimeout(() => {
-      setOpenIndex(experiences.length);
-      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }, 50);
-  };
-
-  const updateExperience = (
-    index: number,
-    field: keyof Experience,
-    value: string
-  ) => {
-    const updated = [...experiences];
-    updated[index][field] = value;
-    onChange(updated);
+    const updated = [...safeExperiences, emptyExperience()];
+    setExperiences(updated);
+    setTimeout(() => setOpenIndex(updated.length - 1), 50);
   };
 
   const removeExperience = (index: number) => {
-    const updated = experiences.filter((_, i) => i !== index);
-    onChange(updated);
+    const updated = safeExperiences.filter((_, i) => i !== index);
+    setExperiences(updated);
     if (openIndex === index) setOpenIndex(null);
     else if (openIndex && openIndex > index) setOpenIndex(openIndex - 1);
   };
 
-  const calculateDays = (start: string, end: string) => {
-    if (!start || !end) return "";
-    try {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      const days = differenceInDays(endDate, startDate);
-      return days >= 0 ? `${days} days` : "Invalid range";
-    } catch {
-      return "";
-    }
+  const updateField = (index: number, field: keyof Experience, value: any) => {
+    const updated = [...safeExperiences];
+    updated[index] = { ...updated[index], [field]: value };
+    setExperiences(updated);
+  };
+
+  // bullet points handlers (simple list)
+  const updateBullet = (expIndex: number, bulletIndex: number, value: string) => {
+    const updated = [...safeExperiences];
+    const bullets = [...(updated[expIndex].descriptionBullets || [])];
+    bullets[bulletIndex] = value;
+    updated[expIndex].descriptionBullets = bullets;
+    setExperiences(updated);
+  };
+
+  const addBullet = (expIndex: number) => {
+    const updated = [...safeExperiences];
+    const bullets = [...(updated[expIndex].descriptionBullets || [])];
+    bullets.push("");
+    updated[expIndex].descriptionBullets = bullets;
+    setExperiences(updated);
+  };
+
+  const removeBullet = (expIndex: number, bulletIndex: number) => {
+    const updated = [...safeExperiences];
+    const bullets = [...(updated[expIndex].descriptionBullets || [])].filter((_, i) => i !== bulletIndex);
+    updated[expIndex].descriptionBullets = bullets.length ? bullets : [""];
+    setExperiences(updated);
+  };
+
+  // stack input (comma separated in single input)
+  const updateStackFromInput = (expIndex: number, raw: string) => {
+    const arr = raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    updateField(expIndex, "stack", arr);
+  };
+
+  const stackToString = (stack?: string[]) => (stack || []).join(", ");
+
+  // links handlers
+  const addLink = (expIndex: number) => {
+    const updated = [...safeExperiences];
+    const links = [...(updated[expIndex].links || []), { label: "", url: "" }];
+    updated[expIndex].links = links;
+    setExperiences(updated);
+  };
+
+  const updateLink = (expIndex: number, linkIndex: number, field: "label" | "url", value: string) => {
+    const updated = [...safeExperiences];
+    const links = [...(updated[expIndex].links || [])];
+    links[linkIndex] = { ...links[linkIndex], [field]: value };
+    updated[expIndex].links = links;
+    setExperiences(updated);
+  };
+
+  const removeLink = (expIndex: number, linkIndex: number) => {
+    const updated = [...safeExperiences];
+    const links = [...(updated[expIndex].links || [])].filter((_, i) => i !== linkIndex);
+    updated[expIndex].links = links;
+    setExperiences(updated);
+  };
+
+  // present toggle: set isPresent true and clear endDate
+  const togglePresent = (index: number, val: boolean) => {
+    const updated = [...safeExperiences];
+    updated[index].isPresent = val;
+    if (val) updated[index].endDate = "";
+    setExperiences(updated);
+  };
+
+  // drag-and-drop handlers
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+    const items = Array.from(safeExperiences);
+    const [moved] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, moved);
+    setExperiences(items);
+    setOpenIndex(result.destination.index);
   };
 
   return (
-    <div className="space-y-6 text-sm text-gray-800" ref={containerRef}>
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
-          <Briefcase size={20} className="text-blue-600" />
-          Experience
-        </h2>
+        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">Experience</h2>
+
         <button
           type="button"
           onClick={addExperience}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          <Plus size={16} />
-          Add Experience
+          <Plus size={14} /> Add Experience
         </button>
       </div>
 
-      {experiences.map((exp, i) => (
-        <div
-          key={i}
-          className="border border-gray-200 rounded-xl bg-white shadow-sm transition-all"
-        >
-          <div className="flex justify-between items-center px-5 py-4 bg-gray-50 rounded-t-xl border-b">
-            <button
-              type="button"
-              onClick={() => toggleOpen(i)}
-              className="text-left font-medium text-gray-800 flex-1 text-sm hover:underline focus:outline-none"
-            >
-              {exp.role || "Untitled Role"} at {exp.company || "Company"}
-            </button>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => removeExperience(i)}
-                className="text-red-500 hover:text-red-700 hover:bg-red-100 p-2 rounded-full transition"
-                aria-label="Remove experience"
-              >
-                <Trash2 size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleOpen(i)}
-                className="text-gray-500 hover:text-gray-700 p-2 rounded-full transition"
-                aria-label="Toggle panel"
-              >
-                {openIndex === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </button>
-            </div>
-          </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="experience-droppable">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-3">
+              {safeExperiences.map((exp, index) => {
+                const startFriendly = formatDateMMMYYYY(exp.startDate) || "";
+                const endFriendly = exp.isPresent ? "Present" : formatDateMMMYYYY(exp.endDate) || "";
+                const durationFriendly = computeDurationFriendly(exp.startDate, exp.endDate, exp.isPresent);
 
-          {openIndex === i && (
-            <div className="p-5 space-y-4 border-t border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-medium mb-1">Role / Title</label>
-                  <input
-                    type="text"
-                    value={exp.role}
-                    onChange={(e) => updateExperience(i, "role", e.target.value)}
-                    placeholder="e.g. Software Engineer"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">Company</label>
-                  <input
-                    type="text"
-                    value={exp.company}
-                    onChange={(e) => updateExperience(i, "company", e.target.value)}
-                    placeholder="e.g. Google"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
+                return (
+                  <Draggable key={index} draggableId={`exp-${index}`} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`border rounded-xl bg-white shadow-md overflow-hidden transition ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""}`}
+                      >
+                        {/* Header */}
+                        <div
+                          className="flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
+                          onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                        >
+                          <div className="flex items-center space-x-3 min-w-0">
+                            <span {...provided.dragHandleProps} className="text-gray-400 hover:text-gray-600 cursor-grab">
+                              <GripVertical size={18} />
+                            </span>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                <div>
-                  <label className="block font-medium mb-1">Start Date</label>
-                  <input
-                    type="date"
-                    value={exp.startDate}
-                    onChange={(e) => updateExperience(i, "startDate", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">End Date</label>
-                  <input
-                    type="date"
-                    value={exp.endDate}
-                    onChange={(e) => updateExperience(i, "endDate", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  {exp.startDate && exp.endDate && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Duration: {calculateDays(exp.startDate, exp.endDate)}
-                    </p>
-                  )}
-                </div>
-              </div>
+                            <div className="min-w-0">
+                              <div className="font-semibold text-gray-900 truncate">
+                                {exp.role || `Untitled Role`} {exp.company ? `@ ${exp.company}` : ""}
+                              </div>
 
-              <div>
-                <label className="block font-medium mb-1">Description</label>
-                <textarea
-                  value={exp.description}
-                  onChange={(e) => updateExperience(i, "description", e.target.value)}
-                  placeholder="Describe your responsibilities and achievements"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                              <div className="text-xs text-gray-500 truncate">
+                                {startFriendly && (startFriendly + " • ")} {endFriendly} {durationFriendly ? ` · ${durationFriendly}` : ""}
+                              </div>
+
+                              {/* show stack preview small */}
+                              {exp.stack && exp.stack.length > 0 && (
+                                <div className="text-xs text-gray-400 mt-1 truncate">{(exp.stack || []).slice(0, 3).join(", ")}{(exp.stack?.length || 0) > 3 ? ` +${exp.stack.length - 3}` : ""}</div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); removeExperience(index); }}
+                              className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                              title="Remove experience"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setOpenIndex(openIndex === index ? null : index); }}
+                              className="text-gray-600 p-1 rounded-full"
+                              aria-label="Toggle"
+                            >
+                              {openIndex === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Expanded */}
+                        {openIndex === index && (
+                          <div className="p-4 space-y-4 border-t bg-white">
+                            {/* Role / Company */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Role / Title</label>
+                                <input
+                                  type="text"
+                                  value={exp.role ?? ""}
+                                  onChange={(e) => updateField(index, "role", e.target.value)}
+                                  placeholder="e.g. Senior Software Engineer"
+                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                <input
+                                  type="text"
+                                  value={exp.company ?? ""}
+                                  onChange={(e) => updateField(index, "company", e.target.value)}
+                                  placeholder="e.g. Acme Corp"
+                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Dates + Present toggle */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input
+                                  type="date"
+                                  value={exp.startDate ?? ""}
+                                  onChange={(e) => updateField(index, "startDate", e.target.value)}
+                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input
+                                  type="date"
+                                  value={exp.endDate ?? ""}
+                                  onChange={(e) => updateField(index, "endDate", e.target.value)}
+                                  disabled={exp.isPresent}
+                                  className={`w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 ${exp.isPresent ? "bg-gray-50 text-gray-500 cursor-not-allowed" : "border-gray-300 focus:ring-blue-400"}`}
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-3">
+                                <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!exp.isPresent}
+                                    onChange={(e) => togglePresent(index, e.target.checked)}
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-400"
+                                  />
+                                  <span className="text-sm text-gray-700">I currently work here</span>
+                                </label>
+                              </div>
+                            </div>
+
+                            {/* Duration preview */}
+                            {exp.startDate && (exp.endDate || exp.isPresent) && (
+                              <div className="text-xs text-gray-500">Duration: {computeDurationFriendly(exp.startDate, exp.endDate, !!exp.isPresent)}</div>
+                            )}
+
+                            {/* Tech stack */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Tech Stack (comma-separated)</label>
+                              <input
+                                type="text"
+                                value={stackToString(exp.stack)}
+                                onChange={(e) => updateStackFromInput(index, e.target.value)}
+                                placeholder="React, Node.js, AWS"
+                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                              />
+                              {exp.stack && exp.stack.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {exp.stack.map((s, si) => (
+                                    <span key={si} className="px-3 py-1 text-xs bg-gray-100 border border-gray-300 rounded-full text-gray-800 shadow-sm">
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Bullet points */}
+                            <div>
+                              <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-gray-700">Achievements / Responsibilities</label>
+                                <button
+                                  type="button"
+                                  onClick={() => addBullet(index)}
+                                  className="inline-flex items-center gap-1 px-3 py-1 text-sm text-gray-800 border border-gray-300 rounded-full hover:bg-gray-50 transition"
+                                >
+                                  <Plus size={14} /> Add bullet
+                                </button>
+                              </div>
+
+                              <div className="space-y-2">
+                                {(exp.descriptionBullets || [""]).map((b, bi) => (
+                                  <div key={bi} className="flex items-start gap-2">
+                                    <div className="mt-2 text-gray-500">•</div>
+                                    <div className="flex-1">
+                                      <input
+                                        type="text"
+                                        value={b ?? ""}
+                                        onChange={(e) => updateBullet(index, bi, e.target.value)}
+                                        placeholder="e.g. Improved API latency by 40%..."
+                                        className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                      />
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeBullet(index, bi)}
+                                      className="text-red-500 hover:bg-red-50 p-2 rounded-full"
+                                      title="Remove bullet"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+
+              {provided.placeholder}
             </div>
           )}
-        </div>
-      ))}
+        </Droppable>
+      </DragDropContext>
+      <div className="text-xs text-gray-500">
+  Tip: Enter a precise <strong>Role</strong>, <strong>Company</strong>, and correct dates. 
+  Write a brief description highlighting your <strong>key contributions and results</strong>.
+  you can rearrange entries by dragging the grip icon.
+</div>
     </div>
   );
 };
