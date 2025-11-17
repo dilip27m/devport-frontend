@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import HomeView from "../HomeView";
-import EducationView from "../Education/EducationView";
-import SkillsView from "../SkillsView";
-import ExperienceView from "../ExperienceView";
-import AchievementsView from "../AchievementsView";
-import SocialsView from "../SocialsView";
+import HomeView from "@/app/templates/template3/HomeView";
+import EducationView from "@/app/templates/template3/Education/EducationView";
+import SkillsView from "@/app/templates/template3/SkillsView";
+import ExperienceView from "@/app/templates/template3/ExperienceView";
+import AchievementsView from "@/app/templates/template3/AchievementsView";
+import SocialsView from "@/app/templates/template1/SocialsView";
 
 interface AboutMePageProps {
   aboutMe: any;
@@ -27,7 +27,6 @@ const AboutMePage = ({
 }: AboutMePageProps) => {
   return (
     <div className="space-y-24">
-      {/* Hero Section */}
       <HomeView aboutMe={aboutMe} />
 
       <div className="max-w-6xl mx-auto px-4 space-y-24 no-scrollbar">

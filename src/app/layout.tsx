@@ -16,9 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // 1. Add h-full to the html tag
     <html lang="en" className="h-full">
-      {/* 2. Add h-full and a default background color to the body */}
       <body className={`${inter.className} h-full bg-gray-100`}>
         <AuthProvider>{children}</AuthProvider>
       </body>

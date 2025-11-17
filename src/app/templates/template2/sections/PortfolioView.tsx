@@ -5,17 +5,14 @@ import { Github, Linkedin, Mail } from "lucide-react";
 import type { PortfolioData } from '@/app/(main)/editor/page';
 import { format } from "date-fns";
 
-// Helper to check for valid URLs/data URIs.
 const isUrlLike = (s?: string) => !!s && /^(https?:\/\/|data:)/i.test(s);
 
-// Map social media keys from your form to their respective icon components.
 const socialIcons: { [key: string]: React.ReactNode } = {
   github: <Github size={20} />,
   linkedin: <Linkedin size={20} />,
   email: <Mail size={20} />,
 };
 
-// Reusable Section component for consistent styling of subsections.
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <section className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-16 border-t border-gray-900">
     <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">{title}</h2>
@@ -23,7 +20,6 @@ const Section = ({ title, children }: { title: string, children: React.ReactNode
   </section>
 );
 
-// This is the contact form component, styled to match your dark theme.
 const ContactForm = ({ portfolioOwnerEmail }: { portfolioOwnerEmail?: string }) => {
   const [formData, setFormData] = useState({ senderEmail: '', message: '' });
   const [status, setStatus] = useState<'idle'|'sending'|'success'>('idle');
@@ -33,11 +29,10 @@ const ContactForm = ({ portfolioOwnerEmail }: { portfolioOwnerEmail?: string }) 
     setStatus('sending');
     console.log("Submitting form to portfolio owner:", portfolioOwnerEmail);
     console.log("Form data:", formData);
-    // Simulate API call
     setTimeout(() => {
       setStatus('success');
       setFormData({ senderEmail: '', message: '' });
-      setTimeout(() => setStatus('idle'), 3000); // Reset button text after 3 seconds
+      setTimeout(() => setStatus('idle'), 3000); 
     }, 1500);
   };
   
@@ -152,7 +147,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                     <h3 className="text-xl font-semibold text-blue-500 break-words">{exp.company || "Company"}</h3>
                     <p className="text-white font-medium mt-1 break-words">{exp.role || "Role"}</p>
                     
-                    {/* NEW: Description Bullets */}
                     {exp.descriptionBullets && exp.descriptionBullets.length > 0 && (
                       <ul className="mt-3 space-y-2 text-gray-400 leading-relaxed max-w-3xl">
                         {exp.descriptionBullets.map((bullet: string, bi: number) => (
@@ -166,7 +160,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                       </ul>
                     )}
 
-                    {/* NEW: Tech Stack */}
                     {exp.stack && exp.stack.length > 0 && (
                       <div className="mt-4 flex flex-wrap gap-2">
                         {exp.stack.map((tech: string, ti: number) => (
@@ -180,7 +173,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                       </div>
                     )}
 
-                    {/* NEW: Links */}
                     {exp.links && exp.links.length > 0 && (
                       <div className="mt-4 flex flex-wrap gap-3">
                         {exp.links.map((link: any, li: number) => (
@@ -223,7 +215,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                   {edu.grade && <p className="text-gray-400 text-sm mt-1">Grade: {edu.grade}</p>}
                 </div>
                 <div className="text-sm text-gray-500 whitespace-nowrap pt-1">
-                  {/* Handle month/year format from education form */}
                   {edu.startMonth && edu.startYear && edu.endMonth && edu.endYear
                     ? `${edu.startMonth} ${edu.startYear} - ${edu.endMonth} ${edu.endYear}`
                     : edu.startYear && edu.endYear
@@ -237,7 +228,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
         </Section>
       )}
 
-      {/* ========== Updated Achievements Section (Now matches ProjectsView style) ========== */}
       {achievements.length > 0 && (
         <Section title="Achievements">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -246,7 +236,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                 key={i}
                 className="group bg-gradient-to-br from-gray-900/80 to-gray-950/80 border border-gray-800/50 rounded-2xl overflow-hidden hover:border-gray-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col min-h-0"
               >
-                {/* Image area (constrained like ProjectsView) */}
                 <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-gray-950 to-black flex-none">
                   {a.image ? (
                     <img
@@ -267,7 +256,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                     </div>
                   )}
 
-                  {/* optional tag (year/type) */}
                   {a.tag && (
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1.5 bg-purple-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full uppercase tracking-wide">
@@ -279,7 +267,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60" />
                 </div>
 
-                {/* Content */}
                 <div className="p-6 flex flex-col flex-1 min-h-0">
                   <h3 className="font-bold text-lg text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2 break-words">
                     {a.title || "Achievement"}
@@ -297,7 +284,6 @@ const PortfolioView: React.FC<{ data: PortfolioData }> = ({ data }) => {
                     {a.description || ""}
                   </p>
 
-                  {/* optional extra links or metadata */}
                   {a.link && (
                     <div className="mt-auto pt-4 border-t border-gray-800/50">
                       <a

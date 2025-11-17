@@ -22,7 +22,6 @@ export const useCloudinaryUpload = (): UseCloudinaryUpload => {
     setIsUploading(true);
 
     try {
-      // Step 1: Get secure signature from backend
       const signatureResponse = await fetch(`${API_BASE_URL}/upload/signature`, {
         headers: {
           Authorization: `Bearer ${token}`,

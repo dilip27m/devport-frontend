@@ -8,14 +8,14 @@ import BottomBar, { SaveStatus } from "@/app/(main)/editor/components/Bottombar"
 import { useAuth } from "@/context/AuthContext";
 
 // --- START: Import all type definitions from every form ---
-import type { AboutMeFormProps } from "./components/forms/AboutMe";
-import type { Project } from "./components/forms/ProjectsForm";
-import type { Education } from "./components/forms/EducationForm";
-import type { SkillCategory } from "./components/forms/SkillsForm";
-import type { Experience } from "./components/forms/ExperienceForm";
-import type { Achievement } from "./components/forms/AchievementsForm";
-import type { Blog } from "./components/forms/BlogsForm";
-import type { SocialNetworkFormProps } from "./components/forms/SocialNetworForm";
+import type { AboutMeFormProps } from "@/app/(main)/editor/components/forms/AboutMe";
+import type { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
+import type { Education } from "@/app/(main)/editor/components/forms/EducationForm";
+import type { SkillCategory } from "@/app/(main)/editor/components/forms/SkillsForm";
+import type { Experience } from "@/app/(main)/editor/components/forms/ExperienceForm";
+import type { Achievement } from "@/app/(main)/editor/components/forms/AchievementsForm";
+import type { Blog } from "@/app/(main)/editor/components/forms/BlogsForm";
+import type { SocialNetworkFormProps } from "@/app/(main)/editor/components/forms/SocialNetworForm";
 // --- END: Import all type definitions ---
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";

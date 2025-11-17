@@ -9,7 +9,6 @@ const SkillsView: React.FC<{ skills: SkillCategory[] }> = ({ skills }) => (
     <div className="space-y-16">
       {(skills || []).map((category, i) => (
         <div key={i} className="group">
-          {/* Category Header */}
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-white mb-2 inline-block relative">
               {category.name}
@@ -17,7 +16,6 @@ const SkillsView: React.FC<{ skills: SkillCategory[] }> = ({ skills }) => (
             </h3>
           </div>
 
-          {/* Skills Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {(category.skills || []).map((skill, si) => (
               <div 
@@ -30,7 +28,6 @@ const SkillsView: React.FC<{ skills: SkillCategory[] }> = ({ skills }) => (
                     alt={skill} 
                     className="w-full h-full object-contain group-hover/skill:scale-110 transition-transform duration-300"
                   />
-                  {/* Glow effect */}
                   <div className="absolute inset-0 bg-blue-500/0 group-hover/skill:bg-blue-500/10 rounded-lg blur-xl transition-all duration-300" />
                 </div>
                 <span className="font-semibold capitalize text-sm text-gray-400 group-hover/skill:text-white transition-colors text-center">

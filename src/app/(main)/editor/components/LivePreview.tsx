@@ -13,7 +13,7 @@ type LazyTemplateComponent = React.LazyExoticComponent<
 /** — Register all templates here — */
 const templateRegistry = {
   template1: React.lazy(
-    () => import("@/app/templates/template1/Template1shell")
+    () => import("@/app/templates/template1/Template1Shell")
   ),
   template2: React.lazy(
     () => import("@/app/templates/template2/Template2Shell")

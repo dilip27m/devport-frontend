@@ -8,33 +8,31 @@ interface BlogsViewProps {
   blogs: Blog[];
 }
 
-// ⭐ Default sample blogs (only for display when list is empty)
 const defaultBlogs: Blog[] = [
   {
     name: "How to Learn Git Fast",
     category: "Technical",
-    image: "https://picsum.photos/seed/git/600/400",
+    image: "/images/blog1.png",
     description: "A beginner-friendly introduction to Git, commits, branching, and collaboration.",
     link: "#",
   },
   {
     name: "My Journey Into Coding",
     category: "Non-Technical",
-    image: "https://picsum.photos/seed/coding/600/400",
+    image: "/images/blog2.png",
     description: "How I started coding, mistakes I made, and how I improved over time.",
     link: "#",
   },
   {
     name: "Top 5 VS Code Extensions",
     category: "Technical",
-    image: "https://picsum.photos/seed/vscode/600/400",
+    image: "/images/blog3.png",
     description: "These extensions boosted my productivity and coding speed significantly.",
     link: "#",
   },
 ];
 
 const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
-  // ❗ DO NOT CHANGE your logic
   const displayBlogs = blogs && blogs.length > 0 ? blogs : defaultBlogs;
 
   return (
@@ -51,7 +49,6 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
               hover:scale-[1.03] transition-all
             "
           >
-            {/* OPTIONAL IMAGE */}
             {blog.image && (
               <img
                 src={blog.image}
@@ -60,22 +57,18 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
               />
             )}
 
-            {/* Title */}
             <h3 className="text-xl font-semibold text-white">
               {blog.name || "Untitled Post"}
             </h3>
 
-            {/* Category */}
             {blog.category && (
               <p className="text-xs text-[#9b5cff] mt-1">{blog.category}</p>
             )}
 
-            {/* Description / Excerpt */}
             <p className="text-slate-300 mt-3 text-sm leading-relaxed line-clamp-3">
               {blog. description || "No preview available."}
             </p>
 
-            {/* Blog Link */}
             {blog.link && (
               <a
                 href={blog.link}

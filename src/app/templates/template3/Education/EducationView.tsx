@@ -1,13 +1,11 @@
 "use client";
 
 import React from 'react';
-// Import the Education type definition from your form
 import { Education } from '@/app/(main)/editor/components/forms/EducationForm';
 
-// Helper function to format the start and end dates
 const formatDuration = (edu: Education) => {
     const { startMonth, startYear, endMonth, endYear } = edu;
-    if (!startYear && !startMonth) return null; // Don't render if no start date
+    if (!startYear && !startMonth) return null; 
 
     const start = [startMonth, startYear].filter(Boolean).join(' ');
     const end = endYear === 'Present' ? 'Present' : [endMonth, endYear].filter(Boolean).join(' ');
@@ -16,7 +14,6 @@ const formatDuration = (edu: Education) => {
 };
 
 const EducationView: React.FC<{ education: Education[] }> = ({ education }) => {
-  // If there's no education data, we can show a placeholder.
   if (!education || education.length === 0) {
     return (
       <section id="education" className="p-6 md:p-8 text-center">
@@ -30,11 +27,9 @@ const EducationView: React.FC<{ education: Education[] }> = ({ education }) => {
     <section id="education" className="p-6 md:p-8">
       <h2 className="text-3xl font-bold mb-8 text-gray-800">Education</h2>
       
-      {/* A container for the timeline items */}
       <div className="border-l-2 border-blue-200 pl-8 space-y-10 relative">
         {(education).map((edu, index) => (
           <div key={index} className="relative">
-            {/* The dot on the timeline for each entry */}
             <div className="absolute -left-[37px] top-1.5 w-5 h-5 bg-blue-500 rounded-full border-4 border-white"></div>
             
             <p className="text-sm font-semibold text-gray-500 mb-1">{formatDuration(edu)}</p>

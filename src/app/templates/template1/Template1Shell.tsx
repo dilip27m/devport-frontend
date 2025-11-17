@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import HomeView from "./HomeView";
-import ProjectsView from "./projects/ProjectsView";
-import EducationView from "./EducationView";
-import SkillsView from "./SkillsView";
-import ExperienceView from "./ExperienceView";
-import AchievementsView from "./AchievementsView";
-import BlogsView from "./BlogsView";
-import ContactView from './ContactView';
-import Header from './components/header';
+import HomeView from "@/app/templates/template1/HomeView";
+import ProjectsView from "@/app/templates/template1/projects/ProjectsView";
+import EducationView from "@/app/templates/template1/EducationView";
+import SkillsView from "@/app/templates/template1/SkillsView";
+import ExperienceView from "@/app/templates/template1/ExperienceView";
+import AchievementsView from "@/app/templates/template1/AchievementsView";
+import BlogsView from "@/app/templates/template1/BlogsView";
+import ContactView from '@/app/templates/template1/ContactView';
+import Header from '@/app/templates/template1/components/Header';
 
 import type { AboutMeFormProps } from '@/app/(main)/editor/components/forms/AboutMe';
 import type { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
@@ -46,7 +46,7 @@ interface Template1ShellProps {
   };
 }
 
-const Template2Shell: React.FC<Template1ShellProps> = ({ data }) => {
+const Template1Shell: React.FC<Template1ShellProps> = ({ data }) => {
   const [activeSection, setActiveSection] = useState<SectionId>("about");
 
   // Listen for navigation events from child components
@@ -158,4 +158,4 @@ const Template2Shell: React.FC<Template1ShellProps> = ({ data }) => {
   );
 };
 
-export default Template2Shell;
+export default Template1Shell;

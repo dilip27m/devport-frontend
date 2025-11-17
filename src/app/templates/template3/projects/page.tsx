@@ -1,6 +1,5 @@
-import ProjectsView from "./ProjectsView";
+import ProjectsView from "@/app/templates/template3/projects/ProjectsView";
 
-// This function simulates fetching the final data for deployment.
 async function getPortfolioData() {
   return {
     projects: [
@@ -13,6 +12,5 @@ async function getPortfolioData() {
 export default async function ProjectsPage() {
   const data = await getPortfolioData();
   
-  // Renders the reusable UI component with the final data
   return <ProjectsView projects={data.projects} />;
 }

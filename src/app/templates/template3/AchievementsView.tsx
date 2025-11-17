@@ -10,7 +10,6 @@ interface AchievementsViewProps {
 const AchievementsView: React.FC<AchievementsViewProps> = ({
   achievements,
 }) => {
-  // ⭐ DEFAULT SAMPLE
   if (!achievements || achievements.length === 0) {
     achievements = [
       {

@@ -3,7 +3,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// Define the shape of our user and the context's value
 interface User {
   _id: string;
   name: string;
@@ -22,7 +21,9 @@ interface AuthContextType {
   updatePassword: (passwordData: any) => Promise<string>;
   forgotPassword: (email: string) => Promise<string>;
   resetPassword: (resetData: any) => Promise<string>;
-  deleteAccount: () => Promise<void>; // <-- NEW: Added to the interface
+  deleteAccount: () => Promise<void>; 
+  sendOtp: (email: string) => Promise<string>;
+  verifyOtp: (email: string, otp: string) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,7 +46,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  // --- REGISTER FUNCTION (Your version, unchanged) ---
   const registerUser = async (userData: any) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -59,11 +59,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/"); // Kept as per your original code
+      router.push("/"); 
     } catch (error) { throw error; }
   };
 
-  // --- LOGIN FUNCTION (Your version, unchanged) ---
   const loginUser = async (userData: any) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -77,20 +76,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/"); // Kept as per your original code
+      router.push("/"); 
     } catch (error) { throw error; }
   };
 
-  // --- LOGOUT FUNCTION (Your version, unchanged) ---
   const logoutUser = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    router.push("/"); // Kept as per your original code
+    router.push("/"); 
   };
 
-  // --- UPDATE PASSWORD FUNCTION (Your version, unchanged) ---
   const updatePassword = async (passwordData: any): Promise<string> => {
     if (!token) { throw new Error("You must be logged in to change your password."); }
     try {
@@ -105,7 +102,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) { throw error; }
   };
 
-  // --- FORGOT PASSWORD FUNCTION (Your version, unchanged) ---
   const forgotPassword = async (email: string): Promise<string> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
@@ -119,7 +115,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) { throw error; }
   };
   
-  // --- RESET PASSWORD FUNCTION (Your version, unchanged) ---
   const resetPassword = async (resetData: any): Promise<string> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
@@ -137,7 +132,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  // --- NEW FUNCTION: DELETE ACCOUNT ---
   const deleteAccount = async (): Promise<void> => {
     if (!token) {
       throw new Error("You must be logged in to delete your account.");
@@ -146,39 +140,77 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(`${API_BASE_URL}/auth/delete-account`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`, // Send token to prove identity
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to delete account.");
       }
-      // On success, call your existing logoutUser function to clear state and redirect.
       logoutUser();
     } catch (error) {
       throw error;
     }
   };
-  // ---------------------------------
+
+  const sendOtp = async (email: string): Promise<string> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || "Failed to send OTP");
+
+    return data.message; 
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+const verifyOtp = async (email: string, otp: string): Promise<string> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || "Invalid OTP");
+
+    return data.message; 
+  } catch (err) {
+    throw err;
+  }
+};
+
 
   const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        user,
-        token,
-        loading,
-        registerUser,
-        loginUser,
-        logoutUser,
-        updatePassword,
-        forgotPassword,
-        resetPassword,
-        deleteAccount, // <-- NEW: Added to the provider value
-      }}
-    >
+  <AuthContext.Provider
+    value={{
+       isAuthenticated,
+       user,
+       token,
+       loading,
+       registerUser,
+       loginUser,
+       logoutUser,
+       updatePassword,
+       forgotPassword,
+       resetPassword,
+       deleteAccount,
+       sendOtp,        
+       verifyOtp,      
+    }}
+  >
       {!loading && children}
     </AuthContext.Provider>
   );

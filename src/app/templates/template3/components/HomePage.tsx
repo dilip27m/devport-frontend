@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// The component receives the profile data as a prop
 interface HomePageUIProps {
   profile: {
     name: string;

@@ -47,7 +47,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
     return [];
   };
 
-  // infer label: GitHub stays, empty/view => Others, otherwise keep user label
   const inferLabel = (label: string | undefined, url: string) => {
     const u = url.toLowerCase();
     if (u.includes("github.com")) return "GitHub";
@@ -55,7 +54,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
     return label.trim();
   };
 
-  // sanitize, dedupe by normalized URL, order GitHub first, and return final labels
   const sanitizeAndOrderLinks = (links?: { label?: string; url?: string }[]) => {
     const valid = (links || []).filter((l) => l && typeof l.url === "string" && l.url.trim() !== "");
 
@@ -80,7 +78,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
       }
     }
 
-    // GitHub first (stable relative order otherwise)
     deduped.sort((a, b) => {
       const aGh = a.url.toLowerCase().includes("github.com") ? 0 : 1;
       const bGh = b.url.toLowerCase().includes("github.com") ? 0 : 1;
@@ -104,7 +101,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
               key={index}
               className="group bg-gradient-to-br from-gray-900/80 to-gray-950/80 border border-gray-800/50 rounded-2xl overflow-hidden hover:border-gray-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 h-full flex flex-col min-w-0"
             >
-              {/* Image */}
               <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-gray-950 to-black flex-none">
                 {project.image ? (
                   <img
@@ -138,7 +134,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Content */}
               <div className="p-6 flex flex-col flex-1 min-h-0 min-w-0">
                 <h3 className="font-bold text-xl text-white mb-3 group-hover:text-blue-400 transition-colors line-clamp-2 break-words break-all">
                   {project.title}
@@ -176,7 +171,6 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
                   </div>
                 )}
 
-                {/* Links */}
                 {linksOrdered.length > 0 && (
                   <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-800/50 mt-auto">
                     {linksOrdered.map((link, i) => (
@@ -187,9 +181,7 @@ const ProjectsView = ({ projects }: { projects?: Project[] }) => {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-lg text-sm font-medium hover:bg-blue-500/20 hover:text-blue-300 transition-all"
                       >
-                        {/* Show GitHub icon only for GitHub label */}
                         {link.label === "GitHub" && <GithubIcon size={14} />}
-                        {/* Others (or any other explicit label) has NO icon */}
                         <span>{link.label}</span>
                       </a>
                     ))}

@@ -2,17 +2,17 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 
-import ProjectsForm from "./forms/ProjectsForm";
-import EducationForm from "./forms/EducationForm";
-import SkillsForm from "./forms/SkillsForm";
-import ExperienceForm from "./forms/ExperienceForm";
-import AchievementsForm from "./forms/AchievementsForm";
-import BlogsForm from "./forms/BlogsForm";
-import SocialNetworkForm from "./forms/SocialNetworForm";
-import AboutMeForm from "./forms/AboutMe";
+import ProjectsForm from "@/app/(main)/editor/components/forms/ProjectsForm";
+import EducationForm from "@/app/(main)/editor/components/forms/EducationForm";
+import SkillsForm from "@/app/(main)/editor/components/forms/SkillsForm";
+import ExperienceForm from "@/app/(main)/editor/components/forms/ExperienceForm";
+import AchievementsForm from "@/app/(main)/editor/components/forms/AchievementsForm";
+import BlogsForm from "@/app/(main)/editor/components/forms/BlogsForm";
+import SocialNetworkForm from "@/app/(main)/editor/components/forms/SocialNetworForm";
+import AboutMeForm from "@/app/(main)/editor/components/forms/AboutMe";
 
-import { SaveStatus } from "./Bottombar";
-import { PortfolioData } from "../page";
+import { SaveStatus } from "@/app/(main)/editor/components/Bottombar";
+import { PortfolioData } from "@/app/(main)/editor/page";
 
 interface FormContainerProps {
   section: string;

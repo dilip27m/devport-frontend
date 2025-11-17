@@ -1,52 +1,71 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const RegisterPage = () => {
+  const { registerUser, sendOtp, verifyOtp } = useAuth();
+
+  const [step, setStep] = useState<"form" | "otp">("form");
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [otp, setOtp] = useState("");
+  const [timer, setTimer] = useState(0);
+
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false); // used for send + resend
+  const [verifyLoading, setVerifyLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Form Validation
   const [fieldErrors, setFieldErrors] = useState({
     username: "",
     email: "",
     password: "",
   });
 
-  const { registerUser } = useAuth();
-
-  // Validate username
   const validateUsername = (value: string) => {
     if (value.length < 3) return "Username must be at least 3 characters.";
     if (value.length > 20) return "Username cannot exceed 20 characters.";
     if (!/^[a-z0-9-]+$/.test(value))
       return "Only letters, numbers, and hyphens allowed.";
-
     return "";
   };
 
-  // Validate email
   const validateEmail = (value: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(value)) return "Enter a valid email address.";
     return "";
   };
 
-  // Validate password
   const validatePassword = (value: string) => {
     if (value.length < 6) return "Password must be at least 6 characters.";
     return "";
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    if (timer <= 0) return;
+    const countdown = setTimeout(() => setTimer((t) => t - 1), 1000);
+    return () => clearTimeout(countdown);
+  }, [timer]);
+
+  // Auto focus first OTP box when step changes to "otp"
+  useEffect(() => {
+    if (step === "otp") {
+      const first = document.getElementById("otp-0");
+      first && (first as HTMLInputElement).focus();
+    }
+  }, [step]);
+
+  // Step 1 — Send OTP
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -62,14 +81,54 @@ const RegisterPage = () => {
 
     if (usernameErr || emailErr || passwordErr) return;
 
-    setLoading(true);
+    setOtpLoading(true);
 
     try {
+      await sendOtp(email);
+      setStep("otp");
+      setTimer(60); // 1-minute cooldown
+    } catch (err: any) {
+      setError(err.message || "Failed to send OTP");
+    }
+
+    setOtpLoading(false);
+  };
+
+  // Resend OTP (after timer hits 0)
+  const handleResendOtp = async () => {
+    if (!email) return;
+    setError("");
+    setOtp("");
+    setOtpLoading(true);
+
+    try {
+      await sendOtp(email);
+      setTimer(60); // restart countdown
+    } catch (err: any) {
+      setError(err.message || "Failed to resend OTP");
+    }
+
+    setOtpLoading(false);
+  };
+
+  // Step 2 — Verify OTP & Register User
+  const handleVerifyOtp = async () => {
+    setError("");
+    if (otp.length !== 6) {
+      setError("OTP must be 6 digits.");
+      return;
+    }
+
+    setVerifyLoading(true);
+
+    try {
+      await verifyOtp(email, otp);
       await registerUser({ name, username, email, password });
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
-      setLoading(false);
+      setError(err.message || "Invalid OTP");
     }
+
+    setVerifyLoading(false);
   };
 
   return (
@@ -85,78 +144,83 @@ const RegisterPage = () => {
           </p>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Full Name */}
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm"
-          />
-
-          {/* USERNAME */}
-          <div>
+        {/* ==============================  
+             STEP 1: USER FORM
+           ============================== */}
+        {step === "form" && (
+          <form onSubmit={handleSendOtp} className="space-y-5">
             <input
               type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => {
-                const val = e.target.value.toLowerCase();
-                setUsername(val);
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  username: validateUsername(val),
-                }));
-              }}
+              placeholder="Full Name"
+              value={name}
               required
-              className={`w-full rounded-3xl border px-4 py-3 text-sm ${
-                fieldErrors.username
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-gray-800"
-              }`}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm"
             />
-            {fieldErrors.username && (
-              <p className="text-red-600 text-xs mt-1">
-                {fieldErrors.username}
-              </p>
-            )}
-          </div>
 
-          {/* EMAIL */}
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => {
-                const val = e.target.value;
-                setEmail(val);
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  email: validateEmail(val),
-                }));
-              }}
-              required
-              className={`w-full rounded-3xl border px-4 py-3 text-sm ${
-                fieldErrors.email
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-gray-800"
-              }`}
-            />
-            {fieldErrors.email && (
-              <p className="text-red-600 text-xs mt-1">{fieldErrors.email}</p>
-            )}
-          </div>
+            {/* Username */}
+            <div>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                required
+                onChange={(e) => {
+                  const val = e.target.value.toLowerCase();
+                  setUsername(val);
+                  setFieldErrors((prev) => ({
+                    ...prev,
+                    username: validateUsername(val),
+                  }));
+                }}
+                className={`w-full rounded-3xl border px-4 py-3 text-sm ${
+                  fieldErrors.username
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-gray-800"
+                }`}
+              />
+              {fieldErrors.username && (
+                <p className="text-red-600 text-xs mt-1">
+                  {fieldErrors.username}
+                </p>
+              )}
+            </div>
 
-          {/* PASSWORD */}
-          <div>
-            <div className="relative group">
+            {/* Email */}
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                required
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEmail(val);
+                  setFieldErrors((prev) => ({
+                    ...prev,
+                    email: validateEmail(val),
+                  }));
+                }}
+                className={`w-full rounded-3xl border px-4 py-3 text-sm ${
+                  fieldErrors.email
+                    ? "border-red-500"
+                    : "border-gray-300 focus:ring-gray-800"
+                }`}
+              />
+              {fieldErrors.email && (
+                <p className="text-red-600 text-xs mt-1">
+                  {fieldErrors.email}
+                </p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
+                required
                 onChange={(e) => {
                   const val = e.target.value;
                   setPassword(val);
@@ -165,8 +229,7 @@ const RegisterPage = () => {
                     password: validatePassword(val),
                   }));
                 }}
-                required
-                className={`peer w-full rounded-3xl border px-4 py-3 pr-10 text-sm ${
+                className={`w-full rounded-3xl border px-4 py-3 pr-10 text-sm ${
                   fieldErrors.password
                     ? "border-red-500"
                     : "border-gray-300 focus:ring-gray-800"
@@ -180,33 +243,113 @@ const RegisterPage = () => {
               </span>
             </div>
 
-            {fieldErrors.password && (
-              <p className="text-red-600 text-xs mt-1">
-                {fieldErrors.password}
-              </p>
-            )}
-          </div>
+            <button
+              type="submit"
+              disabled={otpLoading}
+              className={`w-full rounded-3xl py-2.5 font-medium border ${
+                otpLoading
+                  ? "bg-gray-400 text-white"
+                  : "bg-black text-white border-black hover:bg-white hover:text-black"
+              }`}
+            >
+              {otpLoading ? "Sending OTP..." : "Send OTP"}
+            </button>
+          </form>
+        )}
 
-          {/* SUBMIT BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full rounded-3xl py-2.5 font-medium border ${
-              loading
-                ? "bg-gray-400 text-white"
-                : "bg-black text-white border-black hover:bg-white hover:text-black"
-            }`}
-          >
-            {loading ? "Creating account..." : "Sign Up"}
-          </button>
-        </form>
+        {/* ==============================  
+             STEP 2: OTP INPUT UI
+           ============================== */}
+        {step === "otp" && (
+          <div className="space-y-5">
+            <p className="text-center text-gray-700 text-sm">
+              We sent a 6-digit verification code to:
+              <br />
+              <span className="font-semibold">{email}</span>
+            </p>
+
+            {/* Google-style OTP boxes */}
+            <div className="flex justify-between gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  maxLength={1}
+                  className="w-12 h-12 border border-gray-300 rounded-xl text-center text-lg"
+                  value={otp[i] || ""}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const val = raw.replace(/\D/g, ""); // only digits
+
+                    const newOtp = otp.split("");
+
+                    // If input is cleared
+                    if (!val) {
+                      newOtp[i] = "";
+                      setOtp(newOtp.join(""));
+                      return;
+                    }
+
+                    // Use the last typed digit (handles autofill/paste edge cases)
+                    newOtp[i] = val[val.length - 1];
+                    setOtp(newOtp.join(""));
+
+                    // Auto move to next box
+                    const next = document.getElementById(`otp-${i + 1}`);
+                    if (next) {
+                      (next as HTMLInputElement).focus();
+                    }
+                  }}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={handleVerifyOtp}
+              disabled={verifyLoading}
+              className={`w-full rounded-3xl py-2.5 font-medium border ${
+                verifyLoading
+                  ? "bg-gray-400 text-white"
+                  : "bg-black text-white border-black hover:bg-white hover:text-black"
+              }`}
+            >
+              {verifyLoading ? "Verifying..." : "Verify OTP"}
+            </button>
+
+            {/* RESEND + BACK IN SAME ROW */}
+            <div className="flex items-center justify-between text-sm mt-2">
+              {timer > 0 ? (
+                <span className="text-gray-600">
+                  Resend OTP in <strong>{timer}</strong>s
+                </span>
+              ) : (
+                <button
+                  onClick={handleResendOtp}
+                  disabled={otpLoading}
+                  className="text-gray-800 underline disabled:opacity-60"
+                >
+                  {otpLoading ? "Resending..." : "Resend OTP"}
+                </button>
+              )}
+
+              <button
+                className="text-gray-800 underline"
+                onClick={() => {
+                  setStep("form");
+                  setError("");
+                  setOtp("");
+                  setTimer(0);
+                }}
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 text-center text-sm text-gray-700">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-black font-semibold hover:underline"
-          >
+          <Link href="/login" className="text-black font-semibold hover:underline">
             Log in
           </Link>
         </div>

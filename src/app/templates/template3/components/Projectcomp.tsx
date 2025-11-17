@@ -36,7 +36,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   techStack,
   links = [],
 }) => {
-  // Normalize links for GitHub + Others
   const normalizedLinks = links
     .map((l) => {
       if (!l?.url) return null;
@@ -113,10 +112,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
         )}
 
-        {/* LINK BUTTONS */}
         <div className="flex flex-col gap-2 mt-4">
 
-          {/* GitHub */}
           {githubLink?.url && (
             <a
               href={githubLink.url}
@@ -130,7 +127,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </a>
           )}
 
-          {/* Others (NO ICON) */}
           {otherLinks.map((l, i) => (
             <a
               key={i}
@@ -145,7 +141,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           ))}
         </div>
 
-        {/* Fallback for old structure */}
         {!githubLink && !otherLinks.length && link && (
           <a
             href={link}

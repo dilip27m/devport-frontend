@@ -75,7 +75,7 @@ const SocialsView: React.FC<SocialsViewProps> = ({ data }) => {
       name: "LinkedIn",
       href: linkedinHref,
       icon: <Linkedin className="w-8 h-8 text-white" />,
-      bg: "bg-blue-700", // Adjusted for dark theme
+      bg: "bg-blue-700", 
       label: data.linkedin ? `LinkedIn ${data.linkedin}` : "LinkedIn",
     },
   ];

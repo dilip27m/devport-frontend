@@ -2,13 +2,11 @@
 
 import React, { useState } from "react";
 
-// --- Views ---
-import Navbar from "./components/Navbar";
-import AboutMePage from "./components/AboutMePage";
-import ProjectsView from "./projects/ProjectsView";
-import BlogsView from "./BlogsView";
+import Navbar from "@/app/templates/template3/components/Navbar";
+import AboutMePage from "@/app/templates/template3/components/AboutMePage";
+import ProjectsView from "@/app/templates/template3/projects/ProjectsView";
+import BlogsView from "@/app/templates/template3/BlogsView";
 
-// Types
 import type { AboutMeFormProps } from "@/app/(main)/editor/components/forms/AboutMe";
 import type { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
 import type { Education } from "@/app/(main)/editor/components/forms/EducationForm";
@@ -45,7 +43,6 @@ const Template3Shell: React.FC<Template3ShellProps> = ({ data }) => {
       case "blogs":
         return <BlogsView blogs={data.blogs} />;
 
-      // ⭐ FULL ONE-PAGE ABOUT SECTION HERE
       case "home":
       default:
         return (
@@ -66,12 +63,10 @@ const Template3Shell: React.FC<Template3ShellProps> = ({ data }) => {
 
       <div className="relative mx-auto w-full h-full max-w-full bg-neutral-900 shadow-2xl overflow-hidden flex flex-col no-scrollbar">
 
-        {/* ⭐ Floating Navbar */}
         <div className="absolute top-6 w-full flex justify-center z-50 px-4">
           <Navbar onNavigate={setCurrentPage} />
         </div>
 
-        {/* ⭐ Add padding so the navbar does not overlap */}
         <main className="flex-1 overflow-y-auto pt-28 pb-10 px-2 no-scrollbar">
           {renderCurrentPage()}
         </main>

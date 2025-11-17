@@ -3,10 +3,10 @@
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import UserInfo from "./UserInfo";
-import ChangePasswordForm from "./ChangePasswordForm";
-import DeleteAccount from "./DeleteAccount";
-import PortfolioSummary from "./PortfolioSummary"; // Import the new component
+import UserInfo from "@/app/(main)/profile/UserInfo";
+import ChangePasswordForm from "@/app/(main)/profile/ChangePasswordForm";
+import DeleteAccount from "@/app/(main)/profile/DeleteAccount";
+import PortfolioSummary from "@/app/(main)/profile/PortfolioSummary"; 
 
 const ProfilePage = () => {
   const { user, loading, isAuthenticated } = useAuth();

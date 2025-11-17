@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import type { TemplateKey } from "./page";
+import type { TemplateKey } from "@/app/(main)/viewTemplate/page";
 
 interface ViewTemplateSidebarProps {
   selectedTemplate: TemplateKey;

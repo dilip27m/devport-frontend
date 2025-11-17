@@ -27,7 +27,6 @@ const NAV_ITEMS: { id: SectionId; label: string }[] = [
 const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate, userName }) => {
   const current = (activeSection || "").toLowerCase();
 
-  // Get first letter of name, default to "A" if no name provided
   const getInitial = () => {
     if (!userName || !userName.trim()) return "A";
     return userName.trim().charAt(0).toUpperCase();
@@ -58,7 +57,6 @@ const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate, userName }) 
       role="navigation"
       aria-label="Primary"
     >
-      {/* Logo - Dynamic based on user name */}
       <button 
         onClick={() => onNavigate("about")}
         className="text-2xl font-bold text-white hover:text-green-400 transition-colors"
@@ -66,7 +64,6 @@ const Header: React.FC<HeaderProps> = ({ activeSection, onNavigate, userName }) 
         {`{${getInitial()}}`}
       </button>
       
-      {/* Navigation Links */}
       <div className="flex items-center gap-2">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.id} id={item.id}>

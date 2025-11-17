@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import ViewTemplateSidebar from "./ViewTemplateSidebar";
-import TemplateLivePreview from "./TemplateLivePreview";
+import ViewTemplateSidebar from "@/app/(main)/viewTemplate/ViewTemplateSidebar";
+import TemplateLivePreview from "@/app/(main)/viewTemplate/TemplateLivePreview";
 
 export type TemplateKey = "template1" | "template2" | "template3";
 

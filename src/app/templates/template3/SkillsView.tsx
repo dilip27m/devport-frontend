@@ -8,7 +8,6 @@ interface SkillsViewProps {
 }
 
 const SkillsView: React.FC<SkillsViewProps> = ({ skills }) => {
-  // ⭐ DEFAULT SAMPLE SKILLS
   if (!skills || skills.length === 0) {
     skills = [
       {

@@ -32,7 +32,6 @@ const formatExperienceDuration = (start: string, end: string) => {
 const ExperienceView: React.FC<{
   experiences: (Experience & { description?: string })[];
 }> = ({ experiences }) => {
-  // Default sample
   if (!experiences || experiences.length === 0) {
     experiences = [
       {
@@ -70,7 +69,6 @@ const ExperienceView: React.FC<{
                 key={index}
                 className="relative glass-bg p-6 rounded-xl neon-border shadow-xl hover:scale-[1.015] transition-all"
               >
-                {/* Timeline dot */}
                 <div
                   className="absolute -left-[33px] top-6 w-8 h-8 rounded-full 
                   bg-gradient-to-br from-[#00b3ff] to-[#9b5cff]
@@ -80,7 +78,6 @@ const ExperienceView: React.FC<{
                   {exp.company?.[0]}
                 </div>
 
-                {/* Top date + duration */}
                 <p className="text-sm text-slate-300 mb-1">
                   {dur?.range}
                   {dur?.duration && (
@@ -90,22 +87,18 @@ const ExperienceView: React.FC<{
                   )}
                 </p>
 
-                {/* Role */}
                 <h3 className="text-2xl font-bold text-white">{exp.role}</h3>
 
-                {/* Company */}
                 <p className="text-[#9b5cff] font-medium text-lg">
                   {exp.company}
                 </p>
 
-                {/* Description text */}
                 {exp.description && (
                   <p className="text-slate-300 mt-4 leading-relaxed whitespace-pre-wrap">
                     {exp.description}
                   </p>
                 )}
 
-              {/* ⭐ UPDATED — TECH STACK (comma split + array support) */}
 {exp.stack && (
   <div className="flex flex-wrap gap-2 mt-4">
     {(Array.isArray(exp.stack)
@@ -126,7 +119,6 @@ const ExperienceView: React.FC<{
 )}
 
 
-                {/* ⭐ ADDED — BULLET POINTS */}
                 {exp.descriptionBullets &&
                   exp.descriptionBullets.filter((b) => b.trim() !== "")
                     .length > 0 && (

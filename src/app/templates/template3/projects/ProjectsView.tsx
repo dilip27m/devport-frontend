@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ProjectCard from "../components/Projectcomp";
+import ProjectCard from "@/app/templates/template3/components/Projectcomp";
 
 interface ProjectType {
   title: string;
@@ -21,14 +21,12 @@ interface ProjectsViewProps {
   projects: ProjectType[];
 }
 
-// ⭐ Restored 3 default template projects
 const DEFAULT_PROJECTS: ProjectType[] = [
   {
     title: "Personal Portfolio Website",
     description: "A modern portfolio built with Next.js and TailwindCSS.",
     link: "#",
-    image:
-      "https://images.unsplash.com/photo-1522199710521-72d69614c702?w=800&q=80",
+    image:"/images/project1.png",
     type: "Web",
     techStack: "Next.js, TailwindCSS",
   },
@@ -37,8 +35,7 @@ const DEFAULT_PROJECTS: ProjectType[] = [
     description:
       "A scalable online shop built with React, Node.js, and Stripe payments.",
     link: "#",
-    image:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+    image:"images/project2.png",
     type: "Web App",
     techStack: "React, Node.js, Stripe",
   },
@@ -47,8 +44,7 @@ const DEFAULT_PROJECTS: ProjectType[] = [
     description:
       "A real-time weather tracking app built using OpenWeatherMap API.",
     link: "#",
-    image:
-      "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?w=800&q=80",
+    image:"images/project3.png",
     type: "Mobile",
     techStack: "Flutter, REST API",
   },

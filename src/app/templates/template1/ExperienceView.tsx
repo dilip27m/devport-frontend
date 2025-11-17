@@ -84,16 +84,16 @@ const ExperienceView: React.FC<{ experiences: Experience[] }> = ({
               className="group bg-[#0d1117] border border-gray-800 rounded-lg p-4 hover:border-green-500/60 hover:-translate-y-0.5 transition-all duration-300"
             >
               <div className="flex flex-col md:flex-row md:items-start gap-3">
-                {/* Icon */}
+               
                 <div className="flex-shrink-0">
                   <div className="w-10 h-10 flex items-center justify-center bg-[#161b22] border border-gray-800 rounded-lg group-hover:border-green-400 transition-colors">
                     <Briefcase className="text-green-400" size={18} />
                   </div>
                 </div>
 
-                {/* Content */}
+            
                 <div className="flex-1 min-w-0">
-                  {/* Top row: role/company + dates */}
+            
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1 mb-2">
                     <div className="min-w-0">
                       <h3 className="text-base font-bold text-white group-hover:text-green-400 transition-colors truncate">
@@ -119,7 +119,7 @@ const ExperienceView: React.FC<{ experiences: Experience[] }> = ({
                     )}
                   </div>
 
-                  {/* Tech stack badges */}
+              
                   {stack.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {stack.slice(0, 4).map((tech, idx) => (
@@ -138,7 +138,7 @@ const ExperienceView: React.FC<{ experiences: Experience[] }> = ({
                     </div>
                   )}
 
-                  {/* Bullet points */}
+                
                   {bullets.length > 0 && (
                     <ul className="list-disc pl-4 space-y-1 text-gray-400 text-xs leading-relaxed">
                       {bullets.map((b, i) => (
@@ -149,7 +149,7 @@ const ExperienceView: React.FC<{ experiences: Experience[] }> = ({
                     </ul>
                   )}
 
-                  {/* Links */}
+             
                   {validLinks.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {validLinks.map((link, i) => {

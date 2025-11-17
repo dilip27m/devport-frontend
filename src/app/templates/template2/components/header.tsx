@@ -1,4 +1,3 @@
-// Header.tsx
 "use client";
 
 import React from "react";
@@ -58,7 +57,6 @@ const Header: React.FC<Props> = ({ activePage, onNavigate }) => {
     >
       <div className="relative w-[92%] max-w-6xl">
 
-        {/* Back Glow */}
         <div
           className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{
@@ -68,7 +66,6 @@ const Header: React.FC<Props> = ({ activePage, onNavigate }) => {
           }}
         />
 
-        {/* GLASS NAV */}
         <nav
           aria-label="Primary"
           className="
@@ -80,7 +77,6 @@ const Header: React.FC<Props> = ({ activePage, onNavigate }) => {
             flex items-center justify-between
           "
         >
-          {/* Inner Rim */}
           <div
             className="absolute inset-0 rounded-3xl pointer-events-none"
             style={{
@@ -90,7 +86,6 @@ const Header: React.FC<Props> = ({ activePage, onNavigate }) => {
             }}
           />
 
-          {/* Left: Portfolio */}
           <button
             onClick={() => onNavigate("portfolio")}
             aria-current={activePage === "portfolio" ? "page" : undefined}
@@ -117,7 +112,6 @@ const Header: React.FC<Props> = ({ activePage, onNavigate }) => {
             )}
           </button>
 
-          {/* Right Nav */}
           <div className="flex items-center space-x-6 pr-4">
             {NAV_ITEMS.filter((n) => n.id !== "portfolio").map((item) => (
               <NavLink key={item.id} id={item.id} label={item.label} />

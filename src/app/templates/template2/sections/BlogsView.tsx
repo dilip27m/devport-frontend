@@ -17,10 +17,8 @@ const BlogsView: React.FC<{ blogs?: Blog[] }> = ({ blogs }) => {
             target="_blank"
             rel="noopener noreferrer"
             key={i}
-            // make anchor a full-height column flex so content can be positioned and shrink correctly
             className="group block bg-gradient-to-br from-gray-900/80 to-gray-950/80 border border-gray-800/50 rounded-2xl overflow-hidden hover:border-gray-700 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 h-full flex flex-col min-w-0"
           >
-            {/* Image area: flex-none so it doesn't stretch */}
             {blog.image ? (
               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-950 to-black flex-none">
                 <img
@@ -28,10 +26,8 @@ const BlogsView: React.FC<{ blogs?: Blog[] }> = ({ blogs }) => {
                   alt={blog.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60" />
 
-                {/* Category Badge */}
                 {blog.category && (
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1.5 bg-blue-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full uppercase tracking-wide">
@@ -40,7 +36,6 @@ const BlogsView: React.FC<{ blogs?: Blog[] }> = ({ blogs }) => {
                   </div>
                 )}
 
-                {/* Arrow Icon */}
                 <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:bg-blue-500">
                   <ArrowUpRight size={20} className="text-white" />
                 </div>
@@ -73,9 +68,7 @@ const BlogsView: React.FC<{ blogs?: Blog[] }> = ({ blogs }) => {
               </div>
             )}
 
-            {/* Content area: flex-1 so it fills remaining space; min-h-0 allows internal overflow control; min-w-0 allows internal children to shrink */}
             <div className="p-6 flex flex-col flex-1 min-h-0 min-w-0">
-              {/* Title: clamp to 2 lines + break long words */}
               <h3
                 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors leading-snug line-clamp-2 mb-2 break-words break-all"
                 style={{
@@ -88,7 +81,6 @@ const BlogsView: React.FC<{ blogs?: Blog[] }> = ({ blogs }) => {
                 {blog.name}
               </h3>
 
-              {/* Description: clamp to 2 lines, break long tokens */}
               {blog.description && (
                 <p
                   className="text-gray-400 text-sm leading-relaxed mb-3 break-words break-all whitespace-normal overflow-hidden"

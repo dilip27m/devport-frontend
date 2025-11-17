@@ -45,7 +45,7 @@ const ContactView: React.FC<ContactViewProps> = ({ socials, resume }) => {
         Feel free to get in touch and talk more about your projects.
       </p>
 
-      {/* Social Buttons */}
+ 
       <div className="flex justify-center flex-wrap gap-4 mb-16">
         {linkedinHref && (
           <a
@@ -85,7 +85,7 @@ const ContactView: React.FC<ContactViewProps> = ({ socials, resume }) => {
         )}
       </div>
       
-      {/* Footer */}
+  
       <div className="text-xs text-gray-600 space-y-1">
         <p>Designed and Developed by Abdul Rahman.</p>
         <p>

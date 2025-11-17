@@ -16,14 +16,12 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
     greeting = "Hey there! I'm",
   } = aboutMe || {};
 
-  // ⭐ FIX: Decide final photo URL
   const fallbackPhoto = "/avatar.png";
   const photoURL =
     typeof photo === "string" && photo.length > 0
       ? photo
       : fallbackPhoto;
 
-  // ⭐ Smooth scroll
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -31,16 +29,13 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
 
   return (
     <section className="relative min-h-[88vh] w-full flex flex-col lg:flex-row overflow-hidden rounded-3xl">
-      {/* Background Lights */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-0 w-[380px] h-[380px] bg-[#00b3ff35] blur-[90px] animate-pulseSlow"></div>
         <div className="absolute bottom-10 right-10 w-[420px] h-[420px] bg-[#9b5cff33] blur-[110px] animate-pulseSlow2"></div>
       </div>
 
-      {/* Left Avatar Panel */}
       <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0b1525] to-[#0d0f18] flex items-center justify-center relative p-10">
         <div className="relative">
-          {/* Glow ring */}
           <div
             className="
             absolute inset-0 rounded-full
@@ -49,7 +44,6 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
           "
           ></div>
 
-          {/* Avatar Image */}
           <div
             className="
               w-56 h-56 md:w-72 md:h-72 rounded-full bg-cover bg-center
@@ -61,7 +55,6 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
             }}
           ></div>
 
-          {/* Shine Layer */}
           <div
             className="
             absolute inset-0 rounded-full 
@@ -73,7 +66,6 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/25 to-transparent rounded-3xl pointer-events-none"></div>
       </div>
 
-      {/* Right Content */}
       <div className="w-full lg:w-1/2 px-10 lg:px-16 py-16 bg-gradient-to-br from-[#0c0f1a] via-[#0e1220] to-[#0e1628]">
         <p className="text-slate-300 text-lg tracking-wide">{greeting}</p>
 
@@ -86,7 +78,6 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
         <h2 className="text-3xl font-semibold text-white">{name}</h2>
         <h3 className="text-xl text-[#9b5cff] mt-1 mb-4">{role}</h3>
 
-        {/* ⭐ FIXED BIO — now long text will wrap correctly */}
         <p
           className="
             text-slate-300 
@@ -99,7 +90,6 @@ const HomeView: React.FC<HomeViewProps> = ({ aboutMe }) => {
           {bio}
         </p>
 
-        {/* Buttons */}
         <div className="flex gap-5 mt-10">
           <button
             onClick={() => scrollToSection("education-section")}

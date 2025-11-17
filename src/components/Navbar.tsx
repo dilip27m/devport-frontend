@@ -16,7 +16,6 @@ const Navbar = () => {
         DEVport
       </Link>
 
-      {/* Navigation Links */}
       <div className="flex items-center space-x-6 text-base font-medium text-gray-700">
         {isAuthenticated ? (
           <>

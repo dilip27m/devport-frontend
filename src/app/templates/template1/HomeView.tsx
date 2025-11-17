@@ -55,10 +55,10 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
   const githubHref = normalizeGithub(socials?.github);
   const linkedinHref = normalizeLinkedIn(socials?.linkedin);
 
-  const nameDisplay = name?.trim() || "Abdul Rahman.";
+  const nameDisplay = name?.trim() || "DEVport";
   const greetingDisplay = greeting?.trim() || "Hey there!, I'm-";
   const roleDisplay = role?.trim() || "Software Engineer. A self-taught developer with an interest in Computer Science.";
-  const bioDisplay = bio?.trim() || "🚀 Currently specializing in Frontend (React / Next.js). ⚡ Full-stack Engineer at DocuAsk";
+  const bioDisplay = bio?.trim() || "Currently specializing in Frontend (React / Next.js).  Full-stack Engineer at DocuAsk";
 
   return (
     <div className="min-h-screen">
@@ -72,22 +72,22 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
         </div>
 
         <div className="max-w-7xl mx-auto text-center">
-          {/* Greeting Text - Centered */}
+  
           <p className="text-base md:text-lg text-green-400 mb-3 font-medium">
             {greetingDisplay}
           </p>
           
-          {/* Name - Large and centered */}
+         
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
             {nameDisplay}
           </h1>
           
-          {/* Role/Description - Centered */}
+
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
             {roleDisplay}
           </p>
 
-          {/* Bio/Specialization - Dynamic from form data */}
+         
           {bioDisplay && (
             <div className="mb-8">
               <p className="text-sm md:text-base text-gray-400 text-center max-w-4xl mx-auto leading-relaxed break-words whitespace-pre-line">
@@ -96,7 +96,7 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
             </div>
           )}
 
-          {/* Social Buttons - Centered */}
+
           <div className="flex justify-center flex-wrap gap-3">
             {githubHref && <SocialLinkButton href={githubHref} icon={<Github size={16} />} label="Github" />}
             {linkedinHref && <SocialLinkButton href={linkedinHref} icon={<Linkedin size={16} />} label="LinkedIn" />}
@@ -105,10 +105,10 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
         </div>
       </section>
 
-      {/* ABOUT ME SECTION - Exact match to your image */}
+
       <section className="relative max-w-7xl mx-auto px-4 pb-32 pt-8">
         <div className="flex items-start">
-          {/* Left: Text Content */}
+         
           <div className="flex-1 max-w-3xl pr-8">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2 mb-6">
               <Zap size={20} className="text-green-400"/>
@@ -125,7 +125,7 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
               ) : (
                 <>
                   <p>
-                    Hey! I'm Abdul Rahman, I've been close to a computer since an early age, and been passionate about it ever since.
+                    Hey! I'm DEVport , I've been close to a computer since an early age, and been passionate about it ever since.
                   </p>
                   <p>
                     I really liked to build stuff using <span className="text-green-400">no-code tools</span> back in 2010, and from that, I explored how to code myself, fast-forward to today, I do programming in various languages and technologies, and had the privilege to worked in a <span className="text-green-400">Recruitment Company</span> and a <span className="text-green-400">SaaS Company</span> I'm interested in building something awesome with code and automate tasks with code, currently focused on <span className="text-green-400">Web & Mobile Development</span>, <span className="text-green-400">Open Source</span> and <span className="text-green-400">Competitive Programming</span>
@@ -138,9 +138,9 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
             </div>
           </div>
 
-          {/* Right: Photo - Side by side alignment */}
+
           <div className="hidden lg:flex relative flex-shrink-0 items-start pt-8">
-            {/* Decorative dots - top right behind photo */}
+          
             <div className="absolute top-0 right-8 grid grid-cols-6 gap-5 opacity-30 z-0">
               {Array.from({ length: 48 }).map((_, i) => (
                 <div key={i} className="w-2 h-2 rounded-full bg-gray-600"></div>
@@ -164,7 +164,7 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
             </div>
           </div>
           
-          {/* Mobile Photo */}
+        
           <div className="lg:hidden mt-8 flex justify-center">
             <div className="w-[280px] h-[280px] rounded-full overflow-hidden shadow-2xl">
               {photo ? (

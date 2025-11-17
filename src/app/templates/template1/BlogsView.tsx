@@ -50,7 +50,6 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
     );
   }
 
-  // Full Blog Page View
   if (!isLatestSection) {
     const noResults = displayBlogs.length === 0;
 
@@ -64,7 +63,6 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
           experiences.
         </p>
 
-        {/* Search Bar (now actually works) */}
         <div className="relative mb-10">
           <input
             type="text"
@@ -108,7 +106,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
                 <article className="flex flex-col gap-4 py-6 border-b border-gray-800 hover:border-gray-700 transition-colors">
 
                   <div className="flex flex-col gap-2">
-                    {/* Meta: category + read time */}
+          
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
                       {blog.category && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-gray-700 bg-gray-900 text-gray-200 text-[11px]">
@@ -122,12 +120,11 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
                       )}
                     </div>
 
-                    {/* Title */}
+        
                     <h3 className="text-2xl font-bold text-white group-hover:text-green-400 transition-colors">
                       {blog.name || "Untitled Blog Post"}
                     </h3>
 
-                    {/* Description – wraps nicely and goes down */}
                     <p className="text-gray-400 leading-relaxed text-sm md:text-base break-words">
                       {blog.description || "No description available."}
                     </p>
@@ -141,7 +138,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
     );
   }
 
-  // Latest Articles Section (Home Page)
+  
   return (
     <section className="py-16">
       <div className="flex justify-between items-center mb-8">
@@ -173,7 +170,6 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
               {blog.name || "Untitled Blog Post"}
             </h3>
 
-            {/* Category + read time */}
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-2">
               {blog.category && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-gray-700 bg-gray-900 text-gray-200 text-[11px]">
@@ -187,7 +183,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
               )}
             </div>
 
-            {/* Description snippet */}
+      
             {blog.description && (
               <p className="text-gray-400 text-xs sm:text-sm leading-relaxed break-words mt-1 line-clamp-3">
                 {blog.description}

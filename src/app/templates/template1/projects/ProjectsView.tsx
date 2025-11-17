@@ -8,7 +8,6 @@ interface ProjectsViewProps {
   limit?: number;
 }
 
-/** helper: format date as 'MMM yyyy' */
 const formatDate = (dateStr?: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -16,11 +15,10 @@ const formatDate = (dateStr?: string) => {
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 };
 
-/** helper: compute duration between two dates; returns things like '3 months' / '1 yr 2 mos' */
 const computeDuration = (start?: string, end?: string) => {
   if (!start) return "";
   const s = new Date(start);
-  const e = end ? new Date(end) : new Date(); // if no end, use now
+  const e = end ? new Date(end) : new Date(); 
   if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
 
   const years = e.getFullYear() - s.getFullYear();
@@ -88,7 +86,6 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
               (l) => l && l.url && l.url.trim().length > 0
             ) ?? [];
 
-          // --- date + duration for card ---
           const hasDates = project.startDate || project.endDate;
           const friendlyDates = hasDates
             ? `${formatDate(project.startDate) || "—"} → ${
@@ -104,7 +101,6 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
               key={index}
               className="group bg-[#0b0f16] border border-gray-800/80 rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:border-green-500/60 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
-              {/* Image */}
               <div className="relative h-40 w-full bg-[#05070c] overflow-hidden">
                 {project.image ? (
                   <img
@@ -119,9 +115,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
                 )}
               </div>
 
-              {/* Content */}
               <div className="p-4 flex flex-col flex-1">
-                {/* Title + type */}
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h3 className="text-base font-semibold text-white group-hover:text-green-400 transition-colors line-clamp-1">
                     {project.title || "Untitled Project"}
@@ -133,21 +127,19 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
                   )}
                 </div>
 
-                {/* Dates + duration */}
                 {friendlyDates && (
                   <p className="text-[11px] text-gray-500 mb-2">
                     {friendlyDates} {duration ? `· ${duration}` : ""}
                   </p>
                 )}
 
-                {/* Description */}
                 {project.description && (
                   <p className="text-gray-400 text-xs sm:text-sm leading-relaxed line-clamp-3 mb-3">
                     {project.description}
                   </p>
                 )}
 
-                {/* Tech Stack */}
+         
                 {project.stack && project.stack.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {project.stack.slice(0, 3).map((tech, techIdx) => (
@@ -166,13 +158,13 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, limit }) => {
                   </div>
                 )}
 
-                {/* Links */}
+       
                 {validLinks.length > 0 && (
                   <div className="mt-auto pt-3 border-t border-gray-800 flex flex-wrap gap-2">
                     {validLinks.map((link, linkIndex) => {
                       const isGithub = link.label?.toLowerCase().includes("github");
 
-                      // AUTO FIX URL
+              
                       let url = link.url.trim();
                       if (!url.startsWith("http://") && !url.startsWith("https://")) {
                         url = `https://${url}`;
