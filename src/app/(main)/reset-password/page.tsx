@@ -24,18 +24,32 @@ const ResetPasswordPage = () => {
   const { resetPassword, forgotPassword } = useAuth();
   const router = useRouter();
 
+  const canEditPassword = otp.length === 6;
+
   // Countdown timer
   useEffect(() => {
     if (timer <= 0) return;
-    const countdown = setTimeout(() => setTimer(timer - 1), 1000);
+    const countdown = setTimeout(() => setTimer((t) => t - 1), 1000);
     return () => clearTimeout(countdown);
   }, [timer]);
+
+  // Whenever OTP becomes incomplete, clear passwords & freeze section again
+  useEffect(() => {
+    if (otp.length !== 6) {
+      setPassword("");
+      setConfirmPassword("");
+    }
+  }, [otp]);
 
   // Resend OTP handler
   const handleResendOtp = async () => {
     setError("");
+    setSuccess("");
     try {
       await forgotPassword(email);
+      setOtp("");
+      setPassword("");
+      setConfirmPassword("");
       setTimer(60);
     } catch (err: any) {
       setError(err.message || "Failed to resend code.");
@@ -49,7 +63,7 @@ const ResetPasswordPage = () => {
     setSuccess("");
 
     if (otp.length !== 6) {
-      setError("OTP must be 6 digits.");
+      setError("Please enter the 6-digit code first.");
       return;
     }
 
@@ -72,7 +86,7 @@ const ResetPasswordPage = () => {
         router.push("/login");
       }, 3000);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Failed to reset password.");
       setLoading(false);
     }
   };
@@ -83,7 +97,8 @@ const ResetPasswordPage = () => {
 
     const newOtp = otp.split("");
     newOtp[index] = value;
-    setOtp(newOtp.join(""));
+    const joined = newOtp.join("");
+    setOtp(joined);
 
     if (value && index < 5) {
       const next = document.getElementById(`otp-${index + 1}`);
@@ -104,10 +119,6 @@ const ResetPasswordPage = () => {
     const pasteData = e.clipboardData.getData("text").trim();
     if (/^\d{6}$/.test(pasteData)) {
       setOtp(pasteData);
-      pasteData.split("").forEach((digit, i) => {
-        const box = document.getElementById(`otp-${i}`);
-        if (box) (box as HTMLInputElement).value = digit;
-      });
     }
   };
 
@@ -146,7 +157,7 @@ const ResetPasswordPage = () => {
                   key={i}
                   id={`otp-${i}`}
                   maxLength={1}
-                  onPaste={handlePaste}
+                  onPaste={i === 0 ? handlePaste : undefined}
                   className="w-12 h-12 border border-gray-300 rounded-xl text-center text-lg"
                   value={otp[i] || ""}
                   onChange={(e) => handleOtpInput(e.target.value, i)}
@@ -158,12 +169,12 @@ const ResetPasswordPage = () => {
               ))}
             </div>
 
-            {/* Resend OTP */}
-            <div className="text-center text-sm">
+            {/* Resend + Back in same row */}
+            <div className="flex items-center justify-between text-sm">
               {timer > 0 ? (
-                <p className="text-gray-600">
+                <span className="text-gray-600">
                   Resend code in <strong>{timer}s</strong>
-                </p>
+                </span>
               ) : (
                 <button
                   type="button"
@@ -173,43 +184,57 @@ const ResetPasswordPage = () => {
                   Resend Code
                 </button>
               )}
-            </div>
 
-            {/* PASSWORD INPUT */}
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="New Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-3xl border border-gray-300 px-4 py-3 pr-10 text-sm"
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 cursor-pointer text-gray-500"
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="text-gray-800 underline"
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+                Back
+              </button>
             </div>
 
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-sm"
-            />
+            {/* PASSWORD INPUTS (frozen until OTP length == 6) */}
+            <div
+              className={`space-y-4 ${
+                !canEditPassword ? "opacity-50 pointer-events-none" : ""
+              }`}
+            >
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="New Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required={canEditPassword}
+                  className="w-full rounded-3xl border border-gray-300 px-4 py-3 pr-10 text-sm"
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+
+              <input
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required={canEditPassword}
+                className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-sm"
+              />
+            </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className={`w-full rounded-3xl py-2.5 font-medium border ${
-                loading
-                  ? "bg-gray-400 text-white"
+              disabled={loading || !canEditPassword}
+              className={`w-full rounded-3xl py-2.5 font-medium border transition-all ${
+                loading || !canEditPassword
+                  ? "bg-gray-300 text-white cursor-not-allowed"
                   : "bg-black text-white hover:bg-white hover:text-black"
-              } transition-all`}
+              }`}
             >
               {loading ? "Resetting..." : "Reset Password"}
             </button>
