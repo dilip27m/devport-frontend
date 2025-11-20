@@ -11,15 +11,14 @@ import {
 
 export interface SkillCategory {
   name: string;
-  skills: string[]; // normalized lower-case strings
+  skills: string[];
 }
 
 export interface SkillsFormProps {
-  skills?: SkillCategory[]; // optional incoming
+  skills?: SkillCategory[];
   onChange: (skills: SkillCategory[]) => void;
 }
 
-/* ---------- configs ---------- */
 const SUGGESTIONS = [
   "react","nextjs","typescript","javascript","tailwind","vite","vue","svelte",
   "nodejs","express","django","flask","fastapi","spring","ruby","rails",
@@ -39,7 +38,6 @@ const displaySkill = (s: string) =>
 const skillIconUrl = (skill: string) =>
   `https://skillicons.dev/icons?i=${encodeURIComponent(skill)}`;
 
-/* ---------- component ---------- */
 const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
   const [cats, setCats] = useState<SkillCategory[]>(
     Array.isArray(skills) ? skills : []
@@ -50,12 +48,10 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
   const [suggestionsList, setSuggestionsList] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // sync incoming prop
   useEffect(() => {
     setCats(Array.isArray(skills) ? skills : []);
   }, [skills]);
 
-  // ensure inputs length matches categories
   useEffect(() => {
     setInputs((prev) => {
       const next = [...prev];
@@ -65,19 +61,14 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     });
   }, [cats.length]);
 
-  // notify parent
   const notify = (next: SkillCategory[]) => {
     setCats(next);
     onChange(next);
   };
 
-  // add category
   const addCategory = () => {
     const next = [...cats, { name: "", skills: [] }];
     notify(next);
-    setTimeout(() => {
-      setSuggestionsFor(null);
-    }, 10);
   };
 
   const removeCategory = (index: number) => {
@@ -91,7 +82,6 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     notify(next);
   };
 
-  // add skill (supports raw comma-separated bulk paste or suggestion)
   const addSkillToCategory = (catIndex: number, raw?: string) => {
     const rawValue = (raw ?? inputs[catIndex] ?? "").trim();
     if (!rawValue) return;
@@ -124,12 +114,10 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     notify(next);
   };
 
-  // drag & drop logic
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // reorder categories
     if (source.droppableId === "categories" && destination.droppableId === "categories") {
       const arr = Array.from(cats);
       const [moved] = arr.splice(source.index, 1);
@@ -138,12 +126,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
       return;
     }
 
-    // skills move (droppableId: skills-{catIndex})
-    const parseId = (id: string) => {
-      const parts = id.split("-");
-      return Number(parts[1]);
-    };
-
+    const parseId = (id: string) => Number(id.split("-")[1]);
     if (source.droppableId.startsWith("skills-") && destination.droppableId.startsWith("skills-")) {
       const src = parseId(source.droppableId);
       const dst = parseId(destination.droppableId);
@@ -170,7 +153,6 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     }
   };
 
-  // suggestions filtering
   const getSuggestions = (catIndex: number, q: string) => {
     const query = q.trim().toLowerCase();
     const existing = new Set(cats[catIndex]?.skills?.map((s) => s.toLowerCase()) || []);
@@ -178,7 +160,6 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     return SUGGESTIONS.filter((s) => !existing.has(s) && s.includes(query)).slice(0, 8);
   };
 
-  // click outside to close suggestion box
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!containerRef.current) return;
@@ -190,172 +171,136 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
-  // paste handler for bulk-add
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, catIndex: number) => {
-    const text = e.clipboardData.getData("text");
-    if (text.includes(",")) {
-      e.preventDefault();
-      const parts = text.split(",").map((p) => normalizeSkill(p)).filter(Boolean);
-      if (parts.length) {
-        const next = [...cats];
-        const existing = new Set(next[catIndex].skills.map((s) => s.toLowerCase()));
-        parts.forEach((p) => {
-          if (!existing.has(p)) {
-            next[catIndex].skills.push(p);
-            existing.add(p);
-          }
-        });
-        notify(next);
-        setInputs((prev) => {
-          const cp = [...prev];
-          cp[catIndex] = "";
-          return cp;
-        });
-      }
-    }
-  };
-
-  // icon broken handler
   const markIconBroken = (skill: string) => {
     setBrokenIcons((prev) => ({ ...prev, [skill]: true }));
   };
 
   return (
-    <div className="space-y-6" ref={containerRef}>
+    <div className="space-y-8" ref={containerRef}>
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-bold text-gray-900">Skills</h2>
+        <h2 className="text-xl font-bold text-gray-900">Skills</h2>
         <button
           type="button"
           onClick={addCategory}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          <Plus size={14} /> Add Category
+          Add Category
         </button>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="categories" type="CATEGORY">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-6">
               {cats.map((cat, catIndex) => (
                 <Draggable key={catIndex} draggableId={`cat-${catIndex}`} index={catIndex}>
                   {(prov, snapshot) => (
                     <div
                       ref={prov.innerRef}
                       {...prov.draggableProps}
-                      className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""}`}
+                      className={`border border-gray-200 rounded-2xl bg-white shadow-sm transition-all ${snapshot.isDragging ? "ring-2 ring-blue-500 shadow-lg z-50" : "hover:shadow-md"}`}
                     >
-                      {/* Category header */}
-                      <div className="flex justify-between items-center px-4 py-3 bg-gray-50">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <span {...prov.dragHandleProps} className="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing flex-shrink-0">
-                            <GripVertical size={18} />
+                      {/* HEADER: Drag Handle + Category Name */}
+                      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+                        <div className="flex items-center gap-4 flex-1">
+                          <span {...prov.dragHandleProps} className="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing">
+                            <GripVertical size={20} />
                           </span>
-                          <div className="flex-1 min-w-0">
-                            <input
-                              type="text"
-                              value={cat.name ?? ""}
-                              onChange={(e) => updateCategoryName(catIndex, e.target.value)}
-                              placeholder="Category name (e.g., Frontend, DevOps)"
-                              className="w-full border border-gray-300 rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                            <div className="text-xs text-gray-500 mt-1 px-1">
-                              {cat.skills.length} skill{cat.skills.length !== 1 ? "s" : ""}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                          <button
-                            type="button"
-                            onClick={() => removeCategory(catIndex)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition"
-                            title="Remove category"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Body (compact pill UI) */}
-                      <div className="p-4 space-y-3 border-t bg-white">
-                        {/* input + Add */}
-                        <div className="relative">
                           <input
                             type="text"
-                            value={inputs[catIndex] ?? ""}
-                            onChange={(e) => {
-                              setInputs((prev) => {
-                                const cp = [...prev];
-                                cp[catIndex] = e.target.value;
-                                return cp;
-                              });
-                              setSuggestionsFor(catIndex);
-                              setSuggestionsList(getSuggestions(catIndex, e.target.value));
-                            }}
-                            onFocus={() => {
-                              setSuggestionsFor(catIndex);
-                              setSuggestionsList(getSuggestions(catIndex, inputs[catIndex] ?? ""));
-                            }}
-                            onPaste={(e) => handlePaste(e, catIndex)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                addSkillToCategory(catIndex);
-                              } else if (e.key === "Escape") {
-                                setSuggestionsFor(null);
-                              }
-                            }}
-                            placeholder="Add a skill (press Enter). Try: react, nodejs, aws"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 pr-20 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            value={cat.name ?? ""}
+                            onChange={(e) => updateCategoryName(catIndex, e.target.value)}
+                            placeholder="Category Name (e.g. Frontend)"
+                            className="w-full bg-transparent text-base font-semibold text-gray-900 placeholder:text-gray-500 focus:outline-none"
                           />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                            <button
-                              type="button"
-                              onClick={() => addSkillToCategory(catIndex)}
-                              className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-gray-100 border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-200 transition"
-                            >
-                              <Plus size={14} /> Add
-                            </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeCategory(catIndex)}
+                          className="text-red-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+
+                      {/* BODY: Input + Skills */}
+                      <div className="p-5 space-y-5">
+                        
+                        {/* 1. Reduced Width Input Row */}
+                        <div className="relative flex items-center gap-3">
+                          <div className="relative w-72"> {/* Fixed Reduced Width */}
+                            <input
+                              type="text"
+                              value={inputs[catIndex] ?? ""}
+                              onChange={(e) => {
+                                setInputs((prev) => {
+                                  const cp = [...prev];
+                                  cp[catIndex] = e.target.value;
+                                  return cp;
+                                });
+                                setSuggestionsFor(catIndex);
+                                setSuggestionsList(getSuggestions(catIndex, e.target.value));
+                              }}
+                              onFocus={() => {
+                                setSuggestionsFor(catIndex);
+                                setSuggestionsList(getSuggestions(catIndex, inputs[catIndex] ?? ""));
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  addSkillToCategory(catIndex);
+                                } else if (e.key === "Escape") {
+                                  setSuggestionsFor(null);
+                                }
+                              }}
+                              placeholder="Type a skill..."
+                              className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                            
+                            {/* Suggestions Dropdown */}
+                            {suggestionsFor === catIndex && suggestionsList.length > 0 && (
+                              <div className="absolute top-full left-0 mt-1 w-full z-50 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                                {suggestionsList.map((sug) => (
+                                  <div
+                                    key={sug}
+                                    onClick={() => addSkillToCategory(catIndex, sug)}
+                                    className="px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-3 transition border-b border-gray-50 last:border-0"
+                                  >
+                                    {!brokenIcons[sug] ? (
+                                      <img
+                                        src={skillIconUrl(sug)}
+                                        alt={sug}
+                                        onError={() => markIconBroken(sug)}
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                    ) : (
+                                      <div className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-500">
+                                        {sug[0]?.toUpperCase()}
+                                      </div>
+                                    )}
+                                    <span className="capitalize">{displaySkill(sug)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
+
+                          <button
+                            type="button"
+                            onClick={() => addSkillToCategory(catIndex)}
+                            className="h-10 px-4 bg-white text-black text-sm font-medium rounded-xl border border-black hover:bg-gray-100 transition"
+                          >
+                            Add
+                          </button>
                         </div>
 
-                        {/* suggestions dropdown */}
-                        {suggestionsFor === catIndex && suggestionsList.length > 0 && (
-                          <div className="border border-gray-200 rounded-md bg-white mt-1 max-h-48 overflow-auto shadow-lg">
-                            {suggestionsList.map((sug) => (
-                              <div
-                                key={sug}
-                                onClick={() => {
-                                  addSkillToCategory(catIndex, sug);
-                                }}
-                                className="px-3 py-2 text-sm text-gray-900 hover:bg-gray-50 cursor-pointer flex items-center gap-2 transition"
-                              >
-                                {!brokenIcons[sug] ? (
-                                  <img
-                                    src={skillIconUrl(sug)}
-                                    alt={sug}
-                                    onError={() => markIconBroken(sug)}
-                                    className="w-5 h-5"
-                                  />
-                                ) : (
-                                  <div className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
-                                    {sug[0]?.toUpperCase() ?? "?"}
-                                  </div>
-                                )}
-                                <span>{displaySkill(sug)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* skills list (compact pills) */}
+                        {/* 2. Skills List */}
                         <Droppable droppableId={`skills-${catIndex}`} type="SKILL">
                           {(dropProvided, dropSnapshot) => (
                             <div
                               ref={dropProvided.innerRef}
                               {...dropProvided.droppableProps}
-                              className={`min-h-[40px] flex flex-wrap gap-2 p-2 rounded-md transition ${dropSnapshot.isDraggingOver ? "bg-blue-50 border-2 border-dashed border-blue-300" : "border-2 border-transparent"}`}
+                              className={`min-h-[40px] flex flex-wrap gap-3 ${dropSnapshot.isDraggingOver ? "bg-gray-50/50 rounded-lg border-2 border-dashed border-blue-200 -m-2 p-2" : ""}`}
                             >
                               {cat.skills.map((skill, skillIndex) => {
                                 const broken = !!brokenIcons[skill];
@@ -370,29 +315,27 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
                                         ref={sProv.innerRef}
                                         {...sProv.draggableProps}
                                         {...sProv.dragHandleProps}
-                                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-900 shadow-sm hover:shadow-md transition ${sSnapshot.isDragging ? "ring-2 ring-blue-400 scale-105 z-10" : ""}`}
+                                        className={`group flex items-center gap-2 pl-3 pr-2 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700 shadow-sm hover:border-gray-300 hover:shadow transition-all select-none ${sSnapshot.isDragging ? "ring-2 ring-blue-500 scale-105 z-50" : ""}`}
                                       >
-                                        {/* icon or fallback */}
                                         {!broken ? (
                                           <img
                                             src={skillIconUrl(skill)}
                                             alt={skill}
                                             onError={() => markIconBroken(skill)}
-                                            className="w-5 h-5 rounded-sm"
+                                            className="w-4 h-4 opacity-80 group-hover:opacity-100 transition-opacity"
                                           />
                                         ) : (
-                                          <div className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
-                                            {skill[0]?.toUpperCase() ?? "?"}
+                                          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-500">
+                                            {skill[0]?.toUpperCase()}
                                           </div>
                                         )}
-
-                                        <span className="max-w-[120px] truncate">{displaySkill(skill)}</span>
-
+                                        
+                                        <span className="font-medium">{displaySkill(skill)}</span>
+                                        
                                         <button
                                           type="button"
                                           onClick={() => removeSkill(catIndex, skillIndex)}
-                                          className="ml-1 text-red-500 hover:text-red-700 hover:bg-red-50 p-0.5 rounded-full transition"
-                                          aria-label={`Remove ${skill}`}
+                                          className="ml-1 p-0.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                                         >
                                           <X size={14} />
                                         </button>
@@ -401,7 +344,6 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
                                   </Draggable>
                                 );
                               })}
-
                               {dropProvided.placeholder}
                             </div>
                           )}
@@ -411,18 +353,14 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
                   )}
                 </Draggable>
               ))}
-
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
-      {/* TIPS */}
-      <div className="text-xs text-gray-500">
-        Tip: Enter a precise <strong> Role </strong>, <strong> Company </strong>, and correct dates, 
-        including the <strong> tenure </strong> for roles or projects. Describe your work by focusing 
-        on your <strong> main responsibilities </strong> and <strong> notable achievements </strong>. 
-        Use the drag handle to reorder your experience entries.
+
+                  <div className="text-xs text-gray-500">
+        Tip: Click on category name to enter category name.
       </div>
     </div>
   );

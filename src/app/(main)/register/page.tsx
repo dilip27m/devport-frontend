@@ -19,11 +19,10 @@ const RegisterPage = () => {
   const [timer, setTimer] = useState(0);
 
   const [error, setError] = useState("");
-  const [otpLoading, setOtpLoading] = useState(false); // used for send + resend
+  const [otpLoading, setOtpLoading] = useState(false); 
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Form Validation
   const [fieldErrors, setFieldErrors] = useState({
     username: "",
     email: "",
@@ -49,22 +48,19 @@ const RegisterPage = () => {
     return "";
   };
 
-  // Countdown timer for resend OTP
   useEffect(() => {
     if (timer <= 0) return;
     const countdown = setTimeout(() => setTimer((t) => t - 1), 1000);
     return () => clearTimeout(countdown);
   }, [timer]);
 
-  // Auto focus first OTP box when step changes to "otp"
   useEffect(() => {
     if (step === "otp") {
-      const first = document.getElementById("otp-0");
-      first && (first as HTMLInputElement).focus();
+      const input = document.getElementById("otp-input");
+      input && (input as HTMLInputElement).focus();
     }
   }, [step]);
 
-  // Step 1 — Send OTP
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -86,7 +82,7 @@ const RegisterPage = () => {
     try {
       await sendOtp(email);
       setStep("otp");
-      setTimer(60); // 1-minute cooldown
+      setTimer(60);
     } catch (err: any) {
       setError(err.message || "Failed to send OTP");
     }
@@ -94,7 +90,6 @@ const RegisterPage = () => {
     setOtpLoading(false);
   };
 
-  // Resend OTP (after timer hits 0)
   const handleResendOtp = async () => {
     if (!email) return;
     setError("");
@@ -103,7 +98,7 @@ const RegisterPage = () => {
 
     try {
       await sendOtp(email);
-      setTimer(60); // restart countdown
+      setTimer(60);
     } catch (err: any) {
       setError(err.message || "Failed to resend OTP");
     }
@@ -111,7 +106,6 @@ const RegisterPage = () => {
     setOtpLoading(false);
   };
 
-  // Step 2 — Verify OTP & Register User
   const handleVerifyOtp = async () => {
     setError("");
     if (otp.length !== 6) {
@@ -146,7 +140,7 @@ const RegisterPage = () => {
 
         {/* ==============================  
              STEP 1: USER FORM
-           ============================== */}
+        ============================== */}
         {step === "form" && (
           <form onSubmit={handleSendOtp} className="space-y-5">
             <input
@@ -155,10 +149,9 @@ const RegisterPage = () => {
               value={name}
               required
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm"
+              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500"
             />
 
-            {/* Username */}
             <div>
               <input
                 type="text"
@@ -173,7 +166,7 @@ const RegisterPage = () => {
                     username: validateUsername(val),
                   }));
                 }}
-                className={`w-full rounded-3xl border px-4 py-3 text-sm ${
+                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 ${
                   fieldErrors.username
                     ? "border-red-500"
                     : "border-gray-300 focus:ring-gray-800"
@@ -186,7 +179,6 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Email */}
             <div>
               <input
                 type="email"
@@ -201,7 +193,7 @@ const RegisterPage = () => {
                     email: validateEmail(val),
                   }));
                 }}
-                className={`w-full rounded-3xl border px-4 py-3 text-sm ${
+                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500${
                   fieldErrors.email
                     ? "border-red-500"
                     : "border-gray-300 focus:ring-gray-800"
@@ -214,34 +206,43 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Password */}
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                required
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setPassword(val);
-                  setFieldErrors((prev) => ({
-                    ...prev,
-                    password: validatePassword(val),
-                  }));
-                }}
-                className={`w-full rounded-3xl border px-4 py-3 pr-10 text-sm ${
-                  fieldErrors.password
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-gray-800"
-                }`}
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-gray-800"
-              >
-                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-              </span>
-            </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  required
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPassword(val);
+
+                    // trigger validation + show error
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      password: validatePassword(val),
+                    }));
+                  }}
+                  className={`w-full rounded-3xl border px-4 py-3 pr-10 text-sm text-gray-900 placeholder:text-gray-500 ${
+                    fieldErrors.password
+                      ? "border-red-500"
+                      : "border-gray-300 focus:ring-gray-800"
+                  }`}
+                />
+
+                {/* Eye icon */}
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 cursor-pointer text-gray-900 hover:text-gray-800"
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </span>
+
+                {/* Password error display */}
+                {fieldErrors.password && (
+                  <p className="text-red-600 text-xs mt-1">{fieldErrors.password}</p>
+                )}
+              </div>
+
 
             <button
               type="submit"
@@ -259,50 +260,28 @@ const RegisterPage = () => {
 
         {/* ==============================  
              STEP 2: OTP INPUT UI
-           ============================== */}
+        ============================== */}
         {step === "otp" && (
           <div className="space-y-5">
-            <p className="text-center text-gray-700 text-sm">
+            <p className="text-center text-gray-900 text-sm">
               We sent a 6-digit verification code to:
               <br />
               <span className="font-semibold">{email}</span>
             </p>
 
-            {/* Google-style OTP boxes */}
-            <div className="flex justify-between gap-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <input
-                  key={i}
-                  id={`otp-${i}`}
-                  maxLength={1}
-                  className="w-12 h-12 border border-gray-300 rounded-xl text-center text-lg"
-                  value={otp[i] || ""}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    const val = raw.replace(/\D/g, ""); // only digits
-
-                    const newOtp = otp.split("");
-
-                    // If input is cleared
-                    if (!val) {
-                      newOtp[i] = "";
-                      setOtp(newOtp.join(""));
-                      return;
-                    }
-
-                    // Use the last typed digit (handles autofill/paste edge cases)
-                    newOtp[i] = val[val.length - 1];
-                    setOtp(newOtp.join(""));
-
-                    // Auto move to next box
-                    const next = document.getElementById(`otp-${i + 1}`);
-                    if (next) {
-                      (next as HTMLInputElement).focus();
-                    }
-                  }}
-                />
-              ))}
-            </div>
+            {/* SIMPLE OTP INPUT */}
+            <input
+              id="otp-input"
+              type="text"
+              maxLength={6}
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setOtp(val);
+              }}
+              className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-center text-lg tracking-widest text-gray-900 placeholder:text-gray-500"
+            />
 
             <button
               onClick={handleVerifyOtp}
@@ -316,7 +295,6 @@ const RegisterPage = () => {
               {verifyLoading ? "Verifying..." : "Verify OTP"}
             </button>
 
-            {/* RESEND + BACK IN SAME ROW */}
             <div className="flex items-center justify-between text-sm mt-2">
               {timer > 0 ? (
                 <span className="text-gray-600">

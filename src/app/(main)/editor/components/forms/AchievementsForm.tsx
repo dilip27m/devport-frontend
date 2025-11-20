@@ -8,16 +8,17 @@ import {
   ChevronUp,
   Plus,
   X,
-  ImagePlus,
+  Image as ImageIcon,
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
 export interface Achievement {
   title: string;
   description: string;
   year: string;
-  image?: string; // NEW
+  image?: string;
 }
 
 interface AchievementsFormProps {
@@ -91,6 +92,10 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
     }
   };
 
+  // Shared Styles
+  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all";
+  const labelClass = "block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5";
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -102,14 +107,18 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
           onClick={addAchievement}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          <Plus size={14} /> Add Achievement
+         Add Achievement
         </button>
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="achievements-droppable">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="space-y-4"
+            >
               {achievements.map((ach, index) => {
                 const isOpen = openIndex === index;
                 const isUploading = uploadingIndex === index;
@@ -124,28 +133,26 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`border rounded-xl bg-white shadow-md overflow-hidden transition ${
+                        className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${
                           snapshot.isDragging ? "ring-2 ring-blue-200" : ""
                         }`}
                       >
                         {/* Header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
-                          onClick={() =>
-                            setOpenIndex(isOpen ? null : index)
-                          }
+                          onClick={() => setOpenIndex(isOpen ? null : index)}
                         >
                           <div className="flex items-center space-x-3 min-w-0">
                             <span
                               {...provided.dragHandleProps}
                               className="text-gray-400 hover:text-gray-600 cursor-grab"
                             >
-                              <GripVertical size={18} />
+                              <GripVertical size={16} />
                             </span>
 
                             <div className="min-w-0">
-                              <div className="font-semibold text-gray-900 truncate max-w-xs">
-                                {ach.title || `Untitled Achievement`}
+                              <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                {ach.title || `Untitled Achievement ${index + 1}`}
                               </div>
 
                               {ach.year && (
@@ -163,7 +170,7 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
                                 e.stopPropagation();
                                 removeAchievement(index);
                               }}
-                              className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                              className="text-red-500 hover:bg-red-100 p-2 rounded-full transition"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -186,136 +193,135 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
                         </div>
 
                         {/* Body */}
-                        {isOpen && (
-                          <div className="p-4 space-y-4 border-t bg-white">
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="p-4 space-y-5 border-t bg-white"
+                            >
+                              
+                              {/* --- Image Upload Section --- */}
+                              <div>
+                                <span className={labelClass}>Proof / Certificate Image</span>
+                                <div className="group relative">
+                                    <input
+                                        id={`ach-img-${index}`}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(index, e)}
+                                        className="hidden"
+                                    />
 
-                            {/* Image Upload */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Achievement Image
-                              </label>
+                                    <label
+                                        htmlFor={`ach-img-${index}`}
+                                        className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
+                                        ${ach.image ? "border-transparent shadow-sm" : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"}`}
+                                    >
+                                        {ach.image ? (
+                                            <>
+                                                <img 
+                                                    src={ach.image} 
+                                                    alt="Achievement Proof" 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
+                                                    Change Image
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-gray-400 flex flex-col items-center">
+                                                {isUploading ? (
+                                                    <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
+                                                ) : (
+                                                    <ImageIcon size={32} className="mb-2 opacity-50" />
+                                                )}
+                                                <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Image"}</span>
+                                            </div>
+                                        )}
+                                    </label>
 
-                              <input
-                                type="file"
-                                id={`ach-img-${index}`}
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => handleImageUpload(index, e)}
-                              />
-
-                              {ach.image ? (
-                                <img
-                                  src={ach.image}
-                                  className="w-full h-32 object-cover rounded-lg border mb-2"
-                                  alt="Achievement"
-                                />
-                              ) : (
-                                <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-500 mb-2">
-                                  No image uploaded
+                                    {/* Remove Button */}
+                                    {ach.image && !isUploading && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); 
+                                                updateField(index, "image", "");
+                                            }}
+                                            className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
+                                            title="Remove image"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    )}
                                 </div>
-                              )}
-
-                              <div className="flex gap-2">
-                                <label
-                                  htmlFor={`ach-img-${index}`}
-                                  className={`px-4 py-1 rounded-full border bg-white shadow text-black text-sm cursor-pointer hover:bg-gray-50 ${
-                                    isUploading
-                                      ? "opacity-60 cursor-wait"
-                                      : ""
-                                  }`}
-                                >
-                                  Upload Image
-                                </label>
-
-                                {ach.image && (
-                                  <button
-                                    onClick={() => updateField(index, "image", "")}
-                className="inline-flex items-center justify-center gap-1 px-3 py-1.5 
-                  text-sm text-red-600 border border-gray-300 rounded-full 
-                  hover:bg-red-50 transition shadow-sm"                                  >
-                                    <X size={14} /> Remove
-                                  </button>
-                                )}
                               </div>
 
-                              {isUploading && (
-                                <p className="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                                  <span className="w-3 h-3 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                                  Uploading...
-                                </p>
-                              )}
-                            </div>
+                              {/* --- Fields --- */}
+                              <div className="space-y-4">
+                                <div>
+                                  <label className={labelClass}>Achievement Title</label>
+                                  <input
+                                    type="text"
+                                    value={ach.title}
+                                    onChange={(e) =>
+                                      updateField(index, "title", e.target.value)
+                                    }
+                                    placeholder="e.g. National Hackathon Winner"
+                                    className={inputClass}
+                                  />
+                                </div>
 
-                            {/* Title */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Title
-                              </label>
-                              <input
-                                type="text"
-                                value={ach.title ?? ""}
-                                onChange={(e) =>
-                                  updateField(index, "title", e.target.value)
-                                }
-                                placeholder="e.g. National Hackathon Winner"
-                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
-                              />
-                            </div>
+                                <div>
+                                  <label className={labelClass}>Description</label>
+                                  <textarea
+                                    value={ach.description}
+                                    onChange={(e) =>
+                                      updateField(index, "description", e.target.value)
+                                    }
+                                    rows={3}
+                                    placeholder="Briefly describe the achievement..."
+                                    className={inputClass}
+                                  />
+                                </div>
 
-                            {/* Description */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                              </label>
-                              <textarea
-                                value={ach.description ?? ""}
-                                onChange={(e) =>
-                                  updateField(index, "description", e.target.value)
-                                }
-                                rows={3}
-                                placeholder="Describe what the achievement was about..."
-                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-400"
-                              />
-                            </div>
+                                <div>
+                                  <label className={labelClass}>Year / Date</label>
+                                  <input
+                                    type="text"
+                                    value={ach.year}
+                                    onChange={(e) =>
+                                      updateField(index, "year", e.target.value)
+                                    }
+                                    placeholder="e.g. 2024"
+                                    className={inputClass}
+                                  />
+                                </div>
+                              </div>
 
-                            {/* Year */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Year
-                              </label>
-                              <input
-                                type="text"
-                                value={ach.year ?? ""}
-                                onChange={(e) =>
-                                  updateField(index, "year", e.target.value)
-                                }
-                                placeholder="e.g. 2024"
-                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
-                              />
-                            </div>
-
-                          </div>
-                        )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     )}
                   </Draggable>
-                  
                 );
               })}
-
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
+
       {/* TIPS */}
       <div className="text-xs text-gray-500">
-        Tip: Use clear, measurable <strong> Achievements </strong> such as 
-        “<strong> Solved 100+ LeetCode problems </strong>”, 
-        “<strong> Won 1st prize in a Hackathon </strong>”, or 
-        “<strong> Published a research paper </strong>”. 
-        Add a short <strong> Description </strong> only if needed. 
-        Mention the <strong> Year </strong> when relevant, or leave it empty if not applicable.
+        Tip: Use clear, measurable <strong>Achievements</strong> such as
+        “<strong>Solved 100+ LeetCode problems</strong>”,
+        “<strong>Won 1st prize in a Hackathon</strong>”, or
+        “<strong>Published a research paper</strong>”. Upload a photo of your certificate or award if available.
       </div>
     </div>
   );

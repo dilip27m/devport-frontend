@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trash2, Plus, GripVertical, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Trash2, Plus, GripVertical, ChevronDown, ChevronUp, X, Image as ImageIcon } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
@@ -19,9 +19,7 @@ interface BlogsFormProps {
   onChange: (blogs: Blog[]) => void;
 }
 
-/**
- * Inline ConfirmBox component (simple & reusable)
- */
+/* --- Confirm Box Helper --- */
 const ConfirmBox: React.FC<{
   message: string;
   onConfirm: () => void;
@@ -36,18 +34,8 @@ const ConfirmBox: React.FC<{
       >
         <p className="text-sm text-gray-800 mb-4">{message}</p>
         <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-3 py-1 rounded-full text-sm text-gray-700 border border-gray-200 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-3 py-1 rounded-full text-sm bg-red-600 text-white hover:bg-red-700"
-          >
-            Delete
-          </button>
+          <button onClick={onCancel} className="px-3 py-1 rounded-full text-sm text-gray-700 border border-gray-200 hover:bg-gray-50">Cancel</button>
+          <button onClick={onConfirm} className="px-3 py-1 rounded-full text-sm bg-red-600 text-white hover:bg-red-700">Delete</button>
         </div>
       </motion.div>
     </div>
@@ -57,12 +45,9 @@ const ConfirmBox: React.FC<{
 const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
   const { upload } = useCloudinaryUpload();
 
-  // internal states
   const [openIndex, setOpenIndex] = useState<number | null>(blogs.length > 0 ? 0 : null);
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
-
-  // track which index is currently uploading (shows loader under image)
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const handleChange = (index: number, field: keyof Blog, value: string) => {
@@ -90,19 +75,16 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
   const addBlog = () => {
     const newBlog: Blog = { name: "", category: "", image: "", description: "", link: "" };
     onChange([...blogs, newBlog]);
-    setOpenIndex(blogs.length); // open the new one
+    setOpenIndex(blogs.length);
   };
 
-  // actual removal function (no confirm here)
   const removeBlog = (index: number) => {
     const updated = blogs.filter((_, i) => i !== index);
     onChange(updated);
-    // fix openIndex
     if (openIndex === index) setOpenIndex(null);
     else if (openIndex && openIndex > index) setOpenIndex(openIndex - 1);
   };
 
-  // Called when user clicks the delete icon — will show inline confirm
   const requestDelete = (index: number) => {
     setConfirmIndex(index);
     setShowConfirm(true);
@@ -116,9 +98,12 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
     onChange(reordered);
   };
 
+  // Styles
+  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all";
+  const labelClass = "block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5";
+
   return (
     <div className="space-y-6">
-      {/* header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-900">Blogs</h2>
         <button
@@ -126,7 +111,7 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
           onClick={addBlog}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          <Plus size={14} /> Add Blog
+          Add Blog
         </button>
       </div>
 
@@ -147,7 +132,7 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
                         className={`border rounded-xl bg-white shadow-sm overflow-hidden transition
                           ${snapshot.isDragging ? "ring-2 ring-offset-2 ring-blue-200" : ""}`}
                       >
-                        {/* header */}
+                        {/* Header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                           onClick={() => setOpenIndex(isOpen ? null : index)}
@@ -178,20 +163,15 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
                                 requestDelete(index);
                               }}
                               className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition"
-                              aria-label="Delete blog"
                             >
                               <Trash2 size={16} />
                             </button>
 
-                            {isOpen ? (
-                              <ChevronUp size={18} className="text-gray-600" />
-                            ) : (
-                              <ChevronDown size={18} className="text-gray-600" />
-                            )}
+                            {isOpen ? <ChevronUp size={18} className="text-gray-600" /> : <ChevronDown size={18} className="text-gray-600" />}
                           </div>
                         </div>
 
-                        {/* body */}
+                        {/* Body */}
                         <AnimatePresence initial={false}>
                           {isOpen && (
                             <motion.div
@@ -199,124 +179,113 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
                               animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.22 }}
-                              className="p-4 space-y-4 border-t bg-white"
+                              className="p-4 space-y-5 border-t bg-white"
                             >
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {/* image column */}
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Cover Image
-                                  </label>
-
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    id={`blog-image-${index}`}
-                                    onChange={(e) => handleImageUpload(index, e)}
-                                    className="hidden"
-                                  />
-
-                                  {/* preview area */}
-                                  {blog.image ? (
-                                    <img
-                                      src={blog.image}
-                                      alt="Blog cover"
-                                      className="w-full max-w-xs h-32 object-cover rounded-md border mb-2"
+                              
+                              {/* --- Image Upload Section --- */}
+                              <div>
+                                <span className={labelClass}>Blog Cover Image</span>
+                                <div className="group relative">
+                                    <input
+                                        id={`blog-image-${index}`}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(index, e)}
+                                        className="hidden"
                                     />
-                                  ) : (
-                                    <div className="w-full max-w-xs h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center text-xs text-gray-400 mb-2">
-                                      No image
-                                    </div>
-                                  )}
 
-                                  {/* Upload / Remove pills */}
-                                  <div className="flex items-center gap-2 flex-wrap">
                                     <label
-                                      htmlFor={`blog-image-${index}`}
-                                      className={`inline-flex items-center justify-center gap-1
-                                        px-4 py-1 text-sm font-medium
-                                        bg-white text-gray-700 border border-gray-300
-                                        rounded-full cursor-pointer
-                                        hover:bg-gray-50 transition shadow-sm
-                                        ${isUploading ? "opacity-60 cursor-wait" : ""}`}
+                                        htmlFor={`blog-image-${index}`}
+                                        className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
+                                        ${blog.image ? "border-transparent shadow-sm" : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"}`}
                                     >
-                                      Upload
+                                        {blog.image ? (
+                                            <>
+                                                <img 
+                                                    src={blog.image} 
+                                                    alt="Blog Cover" 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
+                                                    Change Cover
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-gray-400 flex flex-col items-center">
+                                                {isUploading ? (
+                                                    <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
+                                                ) : (
+                                                    <ImageIcon size={32} className="mb-2 opacity-50" />
+                                                )}
+                                                <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Cover Image"}</span>
+                                            </div>
+                                        )}
                                     </label>
 
-                                    {blog.image && (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleChange(index, "image", "")}
-                                        className="inline-flex items-center justify-center gap-1
-                                          px-3 py-1 text-sm font-medium text-red-600
-                                          bg-white border border-gray-300 rounded-full cursor-pointer
-                                          hover:bg-red-50 transition shadow-sm"
-                                      >
-                                        <X size={14} /> Remove
-                                      </button>
+                                    {/* Remove Button */}
+                                    {blog.image && !isUploading && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // prevents label click
+                                                handleChange(index, "image", "");
+                                            }}
+                                            className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
+                                            title="Remove image"
+                                        >
+                                            <X size={14} />
+                                        </button>
                                     )}
-                                  </div>
-
-                                  {/* Upload loader or status (D: small loader below image section) */}
-                                  <div className="mt-2 min-h-[18px]">
-                                    {isUploading && (
-                                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                                        <span className="w-4 h-4 rounded-full border-2 border-t-transparent border-gray-500 animate-spin" />
-                                        <span>Uploading image...</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* form fields */}
-                                <div className="md:col-span-2 space-y-3">
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Blog Name</label>
-                                    <input
-                                      type="text"
-                                      value={blog.name}
-                                      onChange={(e) => handleChange(index, "name", e.target.value)}
-                                      placeholder="e.g. Understanding Git Branches"
-                                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                    <input
-                                      type="text"
-                                      value={blog.category}
-                                      onChange={(e) => handleChange(index, "category", e.target.value)}
-                                      placeholder="e.g. Technology, Design, Marketing"
-                                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea
-                                      value={blog.description}
-                                      onChange={(e) => handleChange(index, "description", e.target.value)}
-                                      placeholder="Brief description of your blog post..."
-                                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                      rows={4}
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Blog Link</label>
-                                    <input
-                                      type="url"
-                                      value={blog.link}
-                                      onChange={(e) => handleChange(index, "link", e.target.value)}
-                                      placeholder="https://yourblog.com/post-title"
-                                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    />
-                                  </div>
                                 </div>
                               </div>
 
-                              <div className="text-right text-xs text-gray-500">Drag handle on the left to reorder</div>
+                              {/* --- Form Fields --- */}
+                              <div className="space-y-4">
+                                <div>
+                                  <label className={labelClass}>Blog Title</label>
+                                  <input
+                                    type="text"
+                                    value={blog.name}
+                                    onChange={(e) => handleChange(index, "name", e.target.value)}
+                                    placeholder="e.g. Understanding Git Branches"
+                                    className={inputClass}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={labelClass}>Category</label>
+                                  <input
+                                    type="text"
+                                    value={blog.category}
+                                    onChange={(e) => handleChange(index, "category", e.target.value)}
+                                    placeholder="e.g. Technology, Design"
+                                    className={inputClass}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={labelClass}>Description</label>
+                                  <textarea
+                                    value={blog.description}
+                                    onChange={(e) => handleChange(index, "description", e.target.value)}
+                                    placeholder="Brief description of your blog post..."
+                                    className={inputClass}
+                                    rows={3}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={labelClass}>Blog URL</label>
+                                  <input
+                                    type="url"
+                                    value={blog.link}
+                                    onChange={(e) => handleChange(index, "link", e.target.value)}
+                                    placeholder="https://yourblog.com/post-title"
+                                    className={inputClass}
+                                  />
+                                </div>
+                              </div>
+
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -325,23 +294,17 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
                   </Draggable>
                 );
               })}
-
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
 
-      {/* TIPS */}
-        <div className="text-xs text-gray-500">
-          Tip: Add a clear <strong> Blog Title </strong>, a short <strong> Description </strong>, 
-          and the full <strong> Link </strong> to your published post (e.g., Medium article, 
-          Dev.to post, Hashnode blog, or LinkedIn article). Make sure the link opens 
-          directly to your full <strong> Blog </strong>.
-        </div>
+      <div className="text-xs text-gray-500">
+        Tip: Add a clear <strong> Blog Title </strong>, a short <strong> Description </strong>,
+        and the full <strong> Link </strong> to your published post (Medium, Dev.to, Hashnode, LinkedIn, etc.).
+      </div>
 
-
-      {/* inline confirmation modal */}
       {showConfirm && confirmIndex !== null && (
         <ConfirmBox
           message="Are you sure you want to delete this blog?"
