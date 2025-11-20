@@ -21,8 +21,9 @@ interface AuthContextType {
   updatePassword: (passwordData: any) => Promise<string>;
   forgotPassword: (email: string) => Promise<string>;
   resetPassword: (resetData: any) => Promise<string>;
-  deleteAccount: () => Promise<void>; 
-  sendOtp: (email: string) => Promise<string>;
+  deleteAccount: () => Promise<void>;
+  // Updated: accept username optionally
+  sendOtp: (email: string, username?: string) => Promise<string>;
   verifyOtp: (email: string, otp: string) => Promise<string>;
 }
 
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/"); 
+      router.push("/");
     } catch (error) { throw error; }
   };
 
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
-      router.push("/"); 
+      router.push("/");
     } catch (error) { throw error; }
   };
 
@@ -85,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    router.push("/"); 
+    router.push("/");
   };
 
   const updatePassword = async (passwordData: any): Promise<string> => {
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return data.message;
     } catch (error) { throw error; }
   };
-  
+
   const resetPassword = async (resetData: any): Promise<string> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
@@ -131,7 +132,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       throw error;
     }
   };
-  
+
   const deleteAccount = async (): Promise<void> => {
     if (!token) {
       throw new Error("You must be logged in to delete your account.");
@@ -153,64 +154,67 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const sendOtp = async (email: string): Promise<string> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+  // --- UPDATED sendOtp FUNCTION ---
+  const sendOtp = async (email: string, username?: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Include username in the request body so backend can check duplicates
+        body: JSON.stringify({ email, username }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) throw new Error(data.error || "Failed to send OTP");
+      // FIX: Check for data.error OR data.message so specific errors show up
+      if (!response.ok) {
+         throw new Error(data.error || data.message || "Failed to send OTP");
+      }
 
-    return data.message; 
-  } catch (err) {
-    throw err;
-  }
-};
+      return data.message;
+    } catch (err) {
+      throw err;
+    }
+  };
 
+  const verifyOtp = async (email: string, otp: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
 
-const verifyOtp = async (email: string, otp: string): Promise<string> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    });
+      const data = await response.json();
 
-    const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Invalid OTP");
 
-    if (!response.ok) throw new Error(data.error || "Invalid OTP");
-
-    return data.message; 
-  } catch (err) {
-    throw err;
-  }
-};
-
+      return data.message;
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const isAuthenticated = !!token;
 
   return (
-  <AuthContext.Provider
-    value={{
-       isAuthenticated,
-       user,
-       token,
-       loading,
-       registerUser,
-       loginUser,
-       logoutUser,
-       updatePassword,
-       forgotPassword,
-       resetPassword,
-       deleteAccount,
-       sendOtp,        
-       verifyOtp,      
-    }}
-  >
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        token,
+        loading,
+        registerUser,
+        loginUser,
+        logoutUser,
+        updatePassword,
+        forgotPassword,
+        resetPassword,
+        deleteAccount,
+        sendOtp,
+        verifyOtp,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
