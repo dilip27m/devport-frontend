@@ -12,7 +12,7 @@ const ResetPasswordPage = () => {
 
   const [email, setEmail] = useState(initialEmail);
   const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(60); // 60 sec cooldown
+  const [timer, setTimer] = useState(60);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -26,14 +26,14 @@ const ResetPasswordPage = () => {
 
   const canEditPassword = otp.length === 6;
 
-  // Countdown timer
+  // Timer
   useEffect(() => {
     if (timer <= 0) return;
     const countdown = setTimeout(() => setTimer((t) => t - 1), 1000);
     return () => clearTimeout(countdown);
   }, [timer]);
 
-  // Whenever OTP becomes incomplete, clear passwords & freeze section again
+  // Clear fields if otp incomplete
   useEffect(() => {
     if (otp.length !== 6) {
       setPassword("");
@@ -41,7 +41,7 @@ const ResetPasswordPage = () => {
     }
   }, [otp]);
 
-  // Resend OTP handler
+  // Resend OTP
   const handleResendOtp = async () => {
     setError("");
     setSuccess("");
@@ -56,7 +56,7 @@ const ResetPasswordPage = () => {
     }
   };
 
-  // Handle actual password reset
+  // Submit new password
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -91,37 +91,6 @@ const ResetPasswordPage = () => {
     }
   };
 
-  // Update OTP input boxes
-  const handleOtpInput = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return;
-
-    const newOtp = otp.split("");
-    newOtp[index] = value;
-    const joined = newOtp.join("");
-    setOtp(joined);
-
-    if (value && index < 5) {
-      const next = document.getElementById(`otp-${index + 1}`);
-      next && (next as HTMLInputElement).focus();
-    }
-  };
-
-  // Support backspace
-  const handleBackspace = (value: string, index: number) => {
-    if (value === "" && index > 0) {
-      const prev = document.getElementById(`otp-${index - 1}`);
-      prev && (prev as HTMLInputElement).focus();
-    }
-  };
-
-  // Support pasting full OTP
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pasteData = e.clipboardData.getData("text").trim();
-    if (/^\d{6}$/.test(pasteData)) {
-      setOtp(pasteData);
-    }
-  };
-
   return (
     <div className="flex pt-20 min-h-[calc(100vh-80px)] items-center justify-center bg-white font-sans px-4">
       <div className="w-full max-w-md border border-gray-300 rounded-3xl p-8">
@@ -142,34 +111,27 @@ const ResetPasswordPage = () => {
 
         {!success && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email is prefilled from URL */}
+            {/* Email (prefilled) */}
+            <p className="text-gray-700 text-sm font-medium items-center justify-center">
+              Resetting password for:{" "}
+              <span className="text-gray-900 font-semibold">{email}</span>
+            </p>
+
+            {/* SIMPLE OTP INPUT */}
             <input
-              type="email"
-              value={email}
-              disabled
-              className="w-full rounded-3xl border border-gray-300 bg-gray-100 px-4 py-3 text-sm"
+              id="otp-input"
+              type="text"
+              maxLength={6}
+              placeholder="Enter 6-digit code"
+              value={otp}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setOtp(val);
+              }}
+              className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-center text-lg tracking-widest text-gray-900 placeholder:text-gray-500"
             />
 
-            {/* OTP Boxes */}
-            <div className="flex justify-between gap-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <input
-                  key={i}
-                  id={`otp-${i}`}
-                  maxLength={1}
-                  onPaste={i === 0 ? handlePaste : undefined}
-                  className="w-12 h-12 border border-gray-300 rounded-xl text-center text-lg"
-                  value={otp[i] || ""}
-                  onChange={(e) => handleOtpInput(e.target.value, i)}
-                  onKeyDown={(e) =>
-                    e.key === "Backspace" &&
-                    handleBackspace(e.currentTarget.value, i)
-                  }
-                />
-              ))}
-            </div>
-
-            {/* Resend + Back in same row */}
+            {/* Resend + Back */}
             <div className="flex items-center justify-between text-sm">
               {timer > 0 ? (
                 <span className="text-gray-600">
@@ -194,7 +156,7 @@ const ResetPasswordPage = () => {
               </button>
             </div>
 
-            {/* PASSWORD INPUTS (frozen until OTP length == 6) */}
+            {/* PASSWORD FIELDS */}
             <div
               className={`space-y-4 ${
                 !canEditPassword ? "opacity-50 pointer-events-none" : ""
@@ -207,7 +169,7 @@ const ResetPasswordPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required={canEditPassword}
-                  className="w-full rounded-3xl border border-gray-300 px-4 py-3 pr-10 text-sm"
+                  className="w-full rounded-3xl border border-gray-300 px-4 py-3 pr-10 text-sm text-gray-900 placeholder:text-gray-500"
                 />
                 <span
                   onClick={() => setShowPassword(!showPassword)}
@@ -223,7 +185,7 @@ const ResetPasswordPage = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required={canEditPassword}
-                className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-sm"
+                className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500"
               />
             </div>
 

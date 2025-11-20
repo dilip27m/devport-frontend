@@ -16,21 +16,20 @@ import { differenceInDays } from "date-fns";
 export interface Experience {
   role: string;
   company: string;
-  startDate: string; // yyyy-mm-dd
-  endDate: string; // yyyy-mm-dd or "" when Present
+  startDate: string;
+  endDate: string;
   isPresent?: boolean;
-  descriptionBullets: string[]; // bullet points
-  stack: string[]; // tech stack (array)
-  techStack?: string; // ✅ string version like project form
-  links: { label: string; url: string }[]; // experience-related links
+  descriptionBullets: string[];
+  stack: string[];
+  techStack?: string;
+  links: { label: string; url: string }[];
 }
 
 export interface ExperienceFormProps {
-  experiences?: Experience[]; // optional from parent
+  experiences?: Experience[];
   onChange: (experiences: Experience[]) => void;
 }
 
-/** helper: format date as 'MMM yyyy' */
 const formatDateMMMYYYY = (dateStr?: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -38,7 +37,6 @@ const formatDateMMMYYYY = (dateStr?: string) => {
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 };
 
-/** helper: compute human-friendly duration between two yyyy-mm-dd strings */
 const computeDurationFriendly = (
   start?: string,
   end?: string,
@@ -49,12 +47,10 @@ const computeDurationFriendly = (
   const e = isPresent || !end ? new Date() : new Date(end);
   if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
 
-  // months difference
   let years = e.getFullYear() - s.getFullYear();
   let months = e.getMonth() - s.getMonth();
   let totalMonths = years * 12 + months;
 
-  // adjust by days
   if (e.getDate() < s.getDate()) totalMonths -= 1;
   if (totalMonths < 0) totalMonths = 0;
 
@@ -75,7 +71,7 @@ const emptyExperience = (): Experience => ({
   isPresent: false,
   descriptionBullets: [""],
   stack: [],
-  techStack: "", // ✅ keep string in sync
+  techStack: "",
   links: [],
 });
 
@@ -83,15 +79,12 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
   experiences = [],
   onChange,
 }) => {
-  // local open index for expand/collapse
   const [openIndex, setOpenIndex] = useState<number | null>(
     experiences.length > 0 ? 0 : null
   );
 
-  // ensure controlled: always use a copy
   const safeExperiences = Array.isArray(experiences) ? experiences : [];
 
-  // utility to update and bubble up
   const setExperiences = (updated: Experience[]) => {
     onChange(updated);
   };
@@ -119,7 +112,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
     setExperiences(updated);
   };
 
-  // bullet points handlers (simple list)
   const updateBullet = (
     expIndex: number,
     bulletIndex: number,
@@ -149,7 +141,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
     setExperiences(updated);
   };
 
-  /** ✅ stack input logic – same style as ProjectsForm (string + array) */
   const updateStackFromInput = (expIndex: number, raw: string) => {
     const techStack = raw;
     const arr = raw
@@ -179,7 +170,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
     return [];
   };
 
-  // links handlers
   const addLink = (expIndex: number) => {
     const updated = [...safeExperiences];
     const links = [...(updated[expIndex].links || []), { label: "", url: "" }];
@@ -209,7 +199,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
     setExperiences(updated);
   };
 
-  // present toggle: set isPresent true and clear endDate
   const togglePresent = (index: number, val: boolean) => {
     const updated = [...safeExperiences];
     updated[index].isPresent = val;
@@ -217,7 +206,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
     setExperiences(updated);
   };
 
-  // drag-and-drop handlers
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
     const items = Array.from(safeExperiences);
@@ -229,7 +217,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
           Experience
@@ -240,7 +227,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
           onClick={addExperience}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-          <Plus size={14} /> Add Experience
+           Add Experience
         </button>
       </div>
 
@@ -262,7 +249,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                   exp.endDate,
                   exp.isPresent
                 );
-                const stackArr = getStackArray(exp); // ✅ unified array
+                const stackArr = getStackArray(exp);
 
                 return (
                   <Draggable
@@ -278,7 +265,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                           snapshot.isDragging ? "ring-2 ring-blue-200" : ""
                         }`}
                       >
-                        {/* Header */}
                         <div
                           className="flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
                           onClick={() =>
@@ -307,7 +293,6 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                   : ""}
                               </div>
 
-                              {/* show stack preview small */}
                               {stackArr.length > 0 && (
                                 <div className="text-xs text-gray-400 mt-1 truncate">
                                   {stackArr.slice(0, 3).join(", ")}
@@ -352,13 +337,11 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                           </div>
                         </div>
 
-                        {/* Expanded */}
                         {openIndex === index && (
                           <div className="p-4 space-y-4 border-t bg-white">
-                            {/* Role / Company */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-900 mb-1">
                                   Role / Title
                                 </label>
                                 <input
@@ -372,12 +355,12 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                     )
                                   }
                                   placeholder="e.g. Senior Software Engineer"
-                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-400"
                                 />
                               </div>
 
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-900 mb-1">
                                   Company
                                 </label>
                                 <input
@@ -391,13 +374,13 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                     )
                                   }
                                   placeholder="e.g. Acme Corp"
-                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-400"
                                 />
                               </div>
                             </div>
 
-                            {/* Dates + Present toggle */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                                                        {/* Start + End dates in one line */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Start Date
@@ -405,14 +388,9 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                 <input
                                   type="date"
                                   value={exp.startDate ?? ""}
-                                  onChange={(e) =>
-                                    updateField(
-                                      index,
-                                      "startDate",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                  onChange={(e) => updateField(index, "startDate", e.target.value)}
+                                  className="w-full border border-gray-500 rounded-xl px-3 py-2 text-sm 
+                                            focus:ring-2 focus:ring-blue-400"
                                 />
                               </div>
 
@@ -423,40 +401,33 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                 <input
                                   type="date"
                                   value={exp.endDate ?? ""}
-                                  onChange={(e) =>
-                                    updateField(
-                                      index,
-                                      "endDate",
-                                      e.target.value
-                                    )
-                                  }
+                                  onChange={(e) => updateField(index, "endDate", e.target.value)}
                                   disabled={exp.isPresent}
                                   className={`w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 ${
                                     exp.isPresent
                                       ? "bg-gray-50 text-gray-500 cursor-not-allowed"
-                                      : "border-gray-300 focus:ring-blue-400"
+                                      : "border-gray-500 focus:ring-blue-400"
                                   }`}
                                 />
                               </div>
-
-                              <div className="flex items-center gap-3">
-                                <label className="inline-flex items-center gap-2 cursor-pointer select-none">
-                                  <input
-                                    type="checkbox"
-                                    checked={!!exp.isPresent}
-                                    onChange={(e) =>
-                                      togglePresent(index, e.target.checked)
-                                    }
-                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-400"
-                                  />
-                                  <span className="text-sm text-gray-700">
-                                    I currently work here
-                                  </span>
-                                </label>
-                              </div>
                             </div>
 
-                            {/* Duration preview */}
+                            {/* Checkbox below, full row */}
+                            <div className="mt-2">
+                              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={!!exp.isPresent}
+                                  onChange={(e) => togglePresent(index, e.target.checked)}
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-400"
+                                />
+                                <span className="text-sm text-gray-700">
+                                  I currently work here
+                                </span>
+                              </label>
+                            </div>
+
+
                             {exp.startDate &&
                               (exp.endDate || exp.isPresent) && (
                                 <div className="text-xs text-gray-500">
@@ -469,9 +440,8 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                 </div>
                               )}
 
-                            {/* Tech stack */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                              <label className="block text-sm font-medium text-gray-900 mb-1">
                                 Tech Stack (comma-separated)
                               </label>
                               <input
@@ -484,8 +454,9 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                   updateStackFromInput(index, e.target.value)
                                 }
                                 placeholder="React, Node.js, AWS"
-                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-400"
                               />
+
                               {stackArr.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
                                   {stackArr.map((s, si) => (
@@ -500,16 +471,15 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                               )}
                             </div>
 
-                            {/* Bullet points */}
                             <div>
                               <div className="flex justify-between items-center mb-2">
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-gray-900">
                                   Achievements / Responsibilities
                                 </label>
                                 <button
                                   type="button"
                                   onClick={() => addBullet(index)}
-                                  className="inline-flex items-center gap-1 px-3 py-1 text-sm text-gray-800 border border-gray-300 rounded-full hover:bg-gray-50 transition"
+                                  className="inline-flex items-center gap-1 px-3 py-1 text-sm text-gray-900 border border-gray-300 rounded-full hover:bg-gray-50 transition"
                                 >
                                   <Plus size={14} /> Add bullet
                                 </button>
@@ -522,9 +492,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                       key={bi}
                                       className="flex items-start gap-2"
                                     >
-                                      <div className="mt-2 text-gray-500">
-                                        •
-                                      </div>
+                                      <div className="mt-2 text-gray-500">•</div>
                                       <div className="flex-1">
                                         <input
                                           type="text"
@@ -537,7 +505,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                             )
                                           }
                                           placeholder="e.g. Improved API latency by 40%..."
-                                          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
+                                          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-400"
                                         />
                                       </div>
                                       <button
@@ -568,12 +536,10 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
           )}
         </Droppable>
       </DragDropContext>
-      {/* TIPS */}
+
       <div className="text-xs text-gray-500">
-        Tip: Enter a precise <strong> Role </strong>, <strong> Company </strong>, and correct dates, 
-        including the <strong> tenure </strong> for roles or projects. Describe your work by focusing 
-        on your <strong> main responsibilities </strong> and <strong> notable achievements </strong>. 
-        Use the drag handle to reorder your experience entries.
+        Tip: Enter a precise <strong>Role</strong>, <strong>Company</strong>, and correct dates.
+        Add measurable <strong>achievements</strong> and highlight your <strong>tech stack</strong>.
       </div>
     </div>
   );

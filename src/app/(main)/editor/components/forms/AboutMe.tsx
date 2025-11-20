@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { User, X } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { User, X, Camera, Sparkles } from "lucide-react";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
 export interface AboutMeFormProps {
@@ -19,8 +19,8 @@ export interface AboutMeFormProps {
 const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
   const { upload } = useCloudinaryUpload();
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Prevent crash when `data` is undefined or partially missing
   const safe = {
     greeting: data?.greeting ?? "",
     name: data?.name ?? "",
@@ -36,12 +36,9 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
 
     try {
       setUploadingPhoto(true);
-
       const url = await upload(file);
       onChange("photo", url);
-
-      // Prevent 413 error
-      e.target.value = "";
+      e.target.value = ""; // reset input
     } catch (err) {
       console.error(err);
       alert("Photo upload failed.");
@@ -50,129 +47,153 @@ const AboutMeForm: React.FC<AboutMeFormProps> = ({ data, onChange }) => {
     }
   };
 
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all";
+  const labelClass = "block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5";
+
   return (
-    <div className="space-y-6 text-sm text-gray-700">
-      {/* SECTION HEADER */}
-      <h2 className="text-lg font-semibold flex items-center gap-2">
-        <User size={18} className="text-blue-600" />
-        About Me
-      </h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
+        <div className="p-2 bg-blue-50 rounded-lg">
+            <User size={20} className="text-blue-600" />
+        </div>
+        <div>
+            <h2 className="text-lg font-bold text-gray-900">About Me</h2>
+            <p className="text-xs text-gray-500">Manage your personal details and bio.</p>
+        </div>
+      </div>
 
-      {/* PROFILE PHOTO */}
-      <div className="space-y-2">
-        <label className="block font-medium">Profile Photo</label>
+      {/* TOP SECTION: Photo + Greeting/Name */}
+      <div className="flex flex-col md:flex-row gap-4 items-start">
+        
+        {/* LEFT: Photo Upload */}
+        <div className="shrink-0">
+            <div className="mb-1.5">
+                <span className={labelClass}>Profile Photo</span>
+            </div>
+            <div className="group relative">
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                />
 
-        <input
-          key={safe.photo}  // 🔥 safe — never undefined
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoUpload}
-          className="block w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3
-                     file:rounded-full file:border file:border-gray-300
-                     file:bg-white file:text-gray-800 hover:file:bg-gray-100"
-        />
+                <div 
+                    onClick={triggerUpload}
+                    className={`relative w-36 h-36 rounded-2xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
+                    ${safe.photo ? "border-transparent shadow-md" : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"}`}
+                >
+                    {safe.photo ? (
+                        <>
+                            <img 
+                                src={safe.photo} 
+                                alt="Profile" 
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-xs">
+                                Change Photo
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-gray-400 flex flex-col items-center">
+                            {uploadingPhoto ? (
+                                 <span className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
+                            ) : (
+                                <Camera size={24} className="mb-2" />
+                            )}
+                            <span className="text-xs font-medium">Upload</span>
+                        </div>
+                    )}
+                </div>
 
-        {uploadingPhoto && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-            <span className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></span>
-            Uploading...
-          </div>
-        )}
+                {safe.photo && !uploadingPhoto && (
+                    <button
+                        type="button"
+                        onClick={() => onChange("photo", "")}
+                        className="absolute -top-2 -right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
+                        title="Remove photo"
+                    >
+                        <X size={14} />
+                    </button>
+                )}
+            </div>
+        </div>
 
-        {safe.photo && !uploadingPhoto && (
-          <div className="flex items-center gap-4 mt-3">
-            <img
-              src={safe.photo}
-              alt="Profile"
-              className="w-24 h-24 rounded-md object-cover border shadow-sm"
+        {/* RIGHT: Greeting & Name */}
+        <div className="flex-1 w-full flex flex-col gap-3">
+            {/* Greeting */}
+            <div>
+                <label className={labelClass}>Greeting</label>
+                <div className="relative">
+                    <input
+                        type="text"
+                        value={safe.greeting}
+                        onChange={(e) => onChange("greeting", e.target.value)}
+                        placeholder="Hey there! I'm"
+                        className={`${inputClass}`}
+                    />
+                </div>
+            </div>
+
+            {/* Name */}
+            <div>
+                <label className={labelClass}>Name</label>
+                <input
+                    type="text"
+                    value={safe.name}
+                    onChange={(e) => onChange("name", e.target.value)}
+                    placeholder="Your Full Name"
+                    className={inputClass}
+                />
+            </div>
+        </div>
+      </div>
+
+      {/* BOTTOM SECTION: Role & Bios */}
+      <div className="space-y-4">
+        
+        {/* Role */}
+        <div>
+            <label className={labelClass}>Role / Title</label>
+            <input
+                type="text"
+                value={safe.role}
+                onChange={(e) => onChange("role", e.target.value)}
+                placeholder="e.g., Full-Stack Developer, UI Designer"
+                className={inputClass}
             />
+        </div>
 
-            <button
-              type="button"
-              onClick={() => onChange("photo", "")}
-              className="px-3 py-1.5 text-sm text-red-600 border border-gray-300 rounded-full 
-                         hover:bg-red-50 transition shadow-sm inline-flex items-center gap-1"
-            >
-              <X size={14} />
-              Remove
-            </button>
-          </div>
-        )}
-      </div>
+        {/* Short Bio */}
+        <div>
+            <label className={labelClass}>Short Bio (One Liner)</label>
+            <textarea
+                value={safe.bio}
+                onChange={(e) => onChange("bio", e.target.value)}
+                rows={2}
+                placeholder="A quick introduction about who you are..."
+                className={inputClass}
+            />
+        </div>
 
-      {/* GREETING */}
-      <div className="space-y-1">
-        <label className="block font-medium">Greeting</label>
-        <input
-          type="text"
-          value={safe.greeting}
-          onChange={(e) => onChange("greeting", e.target.value)}
-          placeholder={`Hey there! I'm`}
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
-                     focus:ring-2 focus:ring-blue-400"
-        />
+        {/* Detailed About Me */}
+        <div>
+            <label className={labelClass}>Detailed About Me</label>
+            <textarea
+                value={safe.aboutMe}
+                onChange={(e) => onChange("aboutMe", e.target.value)}
+                rows={5}
+                placeholder="Share your journey, background, interests, and what drives you..."
+                className={inputClass}
+            />
+        </div>
       </div>
-
-      {/* NAME */}
-      <div className="space-y-1">
-        <label className="block font-medium">Name</label>
-        <input
-          type="text"
-          value={safe.name}
-          onChange={(e) => onChange("name", e.target.value)}
-          placeholder="Your name (e.g., Krishna Subhash)"
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
-                     focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-
-      {/* ROLE */}
-      <div className="space-y-1">
-        <label className="block font-medium">Role</label>
-        <input
-          type="text"
-          value={safe.role}
-          onChange={(e) => onChange("role", e.target.value)}
-          placeholder="e.g., Full-Stack Developer, CS Student"
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
-                     focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-
-      {/* BIO */}
-      <div className="space-y-1">
-        <label className="block font-medium">Bio</label>
-        <textarea
-          value={safe.bio}
-          onChange={(e) => onChange("bio", e.target.value)}
-          rows={3}
-          placeholder="Short one-liner intro about you..."
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
-                     focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-
-      {/* ABOUT ME */}
-      <div className="space-y-1">
-        <label className="block font-medium">About Me</label>
-        <textarea
-          value={safe.aboutMe}
-          onChange={(e) => onChange("aboutMe", e.target.value)}
-          rows={5}
-          placeholder="Share your journey, interests, tech stack, goals, and what you’re passionate about..."
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 text-gray-800 
-                     focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      
-      {/* TIPS */}
-      <div className="text-xs text-gray-500">
-        Tip: Your <strong>Greeting</strong> appears before your name  
-        (e.g., “Hey there! I’m”). Keep the <strong>Name</strong> & 
-        <strong>Role</strong> short. Write a short <strong> Bio </strong> 
-        for quick intro and a detailed <strong> About Me </strong> section 
-        for your journey. Upload a clean, professional <strong>Profile Photo</strong>.
-       </div>
     </div>
   );
 };

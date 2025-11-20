@@ -93,7 +93,7 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-gray-900">Education</h2>
 
@@ -124,7 +124,7 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                         className={`border border-gray-200 rounded-xl bg-white shadow-sm transition 
                           ${snapshot.isDragging ? "ring-2 ring-blue-300" : ""}`}
                       >
-                        {/* Summary Row */}
+
                         <div
                           className="flex justify-between items-center px-5 py-3 bg-gray-50 border-b cursor-pointer"
                           onClick={() => setOpenIndex(isOpen ? null : index)}
@@ -138,25 +138,20 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                             </span>
 
                             <div className="min-w-0">
-                              <div className="text-sm font-medium text-gray-800 truncate">
+                              <div className="text-sm font-medium text-gray-900 truncate">
                                 {edu.degree || "Untitled Degree"}
                               </div>
 
                               {edu.institution && (
-                                <div className="text-xs text-gray-500 truncate">
-                                  {edu.institution}
-                                </div>
+                                <div className="text-xs text-gray-500 truncate">{edu.institution}</div>
                               )}
 
                               {duration && (
-                                <div className="text-xs text-gray-400 truncate">
-                                  {duration}
-                                </div>
+                                <div className="text-xs text-gray-400 truncate">{duration}</div>
                               )}
                             </div>
                           </div>
 
-                          {/* Delete */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -169,10 +164,9 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                           </button>
                         </div>
 
-                        {/* Expanded */}
                         {isOpen && (
                           <div className="p-5 space-y-4">
-                            {/* Degree */}
+
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Degree / Qualification
@@ -182,11 +176,10 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 value={edu.degree}
                                 onChange={(e) => updateEducation(index, "degree", e.target.value)}
                                 placeholder="e.g. B.Tech in CSE"
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500"
                               />
                             </div>
 
-                            {/* Institution */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Institution
@@ -196,11 +189,10 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 value={edu.institution}
                                 onChange={(e) => updateEducation(index, "institution", e.target.value)}
                                 placeholder="e.g. NIT Calicut / Govt School"
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500"
                               />
                             </div>
 
-                            {/* Start */}
                             <div className="grid grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -209,13 +201,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 <select
                                   value={edu.startMonth}
                                   onChange={(e) => updateEducation(index, "startMonth", e.target.value)}
-                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
                                 >
                                   <option value="">Month</option>
                                   {months.map((m) => (
-                                    <option key={m} value={m}>
-                                      {m}
-                                    </option>
+                                    <option key={m} value={m}>{m}</option>
                                   ))}
                                 </select>
                               </div>
@@ -227,19 +217,16 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 <select
                                   value={edu.startYear}
                                   onChange={(e) => updateEducation(index, "startYear", e.target.value)}
-                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
                                 >
                                   <option value="">Year</option>
                                   {years.map((y) => (
-                                    <option key={y} value={String(y)}>
-                                      {y}
-                                    </option>
+                                    <option key={y} value={String(y)}>{y}</option>
                                   ))}
                                 </select>
                               </div>
                             </div>
 
-                            {/* End */}
                             <div className="grid grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -248,13 +235,11 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 <select
                                   value={edu.endMonth}
                                   onChange={(e) => updateEducation(index, "endMonth", e.target.value)}
-                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
                                 >
                                   <option value="">Month</option>
                                   {months.map((m) => (
-                                    <option key={m} value={m}>
-                                      {m}
-                                    </option>
+                                    <option key={m} value={m}>{m}</option>
                                   ))}
                                 </select>
                               </div>
@@ -266,19 +251,16 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 <select
                                   value={edu.endYear}
                                   onChange={(e) => updateEducation(index, "endYear", e.target.value)}
-                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900"
                                 >
                                   <option value="">Year or Present</option>
                                   {["Present", ...years].map((y) => (
-                                    <option key={y} value={String(y)}>
-                                      {y}
-                                    </option>
+                                    <option key={y} value={String(y)}>{y}</option>
                                   ))}
                                 </select>
                               </div>
                             </div>
 
-                            {/* Grade */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Grade / GPA
@@ -288,9 +270,10 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
                                 value={edu.grade}
                                 onChange={(e) => updateEducation(index, "grade", e.target.value)}
                                 placeholder="e.g. 8.5 CGPA / 92% / A+"
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500"
                               />
                             </div>
+
                           </div>
                         )}
                       </div>
@@ -304,12 +287,10 @@ const EducationForm: React.FC<EducationFormProps> = ({ education, onChange }) =>
           )}
         </Droppable>
       </DragDropContext>
-      {/* TIPS */}
+
       <div className="text-xs text-gray-500">
-        Tip: Add a clear <strong> Blog Title </strong>, a short <strong> Description </strong>, 
-        and the full <strong> Link </strong> to your published post (e.g., Medium article, 
-        Dev.to post, Hashnode blog, or LinkedIn article). Make sure the link opens 
-        directly to your full <strong> Blog </strong>.
+        Tip: Add clear details such as <strong>Degree</strong>, <strong>Institution</strong>,
+        <strong>Duration</strong>, and <strong>Grade</strong>.
       </div>
 
     </div>
