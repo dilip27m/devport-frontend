@@ -53,7 +53,7 @@ const NavBar = () => {
                if(main) main.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
-            Dev<span className="text-indigo-600">Port</span>.
+            Port<span className="text-indigo-600">folio</span>.
           </div>
 
           {/* Desktop Menu */}
