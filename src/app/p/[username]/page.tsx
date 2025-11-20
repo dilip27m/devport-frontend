@@ -3,11 +3,15 @@ import { notFound } from "next/navigation";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
 import Template2Shell from "@/app/templates/template2/Template2Shell";
 import Template3Shell from "@/app/templates/template3/Template3Shell";
+import Template4Shell from "@/app/templates/template4/Template4Shell";
+
 
 const templateMap: Record<string, React.ComponentType<{ data: any }>> = {
   template1: Template1Shell,
   template2: Template2Shell,
-  template3: Template3Shell
+  template3: Template3Shell,
+  template4: Template4Shell,
+
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;

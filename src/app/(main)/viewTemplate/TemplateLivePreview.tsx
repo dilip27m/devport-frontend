@@ -6,11 +6,13 @@ import type { TemplateKey } from "@/app/(main)/viewTemplate/page";
 import Template1Shell from "@/app/templates/template1/Template1Shell";
 import Template2Shell from "@/app/templates/template2/Template2Shell";
 import Template3Shell from "@/app/templates/template3/Template3Shell";
+import Template4Shell from "@/app/templates/template4/Template4Shell";
 
 const templateRegistry = {
   template1: Template1Shell,
   template2: Template2Shell,
-  template3: Template3Shell
+  template3: Template3Shell,
+  template4: Template4Shell,
 };
 // --- Dummy preview data (adjust fields to match your forms exactly) ---
 const previewData: any = {
@@ -196,16 +198,24 @@ const TemplateLivePreview: React.FC<Props> = ({ selectedTemplate }) => {
   const ActiveTemplateComponent = templateRegistry[selectedTemplate];
 
   return (
-    <div className="h-full w-full bg-white rounded-3xl border-2 border-gray-300 overflow-hidden shadow-sm">
+    <div className="h-full w-full overflow-hidden">
       <Suspense
         fallback={
-          <div className="h-full flex items-center justify-center text-gray-500">
-            Loading Template...
+          <div className="h-full flex items-center justify-center text-slate-500">
+             <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Loading Template...</span>
+             </div>
           </div>
         }
       >
         {ActiveTemplateComponent ? (
-          <div className="h-full overflow-y-auto no-scrollbar">
+          // FIX: Added 'relative' and 'transform' style.
+          // This forces 'fixed' children (like the Template Navbar) to stick to THIS div.
+          <div 
+            className="h-full overflow-y-auto no-scrollbar bg-slate-50 relative"
+            style={{ transform: "translate3d(0,0,0)" }}
+          >
             <ActiveTemplateComponent data={previewData} />
           </div>
         ) : (
@@ -218,4 +228,4 @@ const TemplateLivePreview: React.FC<Props> = ({ selectedTemplate }) => {
   );
 };
 
-export default TemplateLivePreview
+export default TemplateLivePreview;

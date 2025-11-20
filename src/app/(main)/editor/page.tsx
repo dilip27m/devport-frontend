@@ -7,7 +7,6 @@ import LivePreview from "@/app/(main)/editor/components/LivePreview";
 import BottomBar, { SaveStatus } from "@/app/(main)/editor/components/Bottombar";
 import { useAuth } from "@/context/AuthContext";
 
-// --- START: Import all type definitions from every form ---
 import type { AboutMeFormProps } from "@/app/(main)/editor/components/forms/AboutMe";
 import type { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
 import type { Education } from "@/app/(main)/editor/components/forms/EducationForm";
@@ -16,11 +15,9 @@ import type { Experience } from "@/app/(main)/editor/components/forms/Experience
 import type { Achievement } from "@/app/(main)/editor/components/forms/AchievementsForm";
 import type { Blog } from "@/app/(main)/editor/components/forms/BlogsForm";
 import type { SocialNetworkFormProps } from "@/app/(main)/editor/components/forms/SocialNetworForm";
-// --- END: Import all type definitions ---
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// Helper function to define the complete, default state for the portfolio
 const getInitialData = () => ({
   aboutMe: { greeting: "", name: "", role: "", bio: "", photo: "", resume: "", aboutMe: "" } as AboutMeFormProps['data'],
   projects: [] as Project[],
@@ -39,14 +36,10 @@ export default function EditorPage() {
   const [activeTemplate, setActiveTemplate] = useState("template1");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
-
-  // --- NEW STATES FOR PUBLISHING ---
   const [isPublished, setIsPublished] = useState(false);
   const [publishStatus, setPublishStatus] = useState<"idle" | "loading">("idle");
-  // ---------------------------------
 
   const [data, setData] = useState(getInitialData());
-
   const { user, token } = useAuth();
 
   useEffect(() => {
@@ -64,7 +57,7 @@ export default function EditorPage() {
 
         if (response.ok) {
           const result = await response.json();
-          if (result.success && result.data) { // Check for the top-level data object
+          if (result.success && result.data) {
             setData({
               ...baseData,
               ...(result.data.data || {}),
@@ -73,28 +66,13 @@ export default function EditorPage() {
             });
             setActiveTemplate(result.data.template || "template1");
             setLastSaved(new Date(result.data.lastUpdatedAt).toLocaleString());
-            // Set the publish status from the loaded data
-            setIsPublished(result.data.isPublished ?? false); // Use `?? false` as a safety net
-            console.log("Portfolio data loaded successfully!");
+            setIsPublished(result.data.isPublished ?? false);
             return;
           }
         }
-        
-        console.log("No existing portfolio found or fetch failed. Using default data.");
         setData(baseData);
-
       } catch (error) {
-        // Your excellent, robust error handling is preserved here
         console.error("Critical error during data loading:", error);
-        if (error instanceof SyntaxError) {
-          try {
-             const errorResponse = await fetch(`${API_BASE_URL}/portfolio/${user._id}`, { headers: { Authorization: `Bearer ${token}` } });
-             const errorText = await errorResponse.text();
-             console.error("Backend sent non-JSON response:", errorText);
-          } catch (e) {
-             console.error("Could not read the error response from the backend.");
-          }
-        }
         setData(getInitialData());
       }
     };
@@ -102,7 +80,7 @@ export default function EditorPage() {
     loadPortfolioData();
   }, [user, token]);
 
- const handleSave = async () => {
+  const handleSave = async () => {
     if (!user || !token) {
       alert("You must be logged in to save.");
       return;
@@ -121,14 +99,13 @@ export default function EditorPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save data.");
-      }
+      if (!response.ok) throw new Error("Failed to save data.");
+      
       const result = await response.json();
       if (result.success && result.data) {
         setSaveStatus("success");
         setLastSaved(new Date(result.data.lastUpdatedAt).toLocaleString());
-        setIsPublished(result.data.isPublished); // Also update publish status on save
+        setIsPublished(result.data.isPublished);
       } else {
         throw new Error(result.error || "An unknown error occurred.");
       }
@@ -140,7 +117,6 @@ export default function EditorPage() {
     }
   };
 
-  // --- NEW FUNCTION TO HANDLE THE PUBLISH/UNPUBLISH TOGGLE ---
   const handlePublishToggle = async () => {
     if (!user || !token) return;
     setPublishStatus("loading");
@@ -150,16 +126,13 @@ export default function EditorPage() {
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio/${endpoint}`, {
         method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+        headers: { "Authorization": `Bearer ${token}` },
       });
       const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || `Failed to ${endpoint}`);
-      }
+      if (!response.ok) throw new Error(result.error || `Failed to ${endpoint}`);
+      
       if (result.success && result.data) {
-        setIsPublished(result.data.isPublished); // Update state from the definitive backend response
+        setIsPublished(result.data.isPublished);
       }
     } catch (error) {
       console.error("Publish toggle error:", error);
@@ -170,15 +143,26 @@ export default function EditorPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 flex items-start p-5 pb-0 gap-4 overflow-hidden">
-        <div className="w-[12%] h-full border border-gray-600 bg-gray-100 p-2 rounded-3xl overflow-y-auto">
+    // H-full ensures it takes the remaining height (100vh - navbar height)
+    // overflow-hidden prevents the main page scrollbar from appearing
+    <div className="flex flex-col h-[calc(100vh-64px)] bg-white overflow-hidden">
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex gap-4 p-4 overflow-hidden w-full max-w-full">
+        
+        {/* Sidebar (Fixed Width) */}
+        <div className="w-64 flex-shrink-0 h-full border border-gray-300 bg-gray-50 p-2 rounded-2xl overflow-y-auto no-scrollbar">
           <Sidebar active={activeSection} onSelect={setActiveSection} />
         </div>
-        <div className="w-[59%] h-full border border-gray-600 rounded-3xl overflow-hidden">
+
+        {/* Live Preview (Flexible Width) */}
+        <div className="flex-1 min-w-0 h-full border border-gray-300 rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
+           {/* The key fix: 'min-w-0' allows flex items to shrink below content size */}
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
-        <div className="w-[30%] h-full border border-gray-600 bg-gray-100 shadow-inner flex flex-col rounded-3xl overflow-hidden">
+
+        {/* Form Container (Fixed Width) */}
+        <div className="w-[400px] flex-shrink-0 h-full border border-gray-300 bg-white shadow-lg flex flex-col rounded-2xl overflow-hidden">
           <FormContainer
             section={activeSection}
             data={data}
@@ -188,7 +172,10 @@ export default function EditorPage() {
             lastSaved={lastSaved}
           />
         </div>
+
       </div>
+
+      {/* Bottom Bar */}
       <BottomBar
         activeTemplate={activeTemplate}
         onTemplateChange={setActiveTemplate}
