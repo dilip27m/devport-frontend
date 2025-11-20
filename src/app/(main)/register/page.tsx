@@ -80,10 +80,12 @@ const RegisterPage = () => {
     setOtpLoading(true);
 
     try {
-      await sendOtp(email);
+      // Pass username here so backend checks duplicates before sending email
+      await sendOtp(email, username);
       setStep("otp");
       setTimer(60);
     } catch (err: any) {
+      // Display the specific error from backend (e.g., "Username is already taken")
       setError(err.message || "Failed to send OTP");
     }
 
@@ -97,7 +99,8 @@ const RegisterPage = () => {
     setOtpLoading(true);
 
     try {
-      await sendOtp(email);
+      // Resend also needs username to bypass the check or verify same user
+      await sendOtp(email, username);
       setTimer(60);
     } catch (err: any) {
       setError(err.message || "Failed to resend OTP");
@@ -143,15 +146,18 @@ const RegisterPage = () => {
         ============================== */}
         {step === "form" && (
           <form onSubmit={handleSendOtp} className="space-y-5">
+            {/* FULL NAME */}
             <input
               type="text"
               placeholder="Full Name"
               value={name}
               required
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500"
+              // FIX: Added text-gray-900 and placeholder:text-gray-500
+              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-800"
             />
 
+            {/* USERNAME */}
             <div>
               <input
                 type="text"
@@ -166,9 +172,10 @@ const RegisterPage = () => {
                     username: validateUsername(val),
                   }));
                 }}
-                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 ${
+                // FIX: Added text-gray-900 and placeholder:text-gray-500
+                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
                   fieldErrors.username
-                    ? "border-red-500"
+                    ? "border-red-500 focus:ring-red-200"
                     : "border-gray-300 focus:ring-gray-800"
                 }`}
               />
@@ -179,6 +186,7 @@ const RegisterPage = () => {
               )}
             </div>
 
+            {/* EMAIL */}
             <div>
               <input
                 type="email"
@@ -193,9 +201,10 @@ const RegisterPage = () => {
                     email: validateEmail(val),
                   }));
                 }}
-                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500${
+                // FIX: Added text-gray-900 and placeholder:text-gray-500
+                className={`w-full rounded-3xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
                   fieldErrors.email
-                    ? "border-red-500"
+                    ? "border-red-500 focus:ring-red-200"
                     : "border-gray-300 focus:ring-gray-800"
                 }`}
               />
@@ -206,51 +215,50 @@ const RegisterPage = () => {
               )}
             </div>
 
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  required
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setPassword(val);
+            {/* PASSWORD */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                required
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPassword(val);
+                  setFieldErrors((prev) => ({
+                    ...prev,
+                    password: validatePassword(val),
+                  }));
+                }}
+                // FIX: Added text-gray-900 and placeholder:text-gray-500
+                className={`w-full rounded-3xl border px-4 py-3 pr-10 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
+                  fieldErrors.password
+                    ? "border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:ring-gray-800"
+                }`}
+              />
 
-                    // trigger validation + show error
-                    setFieldErrors((prev) => ({
-                      ...prev,
-                      password: validatePassword(val),
-                    }));
-                  }}
-                  className={`w-full rounded-3xl border px-4 py-3 pr-10 text-sm text-gray-900 placeholder:text-gray-500 ${
-                    fieldErrors.password
-                      ? "border-red-500"
-                      : "border-gray-300 focus:ring-gray-800"
-                  }`}
-                />
+              {/* Eye icon */}
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-gray-800"
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </span>
 
-                {/* Eye icon */}
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 cursor-pointer text-gray-900 hover:text-gray-800"
-                >
-                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </span>
-
-                {/* Password error display */}
-                {fieldErrors.password && (
-                  <p className="text-red-600 text-xs mt-1">{fieldErrors.password}</p>
-                )}
-              </div>
-
+              {/* Password error display */}
+              {fieldErrors.password && (
+                <p className="text-red-600 text-xs mt-1">{fieldErrors.password}</p>
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={otpLoading}
-              className={`w-full rounded-3xl py-2.5 font-medium border ${
+              className={`w-full rounded-3xl py-2.5 font-medium border transition-all duration-200 ${
                 otpLoading
-                  ? "bg-gray-400 text-white"
-                  : "bg-black text-white border-black hover:bg-white hover:text-black"
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-black text-white border-black hover:bg-gray-800"
               }`}
             >
               {otpLoading ? "Sending OTP..." : "Send OTP"}
@@ -269,7 +277,8 @@ const RegisterPage = () => {
               <span className="font-semibold">{email}</span>
             </p>
 
-            {/* SIMPLE OTP INPUT */}
+            {/* OTP INPUT */}
+            {/* FIX: Added text-gray-900 and placeholder:text-gray-500 */}
             <input
               id="otp-input"
               type="text"
@@ -280,16 +289,16 @@ const RegisterPage = () => {
                 const val = e.target.value.replace(/\D/g, "");
                 setOtp(val);
               }}
-              className="w-full rounded-3xl border border-gray-300 px-4 py-3 text-center text-lg tracking-widest text-gray-900 placeholder:text-gray-500"
+              className="w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-center text-lg tracking-widest text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-800"
             />
 
             <button
               onClick={handleVerifyOtp}
               disabled={verifyLoading}
-              className={`w-full rounded-3xl py-2.5 font-medium border ${
+              className={`w-full rounded-3xl py-2.5 font-medium border transition-all duration-200 ${
                 verifyLoading
-                  ? "bg-gray-400 text-white"
-                  : "bg-black text-white border-black hover:bg-white hover:text-black"
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-black text-white border-black hover:bg-gray-800"
               }`}
             >
               {verifyLoading ? "Verifying..." : "Verify OTP"}
@@ -304,14 +313,14 @@ const RegisterPage = () => {
                 <button
                   onClick={handleResendOtp}
                   disabled={otpLoading}
-                  className="text-gray-800 underline disabled:opacity-60"
+                  className="text-gray-800 underline hover:text-black disabled:opacity-60"
                 >
                   {otpLoading ? "Resending..." : "Resend OTP"}
                 </button>
               )}
 
               <button
-                className="text-gray-800 underline"
+                className="text-gray-800 underline hover:text-black"
                 onClick={() => {
                   setStep("form");
                   setError("");
