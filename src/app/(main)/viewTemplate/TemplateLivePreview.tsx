@@ -7,14 +7,17 @@ import Template1Shell from "@/app/templates/template1/Template1Shell";
 import Template2Shell from "@/app/templates/template2/Template2Shell";
 import Template3Shell from "@/app/templates/template3/Template3Shell";
 import Template4Shell from "@/app/templates/template4/Template4Shell";
+import Template5Shell from "@/app/templates/template5/Template5Shell";
 
 const templateRegistry = {
   template1: Template1Shell,
   template2: Template2Shell,
   template3: Template3Shell,
   template4: Template4Shell,
+  template5: Template5Shell,
 };
-// --- Dummy preview data (adjust fields to match your forms exactly) ---
+
+// --- UPDATED PREVIEW DATA TO MATCH INTERFACES ---
 const previewData: any = {
   aboutMe: {
     greeting: "Hey there, I'm",
@@ -29,7 +32,11 @@ const previewData: any = {
       title: "TaskFlow - Project Management Tool",
       description: "A collaborative project management platform with real-time updates, Kanban boards, and team analytics. Built to help remote teams stay organized and productive.",
       image: "/images/project1.png",
-      links: ["https://github.com/alexthompson/taskflow", "https://taskflow-demo.vercel.app"],
+      // FIXED: Links are now objects, not strings
+      links: [
+        { label: "GitHub", url: "https://github.com/alexthompson/taskflow" },
+        { label: "Others", url: "https://taskflow-demo.vercel.app" }
+      ],
       stack: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Socket.io", "TailwindCSS"],
       startDate: "2024-06-15",
       endDate: "2024-10-20",
@@ -39,7 +46,10 @@ const previewData: any = {
       title: "CodeSnippet - Developer's Notebook",
       description: "A beautiful code snippet manager with syntax highlighting, tagging system, and cloud sync. Helps developers organize and share their favorite code snippets.",
       image: "/images/project2.png",
-      links: ["https://github.com/alexthompson/codesnippet"],
+      // FIXED
+      links: [
+        { label: "GitHub", url: "https://github.com/alexthompson/codesnippet" }
+      ],
       stack: ["React", "Node.js", "MongoDB", "Express", "Redux", "Prism.js"],
       startDate: "2024-01-10",
       endDate: "2024-04-05",
@@ -49,7 +59,10 @@ const previewData: any = {
       title: "WeatherWise - Smart Weather Dashboard",
       description: "An intelligent weather forecasting app that provides personalized recommendations based on weather conditions, location, and user preferences.",
       image: "/images/project3.png",
-      links: ["https://weatherwise-app.netlify.app"],
+      // FIXED
+      links: [
+        { label: "Others", url: "https://weatherwise-app.netlify.app" }
+      ],
       stack: ["Vue.js", "TypeScript", "OpenWeather API", "Chart.js", "Vuetify"],
       startDate: "2023-08-01",
       endDate: "2023-11-15",
@@ -112,7 +125,8 @@ const previewData: any = {
         "Mentored 3 junior developers, conducting code reviews and leading weekly technical workshops"
       ],
       stack: ["React", "TypeScript", "Next.js", "GraphQL", "AWS"],
-      links: ["https://techcorp.com"]
+      // FIXED
+      links: [{ label: "Others", url: "https://techcorp.com" }]
     },
     {
       role: "Full Stack Developer Intern",
@@ -210,8 +224,6 @@ const TemplateLivePreview: React.FC<Props> = ({ selectedTemplate }) => {
         }
       >
         {ActiveTemplateComponent ? (
-          // FIX: Added 'relative' and 'transform' style.
-          // This forces 'fixed' children (like the Template Navbar) to stick to THIS div.
           <div 
             className="h-full overflow-y-auto no-scrollbar bg-slate-50 relative"
             style={{ transform: "translate3d(0,0,0)" }}
