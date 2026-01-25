@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
-// We no longer need useRouter or useAuth, simplifying this component.
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, Check, Layers } from "lucide-react";
 
 export type SaveStatus = "idle" | "saving" | "success" | "error";
 
 interface BottomBarProps {
   activeTemplate: string;
   onTemplateChange: (template: string) => void;
-  isPublished: boolean;
-  onPublishToggle: () => void;
-  publishStatus: "idle" | "loading";
+  onSave: () => void;
+  saveStatus: SaveStatus;
+  lastSaved: string | null;
+  hasUnsavedChanges: boolean;
 }
 
 const templates = [
@@ -24,65 +25,139 @@ const templates = [
 const BottomBar: React.FC<BottomBarProps> = ({
   activeTemplate,
   onTemplateChange,
-  isPublished,
-  onPublishToggle,
-  publishStatus,
+  onSave,
+  saveStatus,
+  lastSaved,
+  hasUnsavedChanges,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // --- UPDATED LOGIC for the "View" button ---
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleViewClick = () => {
-    // This now simply opens our new, protected /preview page in a new tab.
-    // That page will handle its own authentication and data fetching.
     const previewUrl = "/preview";
     window.open(previewUrl, "_blank", "noopener,noreferrer");
   };
 
-  // The logic for the publish button text and style is still correct.
-  const publishButtonText = isPublished ? "Unpublish" : "Publish";
-  const publishButtonClass = isPublished
-    ? "bg-yellow-500 text-white border-transparent hover:bg-yellow-600"
-    : "bg-green-600 text-white border-transparent hover:bg-green-700";
+  // Save button styling based on status
+  const getSaveButtonContent = () => {
+    switch (saveStatus) {
+      case "saving":
+        return {
+          text: "Saving...",
+          disabled: true,
+          className: "bg-gray-400 text-white cursor-not-allowed",
+        };
+      case "success":
+        return {
+          text: "Saved ✓",
+          disabled: false,
+          className: "bg-green-600 text-white hover:bg-green-700",
+        };
+      case "error":
+        return {
+          text: "Save Failed",
+          disabled: false,
+          className: "bg-red-500 text-white hover:bg-red-600",
+        };
+      default:
+        return {
+          text: "Save",
+          disabled: false,
+          className: "bg-green-600 text-white hover:bg-green-700",
+        };
+    }
+  };
+
+  const saveBtn = getSaveButtonContent();
+  const formattedTemplate = activeTemplate.charAt(0).toUpperCase() + activeTemplate.slice(1);
 
   return (
-   <div className=" px-6  shadow-md z-50">
-      <div className="flex w-full gap-4">
-        {/* Template switcher section */}
-        <div className="flex-1 overflow-x-auto bg-white bg-gray-100 rounded-3xl no-scrollbar ">
-          <div className="flex items-center space-x-2 whitespace-nowrap p-3">
-            {templates.map((template, index) => (
-              <button
-                key={`${template}-${index}`}
-                onClick={() => onTemplateChange(template)}
-                className={`px-4 py-2 rounded-2xl text-sm transition ${
-                  activeTemplate === template
-                    ? "bg-gray-800 text-white font-bold"
-                    : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-                }`}
-              >
-                {template.charAt(0).toUpperCase() + template.slice(1)}
-              </button>
-            ))}
-          </div>
+    <div className="px-6 py-3 border-t bg-white z-50">
+      <div className="flex w-full items-center justify-between gap-4">
+
+        {/* Template Dropdown Selector */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl border border-gray-200 hover:bg-gray-200 transition-colors"
+          >
+            <Layers size={16} className="text-gray-600" />
+            <span className="font-medium text-gray-800">{formattedTemplate}</span>
+            <ChevronDown
+              size={16}
+              className={`text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isOpen && (
+            <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+              <div className="py-1 max-h-60 overflow-y-auto">
+                {templates.map((template) => {
+                  const isActive = activeTemplate === template;
+                  const label = template.charAt(0).toUpperCase() + template.slice(1);
+                  return (
+                    <button
+                      key={template}
+                      onClick={() => {
+                        onTemplateChange(template);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors ${isActive
+                        ? "bg-gray-100 text-gray-900 font-medium"
+                        : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                    >
+                      <span>{label}</span>
+                      {isActive && <Check size={16} className="text-green-600" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Action buttons section */}
-        <div className="flex-none">
-          <div className="flex items-center space-x-3  p-3">
-            <button
-              onClick={handleViewClick} // The logic inside this function has changed.
-              className="px-4 py-2 bg-black text-white rounded-3xl border border-black transition-all duration-300 hover:bg-white hover:text-black"
-            >
-              View
-            </button>
+        {/* Right Side - Status + Actions */}
+        <div className="flex items-center gap-4">
+          {/* Unsaved or Last Saved indicator */}
+          {hasUnsavedChanges ? (
+            <span className="text-xs text-orange-500 font-medium hidden sm:block">
+              ● Unsaved changes
+            </span>
+          ) : lastSaved && saveStatus === "idle" ? (
+            <span className="text-xs text-gray-500 hidden sm:block">
+              Last saved: {lastSaved}
+            </span>
+          ) : null}
 
-            <button
-              onClick={onPublishToggle}
-              disabled={publishStatus === "loading"}
-              className={`px-4 py-2 rounded-3xl border transition-all duration-300 ${publishButtonClass} disabled:bg-gray-400 disabled:cursor-not-allowed`}
-            >
-              {publishStatus === "loading" ? "Updating..." : publishButtonText}
-            </button>
-          </div>
+          {/* Save Button */}
+          <button
+            onClick={onSave}
+            disabled={saveBtn.disabled}
+            className={`px-5 py-2 rounded-xl font-medium transition-all duration-300 ${saveBtn.className} disabled:cursor-not-allowed`}
+          >
+            {saveBtn.text}
+          </button>
+
+          {/* View Button */}
+          <button
+            onClick={handleViewClick}
+            className="px-5 py-2 bg-gray-900 text-white rounded-xl font-medium transition-all duration-300 hover:bg-gray-700"
+          >
+            View
+          </button>
         </div>
       </div>
     </div>
