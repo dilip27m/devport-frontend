@@ -4,7 +4,7 @@ import { useState } from "react";
 import ViewTemplateSidebar from "@/app/(main)/viewTemplate/ViewTemplateSidebar";
 import TemplateLivePreview from "@/app/(main)/viewTemplate/TemplateLivePreview";
 
-export type TemplateKey = "template1" | "template2" | "template3" | "template4";
+export type TemplateKey = "template1" | "template2" | "template3" | "template4" | "template5";
 
 const ViewTemplatePage = () => {
   const [selectedTemplate, setSelectedTemplate] =

@@ -24,6 +24,10 @@ const TEMPLATES: { id: TemplateKey; name: string }[] = [
     {
     id: "template4",
     name: "Template 4",
+  },
+    {
+    id: "template5",
+    name: "Template 5 (Trendy)",
   }
 ];
 

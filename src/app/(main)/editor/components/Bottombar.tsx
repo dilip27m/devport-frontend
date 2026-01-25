@@ -18,6 +18,7 @@ const templates = [
   "template2",
   "template3",
   "template4",
+  "template5",
 ];
 
 const BottomBar: React.FC<BottomBarProps> = ({
