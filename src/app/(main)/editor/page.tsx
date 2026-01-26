@@ -7,6 +7,7 @@ import FormContainer from "@/app/(main)/editor/components/FormContainer";
 import LivePreview from "@/app/(main)/editor/components/LivePreview";
 import BottomBar from "@/app/(main)/editor/components/Bottombar";
 import { useAuth } from "@/context/AuthContext";
+import { useAlert } from "@/context/AlertContext";
 
 import type { AboutMeFormProps } from "@/app/(main)/editor/components/forms/AboutMe";
 import type { Project } from "@/app/(main)/editor/components/forms/ProjectsForm";
@@ -53,6 +54,7 @@ export default function EditorPage() {
 
   const [data, setData] = useState(getInitialData());
   const { user, token } = useAuth();
+  const { showAlert } = useAlert();
 
   // Resizable form width state
   const [formWidth, setFormWidth] = useState(DEFAULT_FORM_WIDTH);
@@ -106,8 +108,29 @@ export default function EditorPage() {
       baseData.aboutMe.name = user.name;
       baseData.socials.email = user.email;
 
-      // If no portfolioId, we're creating a new portfolio
+      // If no portfolioId, we check for an existing portfolio first
+      // UNLESS the user explicitly requested to create a new one
+      const createNew = searchParams.get("createNew");
+
       if (!portfolioIdFromUrl) {
+        if (!createNew) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/portfolio`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const json = await res.json();
+            if (json.success && json.data && json.data.length > 0) {
+              const latestId = json.data[0]._id;
+              // Redirect to the latest portfolio and stop further execution
+              router.replace(`/editor?portfolioId=${latestId}`);
+              return;
+            }
+          } catch (error) {
+            console.error("Error fetching portfolios:", error);
+          }
+        }
+
+        // If no existing portfolio found (or error), OR user explicitly wants new, start new
         setData(baseData);
         setPortfolioId(null);
         setPortfolioTitle("My Portfolio");
@@ -148,7 +171,7 @@ export default function EditorPage() {
 
   const handleSave = async () => {
     if (!user || !token) {
-      alert("You must be logged in to save.");
+      showAlert("You must be logged in to save.", "error");
       return;
     }
     setSaveStatus("saving");

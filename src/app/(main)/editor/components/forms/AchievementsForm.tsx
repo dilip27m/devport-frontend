@@ -14,6 +14,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
+import { useAlert } from "@/context/AlertContext";
+
 export interface Achievement {
   title: string;
   description: string;
@@ -31,6 +33,7 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
   onChange,
 }) => {
   const { upload } = useCloudinaryUpload();
+  const { showAlert } = useAlert();
   const [openIndex, setOpenIndex] = useState<number | null>(
     achievements.length > 0 ? 0 : null
   );
@@ -86,7 +89,7 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
       const url = await upload(file);
       updateField(index, "image", url);
     } catch (err) {
-      alert("Image upload failed.");
+      showAlert("Image upload failed.", "error");
     } finally {
       setUploadingIndex(null);
     }
@@ -107,7 +110,7 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
           onClick={addAchievement}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-         Add Achievement
+          Add Achievement
         </button>
       </div>
 
@@ -133,9 +136,8 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${
-                          snapshot.isDragging ? "ring-2 ring-blue-200" : ""
-                        }`}
+                        className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""
+                          }`}
                       >
                         {/* Header */}
                         <div
@@ -202,61 +204,61 @@ const AchievementsForm: React.FC<AchievementsFormProps> = ({
                               transition={{ duration: 0.2 }}
                               className="p-4 space-y-5 border-t bg-white"
                             >
-                              
+
                               {/* --- Image Upload Section --- */}
                               <div>
                                 <span className={labelClass}>Proof / Certificate Image</span>
                                 <div className="group relative">
-                                    <input
-                                        id={`ach-img-${index}`}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(index, e)}
-                                        className="hidden"
-                                    />
+                                  <input
+                                    id={`ach-img-${index}`}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(index, e)}
+                                    className="hidden"
+                                  />
 
-                                    <label
-                                        htmlFor={`ach-img-${index}`}
-                                        className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
+                                  <label
+                                    htmlFor={`ach-img-${index}`}
+                                    className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
                                         ${ach.image ? "border-transparent shadow-sm" : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"}`}
-                                    >
-                                        {ach.image ? (
-                                            <>
-                                                <img 
-                                                    src={ach.image} 
-                                                    alt="Achievement Proof" 
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
-                                                    Change Image
-                                                </div>
-                                            </>
+                                  >
+                                    {ach.image ? (
+                                      <>
+                                        <img
+                                          src={ach.image}
+                                          alt="Achievement Proof"
+                                          className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
+                                          Change Image
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div className="text-gray-400 flex flex-col items-center">
+                                        {isUploading ? (
+                                          <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
                                         ) : (
-                                            <div className="text-gray-400 flex flex-col items-center">
-                                                {isUploading ? (
-                                                    <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
-                                                ) : (
-                                                    <ImageIcon size={32} className="mb-2 opacity-50" />
-                                                )}
-                                                <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Image"}</span>
-                                            </div>
+                                          <ImageIcon size={32} className="mb-2 opacity-50" />
                                         )}
-                                    </label>
-
-                                    {/* Remove Button */}
-                                    {ach.image && !isUploading && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); 
-                                                updateField(index, "image", "");
-                                            }}
-                                            className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
-                                            title="Remove image"
-                                        >
-                                            <X size={14} />
-                                        </button>
+                                        <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Image"}</span>
+                                      </div>
                                     )}
+                                  </label>
+
+                                  {/* Remove Button */}
+                                  {ach.image && !isUploading && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateField(index, "image", "");
+                                      }}
+                                      className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
+                                      title="Remove image"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  )}
                                 </div>
                               </div>
 

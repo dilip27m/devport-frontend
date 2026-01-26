@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useAlert } from "@/context/AlertContext";
 import { Plus, FolderOpen } from "lucide-react";
 import PortfolioCard from "./PortfolioCard";
 
@@ -14,6 +15,8 @@ interface Portfolio {
     isPublished: boolean;
 }
 
+import ConfirmBox from "@/components/ConfirmBox";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const PortfolioManager = () => {
@@ -21,7 +24,9 @@ const PortfolioManager = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [deployingId, setDeployingId] = useState<string | null>(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null); // For confirmation
     const { user, token } = useAuth();
+    const { showAlert } = useAlert();
     const router = useRouter();
 
     const fetchPortfolios = async () => {
@@ -55,7 +60,7 @@ const PortfolioManager = () => {
     }, [user, token]);
 
     const handleCreateNew = () => {
-        router.push("/editor");
+        router.push("/editor?createNew=true");
     };
 
     const handleDeploy = async (portfolioId: string) => {
@@ -73,18 +78,23 @@ const PortfolioManager = () => {
 
             // Refresh the list to show updated status
             await fetchPortfolios();
+            showAlert("Portfolio published successfully!", "success");
         } catch (err: any) {
-            alert(`Error: ${err.message}`);
+            showAlert(`Error: ${err.message}`, "error");
         } finally {
             setDeployingId(null);
         }
     };
 
-    const handleDelete = async (portfolioId: string) => {
-        if (!token) return;
+    const confirmDelete = (portfolioId: string) => {
+        setDeleteId(portfolioId);
+    };
+
+    const handleDelete = async () => {
+        if (!token || !deleteId) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/portfolio/${portfolioId}`, {
+            const response = await fetch(`${API_BASE_URL}/portfolio/${deleteId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -93,9 +103,12 @@ const PortfolioManager = () => {
             if (!response.ok) throw new Error(result.error || "Failed to delete");
 
             // Remove from local state
-            setPortfolios(portfolios.filter((p) => p._id !== portfolioId));
+            setPortfolios(portfolios.filter((p) => p._id !== deleteId));
+            showAlert("Portfolio deleted successfully!", "success");
         } catch (err: any) {
-            alert(`Error: ${err.message}`);
+            showAlert(`Error: ${err.message}`, "error");
+        } finally {
+            setDeleteId(null);
         }
     };
 
@@ -119,7 +132,7 @@ const PortfolioManager = () => {
     }
 
     return (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border bg-white p-6 shadow-sm relative">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
@@ -162,11 +175,20 @@ const PortfolioManager = () => {
                             key={portfolio._id}
                             portfolio={portfolio}
                             onDeploy={handleDeploy}
-                            onDelete={handleDelete}
+                            onDelete={confirmDelete}
                             isDeploying={deployingId === portfolio._id}
                         />
                     ))}
                 </div>
+            )}
+
+            {/* Confirm Dialog */}
+            {deleteId && (
+                <ConfirmBox
+                    message="Are you sure you want to delete this portfolio? This action cannot be undone."
+                    onConfirm={handleDelete}
+                    onCancel={() => setDeleteId(null)}
+                />
             )}
         </div>
     );

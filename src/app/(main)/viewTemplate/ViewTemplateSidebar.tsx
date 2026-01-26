@@ -21,11 +21,11 @@ const TEMPLATES: { id: TemplateKey; name: string }[] = [
     id: "template3",
     name: "Template 3",
   },
-    {
+  {
     id: "template4",
     name: "Template 4",
   },
-    {
+  {
     id: "template5",
     name: "Template 5 (Trendy)",
   }
@@ -51,11 +51,10 @@ const ViewTemplateSidebar: React.FC<ViewTemplateSidebarProps> = ({
               type="button"
               onClick={() => onChangeTemplate(tpl.id)}
               className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-colors
-              ${
-                isActive
+              ${isActive
                   ? "bg-green-500 text-white shadow-md"
                   : "bg-white text-slate-700 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <span>{tpl.name}</span>
             </button>

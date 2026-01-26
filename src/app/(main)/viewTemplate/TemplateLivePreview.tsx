@@ -216,15 +216,15 @@ const TemplateLivePreview: React.FC<Props> = ({ selectedTemplate }) => {
       <Suspense
         fallback={
           <div className="h-full flex items-center justify-center text-slate-500">
-             <div className="flex flex-col items-center gap-2">
-                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm font-medium">Loading Template...</span>
-             </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm font-medium">Loading Template...</span>
+            </div>
           </div>
         }
       >
         {ActiveTemplateComponent ? (
-          <div 
+          <div
             className="h-full overflow-y-auto no-scrollbar bg-slate-50 relative"
             style={{ transform: "translate3d(0,0,0)" }}
           >

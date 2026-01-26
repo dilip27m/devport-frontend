@@ -38,9 +38,7 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
     };
 
     const handleDelete = () => {
-        if (confirm(`Are you sure you want to delete "${portfolio.title}"?`)) {
-            onDelete(portfolio._id);
-        }
+        onDelete(portfolio._id);
     };
 
     return (
