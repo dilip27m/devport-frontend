@@ -10,31 +10,66 @@ import {
   Trophy,
   NotebookPen,
   Share2,
+  LucideIcon,
 } from "lucide-react";
 
 interface SidebarProps {
   active: string;
   onSelect: (section: string) => void;
+  isMobile?: boolean;
 }
 
-const sections: { label: string; icon: React.ReactNode }[] = [
-  { label: "About Me", icon: <IdCard size={20} /> },
-  { label: "Education", icon: <BookOpen size={20} /> },
-  { label: "Experience", icon: <Briefcase size={20} /> },
-  { label: "Projects", icon: <FolderKanban size={20} /> },
-  { label: "Skills", icon: <Wrench size={20} /> },
-  { label: "Achievements", icon: <Trophy size={20} /> },
-  { label: "Blogs", icon: <NotebookPen size={20} /> },
-  { label: "Social", icon: <Share2 size={20} /> },
+const sections: { label: string; Icon: LucideIcon }[] = [
+  { label: "About Me", Icon: IdCard },
+  { label: "Education", Icon: BookOpen },
+  { label: "Experience", Icon: Briefcase },
+  { label: "Projects", Icon: FolderKanban },
+  { label: "Skills", Icon: Wrench },
+  { label: "Achievements", Icon: Trophy },
+  { label: "Blogs", Icon: NotebookPen },
+  { label: "Social", Icon: Share2 },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
+const Sidebar: React.FC<SidebarProps> = ({ active, onSelect, isMobile = false }) => {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
 
+  // Mobile: Horizontal scrollable layout
+  if (isMobile) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-2 overflow-hidden">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          {sections.map(({ label, Icon }) => {
+            const isActive = active === label;
+            return (
+              <button
+                key={label}
+                type="button"
+                onClick={() => onSelect(label)}
+                className={`
+                  flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium 
+                  transition-all duration-200 whitespace-nowrap
+                  ${isActive
+                    ? "bg-green-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                  }
+                `}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon size={16} />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: Vertical icon-only layout
   return (
     <nav className="h-full w-full flex flex-col items-center py-2">
       <ul className="flex flex-col gap-2">
-        {sections.map(({ label, icon }) => {
+        {sections.map(({ label, Icon }) => {
           const isActive = active === label;
           const isHovered = hoveredLabel === label;
 
@@ -55,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
                 aria-current={isActive ? "page" : undefined}
                 aria-label={label}
               >
-                {icon}
+                <Icon size={20} />
               </button>
 
               {/* Tooltip */}

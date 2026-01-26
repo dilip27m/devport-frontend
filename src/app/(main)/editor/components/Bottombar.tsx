@@ -83,17 +83,18 @@ const BottomBar: React.FC<BottomBarProps> = ({
   const formattedTemplate = activeTemplate.charAt(0).toUpperCase() + activeTemplate.slice(1);
 
   return (
-    <div className="px-6 py-3 border-t bg-white z-50">
-      <div className="flex w-full items-center justify-between gap-4">
+    <div className="px-3 md:px-6 py-2 md:py-3 border-t bg-white z-50">
+      <div className="flex w-full items-center justify-between gap-2 md:gap-4">
 
         {/* Template Dropdown Selector */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl border border-gray-200 hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 bg-gray-100 rounded-xl border border-gray-200 hover:bg-gray-200 transition-colors text-sm md:text-base"
           >
             <Layers size={16} className="text-gray-600" />
-            <span className="font-medium text-gray-800">{formattedTemplate}</span>
+            <span className="font-medium text-gray-800 hidden sm:inline">{formattedTemplate}</span>
+            <span className="font-medium text-gray-800 sm:hidden">T{activeTemplate.slice(-1)}</span>
             <ChevronDown
               size={16}
               className={`text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
@@ -130,14 +131,14 @@ const BottomBar: React.FC<BottomBarProps> = ({
         </div>
 
         {/* Right Side - Status + Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Unsaved or Last Saved indicator */}
           {hasUnsavedChanges ? (
             <span className="text-xs text-orange-500 font-medium hidden sm:block">
               ● Unsaved changes
             </span>
           ) : lastSaved && saveStatus === "idle" ? (
-            <span className="text-xs text-gray-500 hidden sm:block">
+            <span className="text-xs text-gray-500 hidden lg:block">
               Last saved: {lastSaved}
             </span>
           ) : null}
@@ -146,7 +147,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
           <button
             onClick={onSave}
             disabled={saveBtn.disabled}
-            className={`px-5 py-2 rounded-xl font-medium transition-all duration-300 ${saveBtn.className} disabled:cursor-not-allowed`}
+            className={`px-3 md:px-5 py-2 rounded-xl font-medium transition-all duration-300 text-sm md:text-base ${saveBtn.className} disabled:cursor-not-allowed`}
           >
             {saveBtn.text}
           </button>
@@ -154,7 +155,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
           {/* View Button */}
           <button
             onClick={handleViewClick}
-            className="px-5 py-2 bg-gray-900 text-white rounded-xl font-medium transition-all duration-300 hover:bg-gray-700"
+            className="px-3 md:px-5 py-2 bg-gray-900 text-white rounded-xl font-medium transition-all duration-300 hover:bg-gray-700 text-sm md:text-base"
           >
             View
           </button>

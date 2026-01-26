@@ -202,23 +202,28 @@ export default function EditorPage() {
       {/* Main Content Area */}
       <div
         ref={containerRef}
-        className="flex-1 flex p-4 overflow-hidden w-full max-w-full"
+        className="flex-1 flex flex-col md:flex-row p-2 md:p-4 overflow-hidden w-full max-w-full gap-2 md:gap-0"
       >
 
-        {/* Sidebar (Collapsed - Icons Only) */}
-        <div className="w-16 flex-shrink-0 h-full border border-gray-300 bg-gray-50 rounded-2xl overflow-visible mr-4">
-          <Sidebar active={activeSection} onSelect={setActiveSection} />
+        {/* Mobile: Horizontal Section Selector at Top */}
+        <div className="md:hidden flex-shrink-0 w-full">
+          <Sidebar active={activeSection} onSelect={setActiveSection} isMobile={true} />
         </div>
 
-        {/* Live Preview (Flexible Width) */}
-        <div className="flex-1 min-w-0 h-full border border-gray-300 rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
+        {/* Desktop: Sidebar (Collapsed - Icons Only) */}
+        <div className="hidden md:block w-16 flex-shrink-0 h-full border border-gray-300 bg-gray-50 rounded-2xl overflow-visible mr-4">
+          <Sidebar active={activeSection} onSelect={setActiveSection} isMobile={false} />
+        </div>
+
+        {/* Live Preview (Flexible Width) - Hidden on Mobile */}
+        <div className="hidden md:block flex-1 min-w-0 h-full border border-gray-300 rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
           <LivePreview data={data} activeTemplate={activeTemplate} />
         </div>
 
-        {/* Resize Handle */}
+        {/* Resize Handle - Hidden on Mobile */}
         <div
           onMouseDown={handleMouseDown}
-          className="w-4 flex-shrink-0 cursor-col-resize flex items-center justify-center group"
+          className="hidden md:flex w-4 flex-shrink-0 cursor-col-resize items-center justify-center group"
           title="Drag to resize"
         >
           <div
@@ -232,10 +237,10 @@ export default function EditorPage() {
           />
         </div>
 
-        {/* Form Container (Resizable Width) */}
+        {/* Form Container - Full width on mobile, resizable on desktop */}
         <div
-          style={{ width: formWidth }}
-          className="flex-shrink-0 h-full border border-gray-300 bg-white shadow-lg flex flex-col rounded-2xl overflow-hidden"
+          style={{ width: typeof window !== 'undefined' && window.innerWidth < 768 ? '100%' : formWidth }}
+          className="w-full md:w-auto flex-shrink-0 h-full border border-gray-300 bg-white shadow-lg flex flex-col rounded-2xl overflow-hidden"
         >
           <FormContainer
             section={activeSection}

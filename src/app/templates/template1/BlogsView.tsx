@@ -54,27 +54,27 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
     const noResults = displayBlogs.length === 0;
 
     return (
-      <section className="max-w-5xl mx-auto py-12 px-4">
-        <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-4">
+      <section className="max-w-5xl mx-auto py-8 sm:py-12 px-4">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-3 sm:mb-4">
           Blog
         </h1>
-        <p className="text-gray-400 text-lg mb-12 max-w-2xl">
+        <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-12 max-w-2xl">
           This is where I share my writings on programming, tutorials, and my
           experiences.
         </p>
 
-        <div className="relative mb-10">
+        <div className="relative mb-6 sm:mb-10">
           <input
             type="text"
-            placeholder="Search articles by title, category, or content..."
+            placeholder="Search articles..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-transparent border-b-2 border-gray-800 text-white text-lg p-4 pr-12 focus:outline-none focus:border-green-400 transition-colors placeholder-gray-600"
+            className="w-full bg-transparent border-b-2 border-gray-800 text-white text-base sm:text-lg p-3 sm:p-4 pr-10 sm:pr-12 focus:outline-none focus:border-green-400 transition-colors placeholder-gray-600"
           />
           <svg
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"
-            width="22"
-            height="22"
+            className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"
+            width="20"
+            height="20"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -94,7 +94,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
             <span className="text-gray-300 font-medium">"{search}"</span>.
           </p>
         ) : (
-          <div className="space-y-10">
+          <div className="space-y-6 sm:space-y-10">
             {displayBlogs.map((blog, index) => (
               <a
                 key={index}
@@ -103,10 +103,10 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
                 rel="noopener noreferrer"
                 className="block group"
               >
-                <article className="flex flex-col gap-4 py-6 border-b border-gray-800 hover:border-gray-700 transition-colors">
+                <article className="flex flex-col gap-3 sm:gap-4 py-4 sm:py-6 border-b border-gray-800 hover:border-gray-700 transition-colors">
 
                   <div className="flex flex-col gap-2">
-          
+
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
                       {blog.category && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-gray-700 bg-gray-900 text-gray-200 text-[11px]">
@@ -120,7 +120,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
                       )}
                     </div>
 
-        
+
                     <h3 className="text-2xl font-bold text-white group-hover:text-green-400 transition-colors">
                       {blog.name || "Untitled Blog Post"}
                     </h3>
@@ -138,7 +138,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
     );
   }
 
-  
+
   return (
     <section className="py-16">
       <div className="flex justify-between items-center mb-8">
@@ -183,7 +183,7 @@ const BlogsView: React.FC<BlogsViewProps> = ({ blogs, limit }) => {
               )}
             </div>
 
-      
+
             {blog.description && (
               <p className="text-gray-400 text-xs sm:text-sm leading-relaxed break-words mt-1 line-clamp-3">
                 {blog.description}

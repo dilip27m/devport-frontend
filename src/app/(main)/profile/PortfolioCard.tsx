@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Layers, CheckCircle, Clock, Edit3, Globe, Trash2, FileText } from "lucide-react";
+import { Layers, CheckCircle, Clock, Edit3, Globe, Trash2, FileText, Eye } from "lucide-react";
 
 interface PortfolioCardProps {
     portfolio: {
@@ -27,6 +27,10 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
 
     const handleEdit = () => {
         router.push(`/editor?portfolioId=${portfolio._id}`);
+    };
+
+    const handleView = () => {
+        router.push(`/preview?portfolioId=${portfolio._id}`);
     };
 
     const handleDeploy = () => {
@@ -77,6 +81,15 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
 
             {/* Actions */}
             <div className="flex gap-2 pt-3 border-t border-neutral-100">
+                <button
+                    onClick={handleView}
+                    className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                    title="Preview portfolio"
+                >
+                    <Eye size={16} />
+                    View
+                </button>
+
                 <button
                     onClick={handleEdit}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition-colors"
