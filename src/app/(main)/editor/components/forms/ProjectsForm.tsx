@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAlert } from "@/context/AlertContext";
 import {
   ChevronDown,
   ChevronUp,
@@ -113,6 +114,7 @@ const computeDuration = (start?: string, end?: string) => {
 const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
   const safeProjects = Array.isArray(projects) ? projects : [];
   const { upload } = useCloudinaryUpload();
+  const { showAlert } = useAlert();
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(
     safeProjects.length > 0 ? 0 : null
@@ -175,7 +177,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
       updateProject(index, "image", url);
     } catch (err) {
       console.error(err);
-      alert("Upload failed.");
+      showAlert("Upload failed.", "error");
     } finally {
       setUploadingIndex(null);
     }
@@ -193,9 +195,9 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
     const arr = p.stack?.length
       ? p.stack
       : p.techStack
-          ?.split(",")
-          .map((s) => s.trim())
-          .filter(Boolean) || [];
+        ?.split(",")
+        .map((s) => s.trim())
+        .filter(Boolean) || [];
     if (!arr.length) return null;
     return arr.length <= 2
       ? arr.join(", ")
@@ -241,7 +243,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                   project.startDate &&
                   project.endDate &&
                   project.endDate < project.startDate;
-                
+
                 const ghLink = project.links.find(
                   (l) => l.label === "GitHub"
                 ) || { label: "GitHub", url: "" };
@@ -250,9 +252,8 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                 ) || { label: "Others", url: "" };
 
                 const friendlyDates = project.startDate
-                  ? `${formatDate(project.startDate)} → ${
-                      formatDate(project.endDate) || "Present"
-                    }`
+                  ? `${formatDate(project.startDate)} → ${formatDate(project.endDate) || "Present"
+                  }`
                   : "";
                 const duration = computeDuration(
                   project.startDate,
@@ -269,9 +270,8 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${
-                          snapshot.isDragging ? "ring-2 ring-blue-200" : ""
-                        }`}
+                        className={`border rounded-xl bg-white shadow-sm overflow-hidden transition ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""
+                          }`}
                       >
                         {/* Header */}
                         <div
@@ -316,11 +316,11 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                               <Trash2 size={16} />
                             </button>
                             <div className="text-gray-400">
-                                {isExpanded ? (
-                                  <ChevronUp size={18} />
-                                ) : (
-                                  <ChevronDown size={18} />
-                                )}
+                              {isExpanded ? (
+                                <ChevronUp size={18} />
+                              ) : (
+                                <ChevronDown size={18} />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -351,11 +351,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                   <label
                                     htmlFor={`proj-img-${index}`}
                                     className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
-                                    ${
-                                      project.image
+                                    ${project.image
                                         ? "border-transparent shadow-sm"
                                         : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"
-                                    }`}
+                                      }`}
                                   >
                                     {project.image ? (
                                       <>
@@ -469,11 +468,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                           e.target.value
                                         )
                                       }
-                                      className={`${inputClass} ${
-                                        dateError
-                                          ? "border-red-400 focus:ring-red-200"
-                                          : ""
-                                      }`}
+                                      className={`${inputClass} ${dateError
+                                        ? "border-red-400 focus:ring-red-200"
+                                        : ""
+                                        }`}
                                     />
                                   </div>
                                   <div>
@@ -490,11 +488,10 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                           e.target.value
                                         )
                                       }
-                                      className={`${inputClass} ${
-                                        dateError
-                                          ? "border-red-400 focus:ring-red-200"
-                                          : ""
-                                      }`}
+                                      className={`${inputClass} ${dateError
+                                        ? "border-red-400 focus:ring-red-200"
+                                        : ""
+                                        }`}
                                     />
                                   </div>
                                 </div>
@@ -532,59 +529,59 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <label className={labelClass}>
-                                        GitHub Link
-                                      </label>
-                                      <input
-                                        type="text"
-                                        placeholder="username/repo"
-                                        value={ghLink.url}
-                                        onChange={(e) => {
-                                          const newLinks = project.links.filter(
-                                            (l) => l.label !== "GitHub"
-                                          );
-                                          updateProject(index, "links", [
-                                            ...newLinks,
-                                            { label: "GitHub", url: e.target.value },
-                                          ]);
-                                        }}
-                                        onBlur={(e) => {
-                                            const newLinks = project.links.filter(
-                                              (l) => l.label !== "GitHub"
-                                            );
-                                            updateProject(index, "links", [
-                                              ...newLinks,
-                                              { 
-                                                  label: "GitHub", 
-                                                  url: normalizeGithubUsername(e.target.value) 
-                                              },
-                                            ]);
-                                        }}
-                                        className={inputClass}
-                                      />
-                                    </div>
+                                  <div>
+                                    <label className={labelClass}>
+                                      GitHub Link
+                                    </label>
+                                    <input
+                                      type="text"
+                                      placeholder="username/repo"
+                                      value={ghLink.url}
+                                      onChange={(e) => {
+                                        const newLinks = project.links.filter(
+                                          (l) => l.label !== "GitHub"
+                                        );
+                                        updateProject(index, "links", [
+                                          ...newLinks,
+                                          { label: "GitHub", url: e.target.value },
+                                        ]);
+                                      }}
+                                      onBlur={(e) => {
+                                        const newLinks = project.links.filter(
+                                          (l) => l.label !== "GitHub"
+                                        );
+                                        updateProject(index, "links", [
+                                          ...newLinks,
+                                          {
+                                            label: "GitHub",
+                                            url: normalizeGithubUsername(e.target.value)
+                                          },
+                                        ]);
+                                      }}
+                                      className={inputClass}
+                                    />
+                                  </div>
 
-                                    <div>
-                                      <label className={labelClass}>
-                                        Live/Other Link
-                                      </label>
-                                      <input
-                                        type="text"
-                                        placeholder="https://myproject.com"
-                                        value={otLink.url}
-                                        onChange={(e) => {
-                                          const newLinks = project.links.filter(
-                                            (l) => l.label !== "Others"
-                                          );
-                                          updateProject(index, "links", [
-                                            ...newLinks,
-                                            { label: "Others", url: e.target.value },
-                                          ]);
-                                        }}
-                                        className={inputClass}
-                                      />
-                                    </div>
+                                  <div>
+                                    <label className={labelClass}>
+                                      Live/Other Link
+                                    </label>
+                                    <input
+                                      type="text"
+                                      placeholder="https://myproject.com"
+                                      value={otLink.url}
+                                      onChange={(e) => {
+                                        const newLinks = project.links.filter(
+                                          (l) => l.label !== "Others"
+                                        );
+                                        updateProject(index, "links", [
+                                          ...newLinks,
+                                          { label: "Others", url: e.target.value },
+                                        ]);
+                                      }}
+                                      className={inputClass}
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </motion.div>
@@ -600,7 +597,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ projects, onChange }) => {
           )}
         </Droppable>
       </DragDropContext>
-            <div className="text-xs text-gray-500">
+      <div className="text-xs text-gray-500">
         Tip: After entering the username/repo once click some where in that form and then click save ,it shows full link.
       </div>
 

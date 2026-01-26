@@ -21,21 +21,21 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
   };
 
   return (
-    <nav className="w-full bg-white/5 glass-bg rounded-xl shadow-xl my-4 mx-auto max-w-4xl px-6 py-3">
-      <div className="flex justify-center gap-6">
+    <nav className="w-full bg-white/5 glass-bg rounded-xl shadow-xl my-4 mx-auto max-w-4xl px-3 sm:px-6 py-2 sm:py-3">
+      <div className="flex justify-center gap-2 sm:gap-6">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => handleNavigate(item.id)}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all
+              flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all
               ${activePage === item.id
                 ? "bg-gradient-to-r from-[#00b3ff] to-[#9b5cff] text-white shadow-lg"
                 : "text-slate-300 hover:text-white"}
             `}
           >
             {item.icon}
-            {item.label}
+            <span className="hidden xs:inline sm:inline">{item.label}</span>
           </button>
         ))}
       </div>

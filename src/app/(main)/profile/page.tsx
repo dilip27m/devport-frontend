@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import UserInfo from "@/app/(main)/profile/UserInfo";
 import ChangePasswordForm from "@/app/(main)/profile/ChangePasswordForm";
 import DeleteAccount from "@/app/(main)/profile/DeleteAccount";
-import PortfolioSummary from "@/app/(main)/profile/PortfolioSummary"; 
+import PortfolioManager from "@/app/(main)/profile/PortfolioManager";
 
 const ProfilePage = () => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -51,8 +51,8 @@ const ProfilePage = () => {
           <div className="lg:col-span-2 space-y-6">
             <UserInfo user={user} />
 
-            {/* --- NEW COMPONENT ADDED HERE --- */}
-            <PortfolioSummary />
+            {/* --- PORTFOLIO MANAGER --- */}
+            <PortfolioManager />
             {/* -------------------------------- */}
 
           </div>

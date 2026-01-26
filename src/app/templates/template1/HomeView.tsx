@@ -2,7 +2,7 @@
 import React from "react";
 import type { AboutMeFormProps } from "@/app/(main)/editor/components/forms/AboutMe";
 import type { SocialNetworkFormProps } from "@/app/(main)/editor/components/forms/SocialNetworForm";
-import { Github, Linkedin, Mail, Zap } from "lucide-react"; 
+import { Github, Linkedin, Mail, Zap } from "lucide-react";
 
 type Props = {
   profile: AboutMeFormProps["data"];
@@ -72,22 +72,22 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
         </div>
 
         <div className="max-w-7xl mx-auto text-center">
-  
+
           <p className="text-base md:text-lg text-green-400 mb-3 font-medium">
             {greetingDisplay}
           </p>
-          
-         
+
+
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
             {nameDisplay}
           </h1>
-          
+
 
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
             {roleDisplay}
           </p>
 
-         
+
           {bioDisplay && (
             <div className="mb-8">
               <p className="text-sm md:text-base text-gray-400 text-center max-w-4xl mx-auto leading-relaxed break-words whitespace-pre-line">
@@ -106,15 +106,15 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
       </section>
 
 
-      <section className="relative max-w-7xl mx-auto px-4 pb-32 pt-8">
-        <div className="flex items-start">
-         
-          <div className="flex-1 max-w-3xl pr-8">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2 mb-6">
-              <Zap size={20} className="text-green-400"/>
+      <section className="relative max-w-7xl mx-auto px-4 pb-16 md:pb-32 pt-8">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start">
+
+          <div className="flex-1 max-w-3xl lg:pr-8 order-2 lg:order-1">
+            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2 mb-4 md:mb-6">
+              <Zap size={20} className="text-green-400" />
               About Me
             </h2>
-            
+
             <div className="text-gray-400 text-sm space-y-4 leading-relaxed">
               {aboutMe?.trim() ? (
                 aboutMe.split('\n\n').map((paragraph, idx) => (
@@ -138,15 +138,15 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
             </div>
           </div>
 
+          {/* Desktop Photo */}
+          <div className="hidden lg:flex relative flex-shrink-0 items-start pt-8 order-2">
 
-          <div className="hidden lg:flex relative flex-shrink-0 items-start pt-8">
-          
             <div className="absolute top-0 right-8 grid grid-cols-6 gap-5 opacity-30 z-0">
               {Array.from({ length: 48 }).map((_, i) => (
                 <div key={i} className="w-2 h-2 rounded-full bg-gray-600"></div>
               ))}
             </div>
-            
+
             <div className="w-[280px] h-[280px] rounded-full overflow-hidden shadow-2xl relative z-10">
               {photo ? (
                 <img
@@ -163,10 +163,10 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
               )}
             </div>
           </div>
-          
-        
-          <div className="lg:hidden mt-8 flex justify-center">
-            <div className="w-[280px] h-[280px] rounded-full overflow-hidden shadow-2xl">
+
+          {/* Mobile Photo - Shown at top on mobile */}
+          <div className="lg:hidden mb-8 flex justify-center order-1">
+            <div className="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] rounded-full overflow-hidden shadow-2xl">
               {photo ? (
                 <img
                   src={photo}
@@ -175,7 +175,7 @@ const HomeView: React.FC<Props> = ({ profile, socials }) => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500 bg-[#161b22]">
-                  <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-20 h-20 sm:w-24 sm:h-24" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                   </svg>
                 </div>

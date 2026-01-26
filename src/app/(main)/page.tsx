@@ -3,14 +3,24 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  FiEdit,
-  FiLayers,
-  FiCode,
-  FiZap,
-  FiGithub,
-  FiLinkedin,
-} from "react-icons/fi";
-
+  Layers,
+  Edit3,
+  Zap,
+  Layout,
+  Globe,
+  CheckCircle,
+  ArrowRight,
+  Send,
+  FolderKanban,
+  Palette,
+  Eye,
+  Share2,
+  Sparkles,
+  UserPlus,
+  MousePointerClick,
+  FileEdit,
+  Rocket,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 type SubmitStatus = "idle" | "success" | "error";
@@ -19,15 +29,9 @@ const LandingPage: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
-  // contact target (client-visible). Add NEXT_PUBLIC_CONTACT_EMAIL to .env.local if you want to change it.
-  const contactEmail =
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "devport120@gmail.com";
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "devport120@gmail.com";
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
 
@@ -35,70 +39,79 @@ const LandingPage: React.FC = () => {
     setMounted(true);
   }, []);
 
-  const team = [
+  const features = [
     {
-      name: "M Dilip Kumar Reddy",
-      role: "Developer",
-      image: "/images/dilip.jpeg",
-      github: "https://github.com/dilip27m",
-      linkedin: "https://www.linkedin.com/in/mdilipkumarreddy/",
-      bio: "Frontend-focused dev who loves clean UI, smooth UX, and pixel-perfect details.",
+      icon: <FolderKanban size={28} />,
+      title: "Multiple Portfolios",
+      description: "Create different portfolio versions for various job roles. Switch between your Frontend, Backend, or Full-Stack resumes instantly.",
     },
     {
-      name: "B Krishna Subhash",
-      role: "Developer",
-      image: "/images/subhash.jpeg",
-      github: "https://github.com/subhash865",
-      linkedin: "https://www.linkedin.com/in/bkrishnasubhash/",
-      bio: "Full-stack dev working with React, Next.js, and scalable systems. Always shipping.",
+      icon: <Palette size={28} />,
+      title: "5+ Premium Templates",
+      description: "Choose from professionally designed templates. Each template is crafted to highlight your skills and projects beautifully.",
     },
     {
-      name: "B Chakradhar",
-      role: "Developer",
-      image: "/images/chakri.jpeg",
-      github: "https://github.com/chakri1184",
-      linkedin: "https://www.linkedin.com/in/b-chakradhar-bb839531b/",
-      bio: "Backend enthusiast, APIs, databases, and performance optimization are his playground.",
+      icon: <Eye size={28} />,
+      title: "Live Real-Time Preview",
+      description: "See your changes instantly as you type. No more guessing—what you see is exactly what your visitors will see.",
     },
     {
-      name: "K Harish",
-      role: "Developer",
-      image: "/images/harish.jpeg",
-      github: "https://github.com/Harishkonanki45",
-      linkedin: "https://www.linkedin.com/in/harish-konanki-02181b290/",
-      bio: "Problem-solver who enjoys building efficient logic and robust systems.",
+      icon: <Globe size={28} />,
+      title: "One-Click Deploy",
+      description: "Publish your portfolio with a single click. Get a shareable URL instantly—no hosting setup required.",
+    },
+    {
+      icon: <Layout size={28} />,
+      title: "Resizable Editor",
+      description: "Adjust the editor panel to your preference. Drag to resize and customize your workspace like VS Code.",
+    },
+    {
+      icon: <Share2 size={28} />,
+      title: "Public Shareable Links",
+      description: "Share your portfolio with recruiters using your unique username URL (devport.com/p/yourname).",
     },
   ];
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  const userJourney = [
+    {
+      step: 1,
+      icon: <UserPlus size={24} />,
+      title: "Sign Up",
+      description: "Create your free account in seconds",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      step: 2,
+      icon: <MousePointerClick size={24} />,
+      title: "Pick a Template",
+      description: "Choose a design you love",
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      step: 3,
+      icon: <FileEdit size={24} />,
+      title: "Add Your Info",
+      description: "Fill in your skills & projects",
+      color: "from-teal-500 to-teal-600",
+    },
+    {
+      step: 4,
+      icon: <Eye size={24} />,
+      title: "Preview It",
+      description: "See exactly how it looks",
+      color: "from-orange-500 to-orange-600",
+    },
+    {
+      step: 5,
+      icon: <Rocket size={24} />,
+      title: "Go Live!",
+      description: "One click and you're online",
+      color: "from-green-500 to-green-600",
+    },
+  ];
 
-    const midX = rect.width / 2;
-    const midY = rect.height / 2;
-
-    const rotateX = ((y - midY) / midY) * -8; // invert for natural feel
-    const rotateY = ((x - midX) / midX) * 8;
-
-    (card as HTMLElement).style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    (card as HTMLElement).style.boxShadow = "0 20px 45px rgba(15,23,42,0.35)";
-  };
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    (card as HTMLElement).style.transform = "rotateX(0deg) rotateY(0deg)";
-    (card as HTMLElement).style.boxShadow = "";
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
@@ -106,30 +119,14 @@ const LandingPage: React.FC = () => {
       setSubmitStatus("error");
       return;
     }
-
     setIsSubmitting(true);
     setSubmitStatus("idle");
-
     try {
-      const url = `https://formsubmit.co/ajax/${encodeURIComponent(
-        contactEmail
-      )}`;
-
-      const response = await fetch(url, {
+      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(contactEmail)}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _subject: `New Contact Form Submission from ${formData.name}`,
-          _template: "table",
-        }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name: formData.name, email: formData.email, message: formData.message, _subject: `Contact from ${formData.name}`, _template: "table" }),
       });
-
       if (response.ok) {
         setSubmitStatus("success");
         setFormData({ name: "", email: "", message: "" });
@@ -137,391 +134,284 @@ const LandingPage: React.FC = () => {
       } else {
         setSubmitStatus("error");
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch {
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // show name only when available
-  const displayName = user?.name?.trim() ? user.name : "";
+  const displayName = user?.name?.trim() || "";
 
   return (
-    <div className="flex-1 bg-white text-gray-800 font-sans">
-      {/* HERO */}
-      <section className="min-h-[calc(100vh-80px)] flex items-center justify-center text-center bg-white px-4">
-        <div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
-            Build Your Developer Portfolio{" "}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-400 mt-2">
-              In Minutes.
-            </span>
+    <div className="flex-1 bg-white text-gray-900">
+      {/* ================== HERO SECTION ================== */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Liquid Gradient Background */}
+        <div className="absolute inset-0 liquid-gradient" />
+
+        {/* Floating Water Bubbles */}
+        <div className="water-bubble w-32 h-32 top-20 right-[10%] opacity-60" style={{ animationDelay: '0s' }} />
+        <div className="water-bubble w-48 h-48 top-40 right-[25%] opacity-40" style={{ animationDelay: '2s' }} />
+        <div className="water-bubble w-24 h-24 bottom-32 left-[15%] opacity-50" style={{ animationDelay: '1s' }} />
+        <div className="water-bubble w-40 h-40 bottom-20 left-[30%] opacity-30" style={{ animationDelay: '3s' }} />
+        <div className="water-bubble w-20 h-20 top-32 left-[20%] opacity-70" style={{ animationDelay: '4s' }} />
+        <div className="water-bubble w-36 h-36 bottom-40 right-[20%] opacity-35" style={{ animationDelay: '1.5s' }} />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+          <div className="frosted-badge inline-flex items-center gap-2 px-5 py-2.5 mb-8">
+            <Sparkles size={16} className="text-purple-500" />
+            <span className="text-sm font-medium text-gray-700">Now with Multi-Portfolio Support</span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
+            Build Your Developer
+            <span className="block mt-2 gradient-text">Portfolio in Minutes</span>
           </h1>
-          <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-600">
-            Showcase your projects with stunning, ready-to-use templates. No
-            coding required. Just add your content and go live.
+
+          <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-600 leading-relaxed">
+            Create stunning, professional portfolios with our intuitive editor.
+            Choose templates, add your projects, and go live instantly.
           </p>
-          <div className="mt-8">
-            {isAuthenticated && displayName ? (
-              <div>
-                <p className="text-lg text-gray-700 mb-4">
-                  Welcome back, <span className="font-bold">{displayName}</span>!
-                </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            {isAuthenticated ? (
+              <>
+                {displayName && <p className="text-gray-600 mb-2 sm:hidden">Welcome back, <span className="font-semibold">{displayName}</span>!</p>}
                 <Link
                   href="/editor"
-                  className="inline-block bg-black text-white font-bold text-lg rounded-full px-8 py-4 hover:bg-gray-800 transition-transform duration-200 hover:scale-105"
+                  className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold text-lg rounded-xl px-8 py-4 hover:bg-gray-800 transition-all duration-200 hover:shadow-xl hover:-translate-y-1"
                 >
-                  Go to Your Editor
+                  Go to Editor
+                  <ArrowRight size={20} />
                 </Link>
-              </div>
-            ) : isAuthenticated && !displayName ? (
-              <Link
-                href="/editor"
-                className="inline-block bg-black text-white font-bold text-lg rounded-full px-8 py-4 hover:bg-gray-800 transition-transform duration-200 hover:scale-105"
-              >
-                Go to Your Editor
-              </Link>
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 font-semibold text-lg rounded-xl px-8 py-4 border-2 border-gray-200 hover:border-gray-900 transition-all duration-200"
+                >
+                  View Dashboard
+                </Link>
+              </>
             ) : (
-              <Link
-                href="/register"
-                className="inline-block bg-black text-white font-bold text-lg rounded-full px-8 py-4 hover:bg-gray-800 transition-transform duration-200 hover:scale-105"
-              >
-                Get Started for Free
-              </Link>
+              <>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold text-lg rounded-xl px-8 py-4 hover:bg-gray-800 transition-all duration-200 hover:shadow-xl hover:-translate-y-1"
+                >
+                  Get Started Free
+                  <ArrowRight size={20} />
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 font-semibold text-lg rounded-xl px-8 py-4 border-2 border-gray-200 hover:border-gray-900 transition-all duration-200"
+                >
+                  Sign In
+                </Link>
+              </>
             )}
           </div>
         </div>
       </section>
 
-      {/* 3-STEP PROCESS */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            A Simple Three-Step Process
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            <div className="flex flex-col items-center">
-              <FiLayers size={48} className="text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                1. Choose a Template
-              </h3>
-              <p className="text-gray-600">
-                Select from a library of professionally designed templates built
-                for developers.
-              </p>
+      {/* ================== USER JOURNEY ================== */}
+      <section className="py-24 relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-purple-50/30 to-white" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Your Journey</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              From signup to live portfolio — it's this simple!
+            </p>
+          </div>
+
+          {/* Desktop: Horizontal Timeline */}
+          <div className="hidden md:block">
+            <div className="relative">
+              {/* Connection Line */}
+              <div className="absolute top-10 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 rounded-full" />
+
+              <div className="grid grid-cols-5 gap-4">
+                {userJourney.map((item, idx) => (
+                  <div key={idx} className="relative flex flex-col items-center text-center">
+                    {/* Step Circle - Glossy Bubble */}
+                    <div className={`journey-bubble relative z-10 w-20 h-20 flex items-center justify-center mb-4`}>
+                      <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white shadow-lg`}>
+                        {item.icon}
+                      </div>
+                    </div>
+                    {/* Step Number Badge */}
+                    <div className="absolute top-0 right-1/2 translate-x-10 -translate-y-1 frosted-badge w-7 h-7 !rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-gray-800">{item.step}</span>
+                    </div>
+                    <h3 className="font-bold text-lg mb-1">{item.title}</h3>
+                    <p className="text-gray-600 text-sm">{item.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <FiEdit size={48} className="text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">2. Add Your Content</h3>
-              <p className="text-gray-600">
-                Use our simple editor to add your profile, projects, skills, and
-                images.
-              </p>
+          </div>
+
+          {/* Mobile: Vertical Timeline */}
+          <div className="md:hidden">
+            <div className="relative">
+              {/* Vertical Line */}
+              <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 rounded-full" />
+
+              <div className="space-y-8">
+                {userJourney.map((item, idx) => (
+                  <div key={idx} className="relative flex items-start gap-6 pl-4">
+                    {/* Step Circle */}
+                    <div className={`relative z-10 w-12 h-12 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
+                      {item.icon}
+                    </div>
+                    <div className="pt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="w-5 h-5 bg-gray-900 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                          {item.step}
+                        </span>
+                        <h3 className="font-bold text-lg">{item.title}</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <FiZap size={48} className="text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                3. Publish Your Site
-              </h3>
-              <p className="text-gray-600">
-                Your portfolio goes live instantly at a shareable URL. No
-                waiting for deployments.
-              </p>
+          </div>
+
+          {/* Simple Summary */}
+          <div className="mt-16 text-center">
+            <div className="frosted-badge inline-flex items-center gap-2 px-6 py-3">
+              <CheckCircle size={20} className="text-green-500" />
+              <span className="font-medium text-gray-700">No coding required • Free forever • Takes 5 minutes</span>
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* FEATURES */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            Everything You Need to Succeed
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-6">
-              <FiCode size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">
-                Built for Developers
-              </h3>
-              <p className="text-gray-600">
-                Templates designed to highlight your GitHub projects, technical
-                skills, and experience.
-              </p>
-            </div>
-            <div className="p-6">
-              <FiEdit size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">
-                Live Real-Time Editor
-              </h3>
-              <p className="text-gray-600">
-                See your changes instantly in the live preview as you type. No
-                more guessing.
-              </p>
-            </div>
-            <div className="p-6">
-              <FiLayers size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">
-                Growing Template Library
-              </h3>
-              <p className="text-gray-600">
-                More templates are added regularly, giving you fresh new looks
-                for your portfolio.
-              </p>
-            </div>
-            <div className="p-6">
-              <FiZap size={32} className="text-blue-500 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">
-                Fast and Optimized
-              </h3>
-              <p className="text-gray-600">
-                Your final portfolio is a fast, static-like site, perfect for
-                performance and SEO.
-              </p>
-            </div>
+      {/* ================== FEATURES ================== */}
+      < section className="py-24 relative overflow-hidden" >
+        {/* Subtle gradient background */}
+        < div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/20 to-white" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Powerful Features</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything you need to build a portfolio that gets you noticed
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* TEAM SECTION */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">Meet Our Team</h2>
-          <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
-            The minds behind DevPort building tools that help developers launch
-            a professional portfolio in minutes.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <div
-                key={member.name}
-                className={`relative w-full h-80 [perspective:1200px] group transition-all duration-500 ${
-                  mounted ? "opacity-100" : "opacity-0"
-                }`}
-                style={{
-                  transitionDelay: mounted ? `${index * 120}ms` : "0ms",
-                }}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                  {/* FRONT */}
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500 to-teal-400 p-[1px] rounded-2xl 
-                      [backface-visibility:hidden] group-hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]"
-                  >
-                    <div className="bg-white rounded-2xl p-6 flex flex-col items-center h-full">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-24 h-24 rounded-full object-cover mb-4 border border-gray-200"
-                      />
-                      <h3 className="text-lg font-semibold">{member.name}</h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        {member.role}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* BACK */}
-                  <div
-                    className="absolute inset-0 rounded-2xl bg-white p-6 flex flex-col justify-center items-center text-center 
-                      [transform:rotateY(180deg)] [backface-visibility:hidden] border shadow-lg"
-                  >
-                    <h3 className="text-xl font-semibold mb-2">
-                      {member.name}
-                    </h3>
-                    <p className="text-gray-700 text-sm leading-relaxed">
-                      {member.bio}
-                    </p>
-
-                    {/* Icons after flip */}
-                    <div className="flex items-center gap-4 mt-4">
-                      <a
-                        href={member.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gray-600 hover:text-gray-900 transition-colors"
-                        aria-label={`${member.name} GitHub`}
-                      >
-                        <FiGithub size={20} />
-                      </a>
-                      <a
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gray-600 hover:text-blue-600 transition-colors"
-                        aria-label={`${member.name} LinkedIn`}
-                      >
-                        <FiLinkedin size={20} />
-                      </a>
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, idx) => (
+              <div key={idx} className="glass-card p-6 group">
+                <div className="glossy-icon w-12 h-12 flex items-center justify-center text-blue-600 mb-4">
+                  {feature.icon}
                 </div>
+                <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* CONTACT FORM SECTION (email NOT shown in UI) */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4">
+      {/* ================== CONTACT ================== */}
+      < section className="py-24 bg-white" >
+        <div className="max-w-2xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Get In Touch</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Have questions or feedback? We'd love to hear from you. Send us a
-              message and we'll respond as soon as possible.
-            </p>
+            <p className="text-gray-600">Have questions or feedback? We'd love to hear from you.</p>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl p-8 md:p-12 shadow-sm border border-gray-100">
-            <div className="space-y-6">
+          <div className="card-elevated p-8">
+            <div className="space-y-5">
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <FiEdit className="w-4 h-4 text-blue-500" />
-                    Your Name
-                  </div>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
                 <input
                   type="text"
-                  id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   placeholder="John Doe"
                 />
               </div>
-
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <FiEdit className="w-4 h-4 text-blue-500" />
-                    Your Email
-                  </div>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   placeholder="john@example.com"
                 />
               </div>
-
               <div>
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <FiEdit className="w-4 h-4 text-blue-500" />
-                    Message
-                  </div>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                 <textarea
-                  id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
-                  rows={6}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="Tell us what's on your mind..."
+                  rows={5}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
+                  placeholder="Your message..."
                 />
               </div>
 
               {submitStatus === "success" && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                  Thank you! Your message has been sent successfully. We'll get
-                  back to you soon.
+                <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-3 rounded-xl">
+                  <CheckCircle size={20} />
+                  Message sent successfully!
                 </div>
               )}
-
               {submitStatus === "error" && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  Oops! Something went wrong. Please try again later.
+                <div className="text-red-600 bg-red-50 px-4 py-3 rounded-xl">
+                  Please fill all fields and try again.
                 </div>
               )}
 
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white font-bold text-lg rounded-full px-8 py-4 hover:shadow-lg transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold rounded-xl px-6 py-4 hover:bg-gray-800 transition-all disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Sending...
-                  </>
+                  <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Sending...</>
                 ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      />
-                    </svg>
-                    Send Message
-                  </>
+                  <><Send size={20} /> Send Message</>
                 )}
               </button>
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* CTA */}
-      <section className="bg-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <h2 className="text-4xl font-bold mb-4">
-            {isAuthenticated
-              ? "Ready to Continue?"
-              : "Ready to Build Your Professional Presence?"}
+      {/* ================== FINAL CTA ================== */}
+      < section className="relative py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden" >
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            {isAuthenticated ? "Ready to Continue Building?" : "Ready to Stand Out?"}
           </h2>
-          <p className="text-lg text-gray-300 mb-8">
+          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
             {isAuthenticated
-              ? "Jump back into the editor to perfect your portfolio."
-              : "Join hundreds of developers who are showcasing their work with DevPort."}
+              ? "Jump back into your editor and perfect your portfolio."
+              : "Join developers who are showcasing their work with DevPort."}
           </p>
-
-          {isAuthenticated ? (
-            <Link
-              href="/editor"
-              className="inline-block bg-white text-black font-bold text-lg rounded-full px-8 py-4 hover:bg-gray-200 transition-transform duration-200 hover:scale-105"
-            >
-              Go to Editor
-            </Link>
-          ) : (
-            <Link
-              href="/register"
-              className="inline-block bg-white text-black font-bold text-lg rounded-full px-8 py-4 hover:bg-gray-200 transition-transform duration-200 hover:scale-105"
-            >
-              Sign Up Now
-            </Link>
-          )}
+          <Link
+            href={isAuthenticated ? "/editor" : "/register"}
+            className="inline-flex items-center gap-2 bg-white text-gray-900 font-bold text-lg rounded-xl px-10 py-5 hover:bg-gray-100 transition-all hover:shadow-2xl hover:-translate-y-1"
+          >
+            {isAuthenticated ? "Open Editor" : "Get Started Free"}
+            <ArrowRight size={22} />
+          </Link>
         </div>
-      </section>
-    </div>
+      </section >
+    </div >
   );
 };
 

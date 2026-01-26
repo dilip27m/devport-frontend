@@ -6,6 +6,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
+import { useAlert } from "@/context/AlertContext";
+
 export interface Blog {
   name: string;
   category: string;
@@ -44,6 +46,7 @@ const ConfirmBox: React.FC<{
 
 const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
   const { upload } = useCloudinaryUpload();
+  const { showAlert } = useAlert();
 
   const [openIndex, setOpenIndex] = useState<number | null>(blogs.length > 0 ? 0 : null);
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
@@ -66,7 +69,7 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
       handleChange(index, "image", url);
     } catch (err) {
       console.error(err);
-      alert("Image upload failed.");
+      showAlert("Image upload failed.", "error");
     } finally {
       setUploadingIndex(null);
     }
@@ -181,61 +184,61 @@ const BlogsForm: React.FC<BlogsFormProps> = ({ blogs, onChange }) => {
                               transition={{ duration: 0.22 }}
                               className="p-4 space-y-5 border-t bg-white"
                             >
-                              
+
                               {/* --- Image Upload Section --- */}
                               <div>
                                 <span className={labelClass}>Blog Cover Image</span>
                                 <div className="group relative">
-                                    <input
-                                        id={`blog-image-${index}`}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(index, e)}
-                                        className="hidden"
-                                    />
+                                  <input
+                                    id={`blog-image-${index}`}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(index, e)}
+                                    className="hidden"
+                                  />
 
-                                    <label
-                                        htmlFor={`blog-image-${index}`}
-                                        className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
+                                  <label
+                                    htmlFor={`blog-image-${index}`}
+                                    className={`relative w-full h-48 rounded-xl overflow-hidden border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2
                                         ${blog.image ? "border-transparent shadow-sm" : "border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50"}`}
-                                    >
-                                        {blog.image ? (
-                                            <>
-                                                <img 
-                                                    src={blog.image} 
-                                                    alt="Blog Cover" 
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
-                                                    Change Cover
-                                                </div>
-                                            </>
+                                  >
+                                    {blog.image ? (
+                                      <>
+                                        <img
+                                          src={blog.image}
+                                          alt="Blog Cover"
+                                          className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
+                                          Change Cover
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div className="text-gray-400 flex flex-col items-center">
+                                        {isUploading ? (
+                                          <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
                                         ) : (
-                                            <div className="text-gray-400 flex flex-col items-center">
-                                                {isUploading ? (
-                                                    <span className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2" />
-                                                ) : (
-                                                    <ImageIcon size={32} className="mb-2 opacity-50" />
-                                                )}
-                                                <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Cover Image"}</span>
-                                            </div>
+                                          <ImageIcon size={32} className="mb-2 opacity-50" />
                                         )}
-                                    </label>
-
-                                    {/* Remove Button */}
-                                    {blog.image && !isUploading && (
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // prevents label click
-                                                handleChange(index, "image", "");
-                                            }}
-                                            className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
-                                            title="Remove image"
-                                        >
-                                            <X size={14} />
-                                        </button>
+                                        <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Upload Cover Image"}</span>
+                                      </div>
                                     )}
+                                  </label>
+
+                                  {/* Remove Button */}
+                                  {blog.image && !isUploading && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // prevents label click
+                                        handleChange(index, "image", "");
+                                      }}
+                                      className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border border-gray-100 hover:bg-red-50 transition-colors z-10"
+                                      title="Remove image"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  )}
                                 </div>
                               </div>
 

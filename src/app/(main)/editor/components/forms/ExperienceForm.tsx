@@ -227,7 +227,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
           onClick={addExperience}
           className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
         >
-           Add Experience
+          Add Experience
         </button>
       </div>
 
@@ -261,9 +261,8 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`border rounded-xl bg-white shadow-md overflow-hidden transition ${
-                          snapshot.isDragging ? "ring-2 ring-blue-200" : ""
-                        }`}
+                        className={`border rounded-xl bg-white shadow-md overflow-hidden transition ${snapshot.isDragging ? "ring-2 ring-blue-200" : ""
+                          }`}
                       >
                         <div
                           className="flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors"
@@ -379,7 +378,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                               </div>
                             </div>
 
-                                                        {/* Start + End dates in one line */}
+                            {/* Start + End dates in one line */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -403,11 +402,10 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
                                   value={exp.endDate ?? ""}
                                   onChange={(e) => updateField(index, "endDate", e.target.value)}
                                   disabled={exp.isPresent}
-                                  className={`w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 ${
-                                    exp.isPresent
+                                  className={`w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 ${exp.isPresent
                                       ? "bg-gray-50 text-gray-500 cursor-not-allowed"
                                       : "border-gray-500 focus:ring-blue-400"
-                                  }`}
+                                    }`}
                                 />
                               </div>
                             </div>

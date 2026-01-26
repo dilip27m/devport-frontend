@@ -20,13 +20,13 @@ export interface SkillsFormProps {
 }
 
 const SUGGESTIONS = [
-  "react","nextjs","typescript","javascript","tailwind","vite","vue","svelte",
-  "nodejs","express","django","flask","fastapi","spring","ruby","rails",
-  "flutter","dart","reactnative","kotlin","swift",
-  "mongodb","postgres","mysql","redis","sqlite",
-  "docker","kubernetes","aws","gcp","azure","nginx","git",
-  "python","pytorch","tensorflow","pandas","numpy","scikit-learn",
-  "go","rust","java","c","cpp","graphql","prisma","apollo","sql",
+  "react", "nextjs", "typescript", "javascript", "tailwind", "vite", "vue", "svelte",
+  "nodejs", "express", "django", "flask", "fastapi", "spring", "ruby", "rails",
+  "flutter", "dart", "reactnative", "kotlin", "swift",
+  "mongodb", "postgres", "mysql", "redis", "sqlite",
+  "docker", "kubernetes", "aws", "gcp", "azure", "nginx", "git",
+  "python", "pytorch", "tensorflow", "pandas", "numpy", "scikit-learn",
+  "go", "rust", "java", "c", "cpp", "graphql", "prisma", "apollo", "sql",
 ];
 
 const normalizeSkill = (s: string) => s.trim().toLowerCase();
@@ -225,7 +225,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
 
                       {/* BODY: Input + Skills */}
                       <div className="p-5 space-y-5">
-                        
+
                         {/* 1. Reduced Width Input Row */}
                         <div className="relative flex items-center gap-3">
                           <div className="relative w-72"> {/* Fixed Reduced Width */}
@@ -256,7 +256,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
                               placeholder="Type a skill..."
                               className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
-                            
+
                             {/* Suggestions Dropdown */}
                             {suggestionsFor === catIndex && suggestionsList.length > 0 && (
                               <div className="absolute top-full left-0 mt-1 w-full z-50 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
@@ -329,9 +329,9 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
                                             {skill[0]?.toUpperCase()}
                                           </div>
                                         )}
-                                        
+
                                         <span className="font-medium">{displaySkill(skill)}</span>
-                                        
+
                                         <button
                                           type="button"
                                           onClick={() => removeSkill(catIndex, skillIndex)}
@@ -359,7 +359,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ skills = [], onChange }) => {
         </Droppable>
       </DragDropContext>
 
-                  <div className="text-xs text-gray-500">
+      <div className="text-xs text-gray-500">
         Tip: Click on category name to enter category name.
       </div>
     </div>
